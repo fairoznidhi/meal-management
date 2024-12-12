@@ -1,9 +1,16 @@
+"use client"
+import { Button } from '@/components/button'
 import React from 'react'
 
 const LoginPage = () => {
   return (
     <div>
-      <h1 className='text-center text-4xl'>Login Page</h1>
+      <div className='grid grid-cols-2'>
+        <div>class1</div>
+        <div className='loginForm'>
+            <Button label='Log In' size='md' className='btn bg-lightBlue hover:bg-darkBlue' onClick={()=>console.log('Button clicked')}/>
+        </div>
+      </div>
     </div>
   )
 }

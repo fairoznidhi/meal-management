@@ -2,3 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --lightBlue: #2fa5ed;
+    --darkBlue: #0187da;
+    --white: #ffffff;
+    --black: #000000;
+  }
+  
