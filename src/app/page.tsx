@@ -1,5 +1,8 @@
+import Image from "next/image";
 export default function HomePage() {
   return (
-    <h1 className="text-center text-4xl">HomePage</h1>
+    <div className="m-20 items-center justify-center">
+      <p className="text-center text-4xl">Homepage</p>
+    </div>
   );
 }
