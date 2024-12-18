@@ -1,8 +1,7 @@
-const meal=()=>{
-    return (
-        <div className="m-20 items-center justify-center">
-        <p className="text-center text-4xl">Meal Plan</p>
-      </div>
-    );
+import MealTable from "@/components/meal_table";
+const meal_plan=()=>{
+  return(
+    <MealTable></MealTable>
+  )
 }
-export default meal
+export default meal_plan

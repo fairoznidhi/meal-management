@@ -1,116 +1,12 @@
 'use client'
-{/*import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { format, addDays, startOfWeek, endOfWeek, subWeeks, addWeeks } from "date-fns";
 
 const WeekCalendar = () => {
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
-  //Static Names
-  const names = ["Alice","Bob", "Charlie", "Diana", "Eve", "Frank", "Grace"];
-
-  // Get the start and end of the current week
-  const startOfCurrentWeek = startOfWeek(currentWeek, { weekStartsOn: 1 }); // Monday as the first day
-  const endOfCurrentWeek = endOfWeek(currentWeek, { weekStartsOn: 1 });
-
-  // Generate an array of dates for the week
-  const weekDays = [];
-  for (let i = 0; i < 7; i++) {
-    weekDays.push(addDays(startOfCurrentWeek, i));
-  }
-
-  // Handlers for navigation
-  const handlePrevWeek = () => {
-    setCurrentWeek(subWeeks(currentWeek, 1));
-  };
-
-  const handleNextWeek = () => {
-    setCurrentWeek(addWeeks(currentWeek, 1));
-  };
-
-  return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <button
-          onClick={handlePrevWeek}
-          className="p-2 text-base font-bold bg-gray-300 rounded-md hover:bg-gray-400"
-        >
-          Previous
-        </button>
-        <h2 className="text-sm font-bold me-8">
-          {format(startOfCurrentWeek, "MMMM dd")} - {format(endOfCurrentWeek, "MMMM dd, yyyy")}
-        </h2>
-        <button
-          onClick={handleNextWeek}
-          className="p-2 text-sm font-bold bg-gray-300 rounded-md hover:bg-gray-400"
-        >
-          Next
-        </button>
-      </div>
-      
-        {/*Weekly Calendar 
-        <div className="col-span-7 grid grid-cols-7 gap-2">
-          {weekDays.map((day, index) => (
-            <div key={index} className="p-4 border rounded-md text-center">
-              <p className="text-base font-bold">{format(day, "EEEE")}</p>
-              <p>{format(day, "dd")}</p>
-            </div>
-          ))}
-        </div>
-
-
-        {/* Calendar Grid *
-      <div className="grid grid-cols-8 gap-2">
-        {/* First Row: Empty Slot + Week Days 
-        <div className="bg-transparent"></div>
-        {weekDays.map((day, index) => (
-          <div key={index} className="p-4 border rounded-md text-center font-bold">
-            <p>{format(day, "EEEE")}</p>
-            <p>{format(day, "dd")}</p>
-          </div>
-        ))}
-
-        {/* Rows for Names 
-        {names.map((name, rowIndex) => (
-          <React.Fragment key={rowIndex}>
-            {/* Static Name Column 
-            <div className="p-4 border rounded-md bg-gray-100 text-center font-bold">
-              {name}
-            </div>
-            {/* Fields for Each Day 
-            {weekDays.map((day, colIndex) => (
-              <div
-                key={colIndex}
-                className="p-4 border rounded-md text-center"
-              >
-                <input
-                  type="text"
-                  placeholder="Enter data"
-                  className="w-full px-2 py-1 border rounded"
-                />
-              </div>
-            ))}
-          </React.Fragment>
-        ))}
-
-
-
-      </div>
-    </div>
-  );
-};
-
-export default WeekCalendar;*/}
-
-
-
-import React, { useState, useRef, useEffect } from "react";
-import { format, addDays, startOfWeek, endOfWeek, subWeeks, addWeeks } from "date-fns";
-
-const WeekCalendarWithNames = () => {
-  const [currentWeek, setCurrentWeek] = useState(new Date());
-
   // Static names
-  const names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace"];
+  const names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace","Guest"];
 
   // Get the start and end of the current week
   const startOfCurrentWeek = startOfWeek(currentWeek, { weekStartsOn: 1 }); // Monday as the first day
@@ -121,13 +17,13 @@ const WeekCalendarWithNames = () => {
   for (let i = 0; i < 7; i++) {
     weekDays.push(addDays(startOfCurrentWeek, i));
   }
-   // State for input values, initialized with `1` for all fields
+   // State for input values, initialized with 1 for all fields
   const [fields, setFields] = useState(
     names.map(() => weekDays.map(() => 1))
   );
 
   useEffect(() => {
-    // Reset all fields to `1` whenever the week changes
+    // Reset all fields to 1 whenever the week changes
     const newFields = names.map(() => weekDays.map(() => 1));
     setFields(newFields);
   }, [currentWeek]);
@@ -246,6 +142,7 @@ const WeekCalendarWithNames = () => {
     </div>
   );
 };
+export default WeekCalendar 
 
-export default WeekCalendarWithNames;
+
 

@@ -1,57 +1,61 @@
 "use client"
-
 import React, { useState } from "react";
 
-const SidebarLayout = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+const CollapsibleSidebar = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    setIsCollapsed(!isCollapsed);
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full bg-gray-800 text-white transition-transform duration-300 ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-        style={{ width: "250px" }}
+        className={`bg-gray-800 text-white ${
+          isCollapsed ? "w-16" : "w-64"
+        } transition-all duration-300 ease-in-out`}
       >
-        <div className="p-4">
-          <h2 className="text-lg font-bold">Sidebar</h2>
-          <ul className="mt-4">
-            <li className="py-2">Home</li>
-            <li className="py-2">About</li>
-            <li className="py-2">Contact</li>
-          </ul>
+        <div className="p-4 flex justify-between items-center">
+          <h2 className={`text-lg font-bold ${isCollapsed ? "hidden" : "block"}`}>
+            Sidebar
+          </h2>
+          <button
+            onClick={toggleSidebar}
+            className="text-white bg-gray-600 p-2 rounded-md hover:bg-gray-700"
+          >
+            {isCollapsed ? ">" : "<"}
+          </button>
         </div>
+        <ul className="mt-4 space-y-2">
+          <li className="p-2 hover:bg-gray-700 rounded-md">
+            <a href="#" className={`${isCollapsed ? "text-sm" : "text-base"}`}>
+              Item 1
+            </a>
+          </li>
+          <li className="p-2 hover:bg-gray-700 rounded-md">
+            <a href="#" className={`${isCollapsed ? "text-sm" : "text-base"}`}>
+              Item 2
+            </a>
+          </li>
+          <li className="p-2 hover:bg-gray-700 rounded-md">
+            <a href="#" className={`${isCollapsed ? "text-sm" : "text-base"}`}>
+              Item 3
+            </a>
+          </li>
+        </ul>
       </div>
 
       {/* Main Content */}
-      <div
-        className={`flex-1 transition-transform duration-300 ${
-          isSidebarOpen ? "ml-64" : "ml-0"
-        }`}
-      >
-        <div className="p-4">
-          <button
-            onClick={toggleSidebar}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          >
-            {isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
-          </button>
-          <div className="mt-4">
-            <h1 className="text-2xl font-bold">Main Content</h1>
-            <p className="mt-2">
-              This is the main content area. When the sidebar appears, this
-              content is pushed to the right.
-            </p>
-          </div>
-        </div>
+      <div className="flex-1 bg-gray-100 p-4">
+        <h1 className="text-xl font-bold">Main Content</h1>
+        <p>
+          This is the main content area. The sidebar can collapse and expand by
+          clicking the button.
+        </p>
       </div>
     </div>
   );
 };
 
-export default SidebarLayout;
+export default CollapsibleSidebar;
