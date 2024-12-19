@@ -3,9 +3,12 @@
 import React, { useState } from "react";
 import { addDays, subDays, format } from "date-fns";
 
+
+type Entries = Record<string, Record<string, string>>;
+
 const MealTable = () => {
   const [startDate, setStartDate] = useState(new Date());
-  const [entries, setEntries] = useState({});
+  const [entries, setEntries] = useState<Entries>({});
 
   // Function to get the current week's dates
   const getWeekDates = () => {
@@ -25,7 +28,7 @@ const MealTable = () => {
   };
 
   // Handle input changes
-  const handleInputChange = (date, column, value) => {
+  const handleInputChange = (date:string, column: string, value: string) => {
     setEntries((prevEntries) => ({
       ...prevEntries,
       [date]: {
