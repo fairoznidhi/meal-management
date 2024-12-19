@@ -1,0 +1,5 @@
+.input:focus, .input:focus-within{
+    outline-style: solid;
+    outline-width: 1px;
+    outline-offset: 0px;
+}
