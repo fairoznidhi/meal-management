@@ -1,6 +1,6 @@
 "use client"
 import SearchBar from "./searchbar"
-import Sidebar from "./sidebar"
+import Sidebar from "../sidebar"
 
 const Admin_Header=()=>{
     return(
