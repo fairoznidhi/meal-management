@@ -1,35 +1,59 @@
 "use client"
-
-import Form from "@/components/create_user/form"
-import EmpTable from "@/components/employee_table";
-
+import React, { useState } from "react";
+import Table, {Column,Row} from "@/components/Table";
+import Search from "@/components/Search";
 const employee=()=>{
-  const columns = [
-    { key: "name", label: "Name", editable: true },
-    { key: "penalties", label: "Penalties", editable: true },
-    { key: "notes", label: "Notes", editable: true },
+  const columns:Column[] = [
+    { key: "name", label: "Name"},
+    { key: "penalties", label: "Penalties"},
+    { key: "notes", label: "Notes"},
   ];
 
-  const initialData = [
+  const initialData:Row[] = [
     { name: "Alice", penalties: "2", notes: "No Beef" },
     { name: "Bob", penalties: "1", notes: "No Fish" },
   ];
 
-  const handleDataChange = (updatedData: any[]) => {
-    console.log("Updated Data:", updatedData);
+ 
+  const [data, setData] = useState(initialData);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredData = data.filter((row) =>
+    columns.some((col) =>
+      row[col.key]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+  const handleAddRow = () => {
+    const newRow: Row = {};
+    columns.forEach((col) => (newRow[col.key] = ""));
+    setData([...data, newRow]);
+  };
+
+  const handleDeleteRow = (index: number) => {
+    const updatedData = data.filter((_, i) => i !== index);
+    setData(updatedData);
   };
     return (
-        <div className="m-20 items-center justify-center">
-          <p className="text-2xl ms-4">Employee List</p>
+        <div className="m-5 items-center justify-center">
+
         {/*<Form></Form>*/}
         
         <div className="p-4">
-      
-      <EmpTable
+        <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        <div className="mt-40">
+      <Table
         columns={columns}
-        initialData={initialData}
-        
+        data={filteredData}
+        onAddRow={handleAddRow}
+        onDeleteRow={handleDeleteRow}
+       
       />
+      </div>
+      <button className="rounded bg-blue-400 px-2 py-1 mt-7 text-white">
+         +
+      </button>
+
     </div>
       </div>
     );

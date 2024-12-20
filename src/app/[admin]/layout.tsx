@@ -2,8 +2,10 @@
 
 
 import React, { useState } from "react";
-import SearchBar from "@/components/admin_navbar/searchbar";
 import Sidebar from "@/components/sidebar";
+
+
+
 
 export default function AdminLayout({
   children,
@@ -14,13 +16,19 @@ export default function AdminLayout({
     { name: "Dashboard", route: "/admin/dashboard" },
     { name: "Employee List", route: "/admin/employee" },
     { name: "Meal Plan", route: "/admin/meal_plan" },
+    { name: "Profie", route: "/admin/profile"},
   ];
 
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  
+
+
   const toggleSidebar = () => {
     setIsCollapsed((prev) => !prev);
   };
+
+
 
   return (
     <div className="flex h-screen">
@@ -45,8 +53,7 @@ export default function AdminLayout({
           isCollapsed ? "ml-16" : "ml-64"
         }`}
       >
-        <div className="p-4">
-          <SearchBar onSearch={"text"} />
+        <div className="p-4"> 
           {children}
         </div>
       </div>

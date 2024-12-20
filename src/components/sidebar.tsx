@@ -17,6 +17,10 @@ const Sidebar = ({
   const pathname = usePathname(); // Get the current path
 
   return (
+    <div>
+     <div className="flex">
+      
+     </div>
     <ul className="space-y-4 p-4">
       {items.map((item, index) => {
         const isActive = pathname === item.route; // Check if the current path matches the route
@@ -35,6 +39,9 @@ const Sidebar = ({
         );
       })}
     </ul>
+
+    
+</div>
   );
 };
 

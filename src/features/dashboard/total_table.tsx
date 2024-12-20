@@ -9,7 +9,7 @@ const Grid = () => {
       {items.map((_, index) => (
         <div
           key={index}
-          className="p-2 border rounded-md text-center items-center text-base w-40 h-10 text-bold"
+          className="p-2 border rounded-md text-center items-center text-base w-36 h-10 text-bold"
         >
           {index === 0 ? "Total" : ""}
           

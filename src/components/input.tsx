@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
 const Input = ({
-  label,
-  id,
+  label="",
+  id="",
   type = "text",
   className = "",
   togglePasswordVisibility = false,
