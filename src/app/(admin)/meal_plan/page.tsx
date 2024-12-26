@@ -69,11 +69,11 @@ const meal_plan=()=>{
      <Table
         columns={columns}
         data={data}
-        onAddRow={() => {}} // Disable adding rows for this table
-        onDeleteRow={() => {}} // Disable deleting rows for this table
+        //onAddRow={() => {}} // Disable adding rows for this table
+        //onDeleteRow={() => {}} // Disable deleting rows for this table
         onEditRow={handleEditRow}
       />
-      <button className="mt-20 p-2 border rounded-md hover:bg-green-500">Save changes</button>
+      <button className="mt-20 p-2 border rounded-md bg-blue-500 hover:bg-blue-600 text-white">Save changes</button>
     </div>
   )
 }

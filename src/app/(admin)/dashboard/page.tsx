@@ -5,10 +5,12 @@
 import React, { useState } from "react";
 import Table, { Column, Row } from "@/components/Table";
 import SearchBar from "@/components/Search";
+import TotalBox from "@/features/dashboard/TotalBox";
+import TotalTable from "@/features/dashboard/TotalTable";
 import { addDays, startOfWeek, endOfWeek, format } from "date-fns";
 
 const Dashboard = () => {
-  const employees = ["Alice", "Bob", "Charlie", "Diana"]; // Static employee names
+  const employees = ["Alice", "Bob", "Charlie", "Diana","Guest"]; // Static employee names
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
   // Define columns
@@ -57,9 +59,18 @@ const Dashboard = () => {
     <div className="p-4">
       {/* SearchBar */}
       <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-      
+      <div className="mt-10 p-2 bg-gray-100 w-96">
+      <TotalBox></TotalBox>
+      </div>
+      <div >
+        <select name="meal" id="meal" className="border bordre-black p-1 mt-20">
+          <option value="1">Lunch</option>
+          <option value="2">Snacks</option>
+        </select>
+      </div>
       {/*Navigation */}
-            <div className="flex items-center justify-center mb-4 gap-x-2 mt-40">
+      
+            <div className="flex items-center justify-center mb-4 gap-x-2 mt-20">
                    <button
                      onClick={handlePreviousWeek}
                      className="p-2 text-base bg-gray-300 rounded-md hover:bg-gray-400"
@@ -76,12 +87,18 @@ const Dashboard = () => {
                      <span className="text-lg">&raquo;</span> 
                    </button>
                  </div>
+                  
       
       <Table
         columns={columns}
         data={filteredData}
        
       />
+
+      <div className="mt-5">
+        <TotalTable></TotalTable>
+      </div>
+      
     </div>
   );
 };

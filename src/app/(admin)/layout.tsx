@@ -3,8 +3,8 @@
 
 import React, { useState } from "react";
 import Sidebar from "@/components/sidebar";
-
-
+import Image from "next/image";
+import vslogo from "public/vslogo.png";
 
 
 export default function AdminLayout({
@@ -13,10 +13,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const sidebarItems = [
-    { name: "Dashboard", route: "/admin/dashboard" },
-    { name: "Employee List", route: "/admin/employee" },
-    { name: "Meal Plan", route: "/admin/meal_plan" },
-    { name: "Profie", route: "/admin/profile"},
+    { name: "Dashboard", route: "/dashboard" },
+    { name: "Employee List", route: "/employee" },
+    { name: "Meal Plan", route: "/meal_plan" },
+    { name: "Profie", route: "/profile"},
   ];
 
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -53,8 +53,11 @@ export default function AdminLayout({
           isCollapsed ? "ml-16" : "ml-64"
         }`}
       >
-        <div className="p-4"> 
-          {children}
+        <div className="">
+        <div className="relative"><Image src={vslogo} alt="vlogo" className="fixed top-2 right-5 w-20 h-20"></Image></div>
+          <div>
+            {children}</div> 
+           
         </div>
       </div>
     </div>
