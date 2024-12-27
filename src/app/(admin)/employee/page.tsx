@@ -15,11 +15,15 @@ const Employee = () => {
 
   // Columns for adding new employee (modal)
   const employeeColumns: Column[] = [
+    { key: "employee_id", label:"Employee_id"},
     { key: "name", label: "Name" },
     { key: "email", label: "Email" },
-    { key: "phone", label: "Phone Number" },
-    { key: "department", label: "Department" },
     { key: "password", label: "Password" },
+   // { key: "phone", label: "Phone Number" },
+    { key: "dept_id", label: "Department" },
+    
+    { key: "remarks", label: "remarks"},
+    { key: "default_status", label: "default_status"},
   ];
 
   const initialData: Row[] = [
@@ -33,11 +37,14 @@ const Employee = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newRow, setNewRow] = useState<Row>({
+    employee_id:"",
     name: "",
     email: "",
-    phone: "",
-    department: "Development",
     password: "",
+    dept_id:"",
+    remarks: "",
+    status:"active",//default status
+    
   });
 
   // Filter data based on name and notes
@@ -46,11 +53,42 @@ const Employee = () => {
     row.notes.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddRow = () => {
+  /*const handleAddRow = () => {
+    
     setData([...data, newRow]);
     setNewRow({ name: "", email: "", phone: "", department: "Development", password: "" });
     setIsModalOpen(false); // Close modal after adding
+  };*/
+
+  const handleAddRow = async () => {
+    try {
+      const response = await fetch('/api/create_user', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          
+        },
+        body: JSON.stringify(newRow),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Failed to create user:${errorData.message || response.statusText}`);
+      }
+  
+      const result = await response.json();
+      console.log("User created:", result.user);
+  
+      // Update the table with the new user
+      setData([...data, newRow]);
+      setNewRow({ employee_id:"",name: "", email: "", password: "", dept_id: "", remarks: "", status:"active" });
+      setIsModalOpen(false); // Close modal after adding
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("Failed to create user. Please try again.");
+    }
   };
+  
 
   const handleDeleteRow = (index: number) => {
     const updatedData = data.filter((_, i) => i !== index);
@@ -115,10 +153,10 @@ const Employee = () => {
                   onChange={(e) => handleNewRowChange(col.key, e.target.value)}
                   className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-300"
                 >
-                  <option value="Development">Development</option>
-                  <option value="Call Center">Call Center</option>
-                  <option value="Sales">Sales</option>
-                  <option value="HR">HR</option>
+                  <option value="1">Development</option>
+                  <option value="2">Call Center</option>
+                  <option value="3">Sales</option>
+                  <option value="4">HR</option>
                 </select>
               ) : (
                 <input

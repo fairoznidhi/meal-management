@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 
 import Table, {Column, Row} from "@/components/Table";
-const meal_plan=()=>{
+const MealPlan=()=>{
   const columns: Column[] = [
     { key: "date", label: "Date" },
     { key: "snacks", label: "Snacks", editable: true },
@@ -77,4 +77,4 @@ const meal_plan=()=>{
     </div>
   )
 }
-export default meal_plan
+export default MealPlan;

@@ -7,16 +7,14 @@ import Image from "next/image";
 import vslogo from "public/vslogo.png";
 
 
-export default function AdminLayout({
+export default function UserLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const sidebarItems = [
-    { name: "Dashboard", route: "/dashboard" },
-    { name: "Employee List", route: "/employee" },
-    { name: "Meal Plan", route: "/meal_plan" },
-    { name: "My Profie", route: "/profile"},
+    { name: "Dashboard", route: "/UserDash" },
+    { name: "My Profie", route: "/UserProfile"},
   ];
 
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -54,6 +52,12 @@ export default function AdminLayout({
         }`}
       >
         <div className="">
+        <div className="avatar relative">
+  <div className="ring-primary ring-offset-base-100 w-10 rounded-full ring ring-offset-2 mt-10 ms-10 right-48">
+    <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>
+  </div>
+  <p className="mt-12 ms-6 font-bold">UserName</p>
+</div>   
         <div className="relative"><Image src={vslogo} alt="vlogo" className="fixed top-2 right-5 w-20 h-20"></Image></div>
           <div>
             {children}</div> 
