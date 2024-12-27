@@ -7,9 +7,10 @@ import loginhero from '../../../public/loginhero.png'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { loginUser } from '@/utils/actions/loginUser'
-import RadioInput from '@/components/radioInput/RadioInput'
+import { jwtDecode } from "jwt-decode";
+import { CustomUser } from './JwtPayload'
 export type Inputs = {
-  usertype: 'employee'|'admin'
+  // usertype: 'employee'|'admin'
   email: string
   password: string
 }
@@ -23,15 +24,30 @@ const LoginPage = () => {
   const onSubmit = async (data: Inputs) =>{
     console.log(data);
     try {
-      const res = await loginUser(data);
-      console.log(res);
-      if(res.accessToken){
-        alert(res.message);
-        localStorage.setItem('accessToken',res.accessToken);
-        router.push("/");
-      }
-      else{
-        alert(res.message);
+      // Call the loginUser function and get the response
+      const res = await loginUser(data)
+      console.log("Login response:", res)
+
+      // Store the token in localStorage
+      localStorage.setItem('accessToken', res)
+      const token = res
+      console.log("Stored Token:", token)
+
+      // Decode the JWT token
+      const decodedToken = jwtDecode<CustomUser>(token)
+      console.log("Decoded token:", decodedToken)
+
+      // Check if the user is admin or not and route accordingly
+      if (decodedToken.is_admin === true) {
+        console.log('Redirecting to /dashboard')
+        // Redirect to dashboard
+        router.push("/adminDashboard")
+      } else if (decodedToken.is_admin === false) {
+        console.log('Redirecting to /calendar')
+        // Redirect to calendar
+        router.push("/calendar")
+      } else {
+        console.error('Unexpected token data: is_admin is undefined')
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -66,13 +82,13 @@ const LoginPage = () => {
               
             </div>
             <form action="" onSubmit={handleSubmit(onSubmit)}>
-              <div>
+              {/* <div>
               <RadioInput label='Admin'  {...register("usertype")} value='admin'></RadioInput>
               <RadioInput label='Employee' {...register("usertype")} value='employee'></RadioInput>
-              </div>
+              </div> */}
               <Input type='text' placeholder='Email' {...register("email")}></Input>
               <Input type='password' placeholder='Password' {...register("password")}></Input>
-              <Button label='Log In' size='md' className='w-full'><input type="submit" /></Button>
+              <Button label='Log In' size='md' className='w-full' ></Button>
             </form>
           </div>
         </div>
