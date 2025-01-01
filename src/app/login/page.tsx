@@ -45,7 +45,7 @@ const LoginPage = () => {
       } else if (decodedToken.is_admin === false) {
         console.log('Redirecting to /calendar')
         // Redirect to calendar
-        router.push("/calendar")
+        router.push("/UserDash")
       } else {
         console.error('Unexpected token data: is_admin is undefined')
       }
