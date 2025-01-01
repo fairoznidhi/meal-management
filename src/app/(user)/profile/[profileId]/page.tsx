@@ -1,12 +1,18 @@
-import React from 'react'
+'use client'
 
-const SingleProfilePage = async({params}: {params: Promise<{ profileId: number }>}) => {
-    const ID=(await params).profileId
+import { useSingleEmployee } from "@/services/queries";
+
+const SingleProfilePage = ({params}:{params:{profileId:number}}) => {
+  const {profileId} =  params;
+  const profile=useSingleEmployee(profileId)
+  console.log('Hello')
   return (
     <div>
-      <h1 className='text-4xl text-center'>Profile Id: {ID}</h1>
+      <h1>{profileId}</h1>
+      <h1>Fetch status: {profile.fetchStatus}</h1>
+      <p></p>
     </div>
-  )
-}
+  );
+};
 
-export default SingleProfilePage
+export default SingleProfilePage;
