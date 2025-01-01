@@ -4,54 +4,10 @@ import Modal from "@/components/modal";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
 
-export type UserProfileDataType = {
-  employee_id: number;
-  name: string;
-  email: string;
-  dept_id:number;
-  password:string;
-  remarks:string;
-  default_status:boolean;
-  is_admin:boolean;
-};
+;
 const UserProfile = () => {
   
-  const [formData, setFormData] = useState<UserProfileDataType>({
-    name: "John Doe",
-    email: "john.doe@example.com",
-    dept_id: 1,
-    password: "password123",
-    remarks: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    default_status: true,
-    is_admin: false,
-  });
-
-  const [profilePicture, setProfilePicture] = useState(
-    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-  );
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleInputChange = (field: keyof UserProfileDataType, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.result) {
-          setProfilePicture(reader.result as string); // Update profile picture immediately
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSaveChanges = () => {
-    setIsModalOpen(false); // Close the modal after saving
-  };
+  
 
   return (
     <div className="p-4 mx-24">
