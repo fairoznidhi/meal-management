@@ -2,27 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  async headers() {
-    return [
-      {
-        source: "/api/:path*", // Apply to all API routes
-        headers: [
-          {
-            key: "Access-Control-Allow-Origin",
-            value: "*", // Allow all origins or specify a domain
-          },
-          {
-            key: "Access-Control-Allow-Methods",
-            value: "GET, POST, PUT, DELETE, OPTIONS", // Allowed methods
-          },
-          {
-            key: "Access-Control-Allow-Headers",
-            value: "Content-Type, Authorization", // Allowed headers
-          },
-        ],
-      },
-    ];
-  },
+  async rewrites() {
+		return [
+			{
+				source: '/api/create',
+				destination: 'http://46.137.193.141:50000/employee',
+			},
+		]
+	},
 };
 
 export default nextConfig;
