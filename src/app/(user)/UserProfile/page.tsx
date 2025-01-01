@@ -18,7 +18,12 @@ const UserProfile = () => {
   
   const [formData, setFormData] = useState<UserProfileDataType>({
     name: "John Doe",
-    email: "john.doe@example.com"
+    email: "john.doe@example.com",
+    dept_id: 1,
+    password: "password123",
+    remarks: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    default_status: true,
+    is_admin: false,
   });
 
   const [profilePicture, setProfilePicture] = useState(
