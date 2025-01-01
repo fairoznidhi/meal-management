@@ -1,12 +1,12 @@
-import React from 'react'
+import React from 'react';
 
-const SingleProfilePage = async({params}: {params: Promise<{ profileId: number }>}) => {
-    const ID=(await params).profileId
+const SingleProfilePage = async({params}:{params:{profileId:string}}) => {
+  console.log()
   return (
     <div>
-      <h1 className='text-4xl text-center'>Profile Id: {ID}</h1>
+      <h1>{params.profileId}</h1>
     </div>
-  )
-}
+  );
+};
 
-export default SingleProfilePage
+export default SingleProfilePage;
