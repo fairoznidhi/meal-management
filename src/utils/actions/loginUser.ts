@@ -11,6 +11,6 @@ export const loginUser=async(data:Inputs)=>{
         body:JSON.stringify(data),
         cache: "no-store",
     });
-    const userInfo=await res.json();
+    const userInfo = await res.json();
     return userInfo;
 }
