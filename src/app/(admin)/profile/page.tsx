@@ -4,7 +4,15 @@ import React, { useState } from "react";
 import Modal from "@/components/modal";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
+import QueryProvider from "@/components/QueryProvider";
 
+const fetchEmployeeData = async () => {
+  const response = await fetch('/api/employee');
+  if (!response.ok) {
+    throw new Error('Failed to fetch employee data');
+  }
+  return response.json(); // Assuming the API returns an array of employee data
+};
 
 const AdminProfile = () => {
 

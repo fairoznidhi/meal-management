@@ -1,52 +1,95 @@
-'use client'
-import { useState } from 'react'
+"use client";
 
-export default function Home() {
-   
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    
+{/*import React, { useState } from "react";
+import ExtendedTable from "@/features/dashboard/AdminDashTable";
+import { Row } from "@/components/Table";
+import AdminDashTable from "@/features/dashboard/AdminDashTable";
 
-    const submitData = async () => {
-        let response = await fetch('/api/proxy_login', {
-            method: 'POST',
-            body: JSON.stringify({
-              email:'vivasoft@gmail.com',
-              password:'1234',
-          
-            }),
-            headers: {
-                'Content-type': 'application/json'
-            }
-        })
-        
-        const text = await response.text()
-        console.log(text)
-        //response = await response.json()
+const EmployeeSchedule = () => {
+  // Initial data
+  const [data, setData] = useState<Row[]>([
+    { name: "Alice" },
+    { name: "Bob" },
+    { name: "Charlie" },
+  ]);
 
-        //alert(JSON.stringify(response))
-        //console.log(JSON.stringify(response))
-    }
+  const handleEditRow = (updatedRow: Row, rowIndex: number) => {
+    const updatedData = [...data];
+    updatedData[rowIndex] = updatedRow;
+    setData(updatedData);
+  };
 
-    return (
-        <>
-            <h2>External Post API Request | GeeksForGeeks</h2>
-            <input
-                type='text'
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder='Enter email'
-            />
-            
-<input
-                type='password'
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder='Enter password'
-            />
+  return (
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Employee Weekly Schedule</h1>
+      <AdminDashTable data={data} onEditRow={handleEditRow} />
+    </div>
+  );
+};
 
-           
-            <button onClick={submitData}>Submit</button>
-        </>
-    )
-}
+export default EmployeeSchedule;*/}
+
+// pages/employees.tsx
+
+// src/app/employees/page.tsx
+
+
+
+
+
+
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import Table, { Column, Row } from "@/components/Table";
+import Search from "@/components/Search";
+
+const fetchEmployeeData = async () => {
+  const response = await fetch('/api/employee');
+  if (!response.ok) {
+    throw new Error('Failed to fetch employee data');
+  }
+  return response.json(); // Assuming the API returns an array of employee data
+};
+
+const Employee = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Use `useQuery` to fetch employee data
+  const { data: employees = [], isLoading, error } = useQuery({
+    queryKey: ['employees'], // Unique key for this query
+    queryFn: fetchEmployeeData,
+  });
+
+  // Filter data based on the search term
+  const filteredData = employees.filter((row: Row) =>
+    row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    row.remarks.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const columns: Column[] = [
+    { key: "name", label: "Name" },
+    { key: "remarks", label: "Remarks" },
+  ];
+
+  return (
+    <div className="m-5 items-center justify-center">
+      <div className="p-4">
+        <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        <div className="mt-40">
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p>Error: {error.message}</p>
+          ) : (
+            <Table columns={columns} data={filteredData} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Employee;
+
+
+
