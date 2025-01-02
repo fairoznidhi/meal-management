@@ -1,14 +1,26 @@
 'use client'
 
 import { useSingleEmployee } from "@/services/queries";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import Modal from "@/components/modal";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
 import { UserProfileDataType } from "@/services/types";
+import { useSearchParams } from "next/navigation";
+import { getSession, useSession } from "next-auth/react";
 
-const SingleProfilePage = ({ params }: { params: { profileId: number } }) => {
-  const { profileId } = (params);
+const SingleProfilePage = ({ params }: { params:Promise<{ profileId: number }> }) => {
+  // useEffect(()=>{
+  //   const fetchSession=async()=>{
+  //     const session=await getSession();
+  //     console.log(session)
+  //   }
+  //   fetchSession();
+  // },[])
+
+  const { profileId } = use<{ profileId: number }>(params);
+  console.log(params)
+  console.log(profileId)
   const { data, isLoading, error } = useSingleEmployee(profileId);
   const [formData, setFormData] = useState<UserProfileDataType | null>(null);
   const [profilePicture, setProfilePicture] = useState(
@@ -70,15 +82,20 @@ const SingleProfilePage = ({ params }: { params: { profileId: number } }) => {
   return (
     <div className="p-4 mx-24">
       {/* Profile Display */}
-      <ProfileDisplay profilePicture={profilePicture} title="My Profile" />
+      <div className="flex flex-row justify-between items-center mt-8 mb-8">
+        <div className="flex items-center ">
+          <ProfileDisplay profilePicture={profilePicture} title="My Profile" />
+          {formData && <h1 className="px-6 text-xl font-semibold">{formData.name}</h1>}
+        </div>
 
-      {/* Edit Button */}
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="mt-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Edit Profile
-      </button>
+        {/* Edit Button */}
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="mt-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Edit Profile
+        </button>
+      </div>
 
       {/* Profile Details */}
       {formData && <ProfileDetails formData={formData} />}
