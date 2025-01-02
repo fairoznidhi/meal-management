@@ -27,7 +27,7 @@ const EmployeeSchedule = () => {
   );
 };
 
-export default EmployeeSchedule;*/}
+export default EmployeeSchedule;
 
 // pages/employees.tsx
 
@@ -90,6 +90,33 @@ const Employee = () => {
 };
 
 export default Employee;
+*/}
 
+import React from "react";
+import { useAllEmployees } from "@/services/EmployeeList/queries";
+import Table, { Column, Row } from "@/components/Table";
 
+const EmployeeList = () => {
+  const { data: employees = [], isLoading, error } = useAllEmployees();
 
+  const columns: Column[] = [
+    { key: "name", label: "Name" },
+    { key: "remarks", label: "Remarks" },
+  ];
+
+  return (
+    <div className="m-5 items-center justify-center">
+      <div className="p-4">
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          <Table columns={columns} data={employees as Row[]} />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default EmployeeList;
