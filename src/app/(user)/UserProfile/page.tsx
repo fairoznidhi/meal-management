@@ -1,27 +1,29 @@
 "use client"
-
 import React, { useState } from "react";
 import Modal from "@/components/modal";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
 
-
+export type UserProfileDataType = {
+  employee_id: number;
+  name: string;
+  email: string;
+  dept_id:number;
+  password:string;
+  remarks:string;
+  default_status:boolean;
+  is_admin:boolean;
+};
 const UserProfile = () => {
-
-  type FormDataType = {
-    name: string;
-    email: string;
-    mobile: string;
-    department: string;
-    notes: string;
-  };
   
-  const [formData, setFormData] = useState<FormDataType>({
+  const [formData, setFormData] = useState<UserProfileDataType>({
     name: "John Doe",
     email: "john.doe@example.com",
-    mobile: "1234567890",
-    department: "Development",
-    notes: "Some notes here...",
+    dept_id: 1,
+    password: "password123",
+    remarks: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    default_status: true,
+    is_admin: false,
   });
 
   const [profilePicture, setProfilePicture] = useState(
@@ -30,7 +32,7 @@ const UserProfile = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleInputChange = (field: keyof FormDataType, value: string) => {
+  const handleInputChange = (field: keyof UserProfileDataType, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -120,4 +122,3 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
-
