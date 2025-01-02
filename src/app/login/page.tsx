@@ -9,45 +9,35 @@ import { useRouter } from 'next/navigation'
 import { loginUser } from '@/utils/actions/loginUser'
 import { jwtDecode } from "jwt-decode";
 import { CustomUser } from './JwtPayload'
+import { signIn } from 'next-auth/react'
 export type Inputs = {
   // usertype: 'employee'|'admin'
   email: string
   password: string
 }
 const LoginPage = () => {
-  const {
-    register,
-    handleSubmit,
-    // formState: { errors },
-  } = useForm<Inputs>()
+  const {register,handleSubmit} = useForm<Inputs>();
+  
   const router=useRouter();
   const onSubmit = async (data: Inputs) =>{
     console.log(data);
     try {
-      // Call the loginUser function and get the response
-      const res = await loginUser(data)
-      console.log("Login response:", res)
-
-      // Store the token in localStorage
-      localStorage.setItem('accessToken', res)
-      const token = res
-      console.log("Stored Token:", token)
-
-      // Decode the JWT token
-      const decodedToken = jwtDecode<CustomUser>(token)
-      console.log("Decoded token:", decodedToken)
-
-      // Check if the user is admin or not and route accordingly
-      if (decodedToken.is_admin === true) {
-        console.log('Redirecting to /dashboard')
-        // Redirect to dashboard
-        router.push("/adminDashboard")
-      } else if (decodedToken.is_admin === false) {
-        console.log('Redirecting to /calendar')
-        // Redirect to calendar
-        router.push("/UserDash")
-      } else {
-        console.error('Unexpected token data: is_admin is undefined')
+      const result = await signIn("credentials", {
+        redirect:false,
+        email: data.email,
+        password: data.password,
+      });
+      console.log("Sign-in result:", result);
+      if (result?.error) {
+        alert("Invalid credentials!");
+      } else if (result?.ok) {
+        console.log("Login successful!");
+        const session = await fetch("/api/auth/session").then((res) => res.json());
+        if (session?.user?.is_admin) {
+          router.push("/adminDashboard");
+        } else {
+          router.push("/UserDash");
+        }
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -82,10 +72,6 @@ const LoginPage = () => {
               
             </div>
             <form action="" onSubmit={handleSubmit(onSubmit)}>
-              {/* <div>
-              <RadioInput label='Admin'  {...register("usertype")} value='admin'></RadioInput>
-              <RadioInput label='Employee' {...register("usertype")} value='employee'></RadioInput>
-              </div> */}
               <Input type='text' placeholder='Email' {...register("email")}></Input>
               <Input type='password' placeholder='Password' {...register("password")}></Input>
               <Button label='Log In' size='md' className='w-full' ></Button>
