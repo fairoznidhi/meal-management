@@ -3,7 +3,7 @@
 import { Inputs } from "@/app/login/page";
 
 export const loginUser=async(data:Inputs)=>{
-    const res=await fetch(`${process.env.BACKEND_URL}/login`,{
+    const res=await fetch(`${process.env.NEXT_PUBLIC_PROXY_URL}/login`,{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
