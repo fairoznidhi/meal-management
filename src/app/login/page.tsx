@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { loginUser } from '@/utils/actions/loginUser'
 import { jwtDecode } from "jwt-decode";
-import { CustomUser } from './JwtPayload'
+import { CustomUser } from '../../types/JwtPayload'
 import { signIn } from 'next-auth/react'
 export type Inputs = {
   // usertype: 'employee'|'admin'
