@@ -33,20 +33,19 @@ export default function UserLayout({
           isCollapsed ? "w-16" : "w-64"
         } bg-gray-800 text-white fixed top-0 left-0 h-full`}
       >
-        <button
-          onClick={toggleSidebar}
-          className="p-2 bg-gray-700 hover:bg-gray-600 w-full text-center"
-        >
-          {isCollapsed ? ">>" : "<<"}
-        </button>
-        <div className="flex flex-col h-[50rem]">
-          <div><Sidebar items={sidebarItems} isCollapsed={isCollapsed} /></div>
-          <div className="flex-grow"></div>
-          <div className="flex justify-center m-10">
-            {!isCollapsed && 
-            <button onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</button>}
+          <button
+            onClick={toggleSidebar}
+            className="p-2 bg-gray-700 hover:bg-gray-600 w-full text-center"
+          >
+            {isCollapsed ? ">>" : "<<"}
+          </button>
+          <div className="flex flex-col">
+            <div className="flex-grow"><Sidebar items={sidebarItems} isCollapsed={isCollapsed} /></div>
+            <div className="flex justify-center items-end my-8 absolute bottom-0 left-0 right-0">
+              {!isCollapsed && 
+              <button onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</button>}
+            </div>
           </div>
-        </div>
       </div>
 
       {/* Main Content */}
