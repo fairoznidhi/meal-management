@@ -1,6 +1,45 @@
 "use client"
 
-import React, { useState } from "react";
+import React, {useState} from "react";
+import { useAllEmployees } from "@/services/EmployeeList/queries";
+import Table, { Column, Row } from "@/components/Table";
+import Search from "@/components/Search";
+
+const EmployeeList = () => {
+  const { data: employees = [], isLoading, error } = useAllEmployees();
+ 
+  const [searchTerm, setSearchTerm] = useState("");
+  const columns: Column[] = [
+    { key: "name", label: "Name" },
+    { key: "remarks", label: "Remarks" },
+  ];
+  const filteredData = employees.filter((row: Row) =>
+    row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    row.remarks.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+  return (
+    <div className="m-5 items-center justify-center">
+      <div className="p-4">
+      <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      <div className="mt-40">
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          <Table columns={columns} data={filteredData} />
+        )}
+      </div>
+      </div>
+    </div>
+  );
+};
+
+export default EmployeeList;
+
+
+{/*import React, { useState } from "react";
 import Table, { Column, Row } from "@/components/Table";
 import Search from "@/components/Search";
 import Modal from "@/components/modal";
@@ -60,7 +99,7 @@ const Employee = () => {
     setIsModalOpen(false); // Close modal after adding
   };*/
 
-  const handleAddRow = async () => {
+  {/*const handleAddRow = async () => {
     try {
       const response = await fetch('/api/create_user', {
         method: "POST",
@@ -105,7 +144,7 @@ const Employee = () => {
         <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <div className="mt-40">
           {/* Table displaying employee data */}
-          <Table columns={columns} data={filteredData} />
+     {/*     <Table columns={columns} data={filteredData} />
         </div>
         <button
           className="rounded bg-blue-400 px-2 py-1 mt-7 text-white"
@@ -116,7 +155,7 @@ const Employee = () => {
       </div>
 
       {/* Modal for adding a new employee */}
-      <Modal
+      {/*<Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Add New Employee"
@@ -176,3 +215,5 @@ const Employee = () => {
 };
 
 export default Employee;
+*/}
+      }
