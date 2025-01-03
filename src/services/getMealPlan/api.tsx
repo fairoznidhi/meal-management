@@ -3,7 +3,7 @@ import { getMealPlan } from "@/types/types";
 
 export type MealPlan={
     date:string;
-    meal: getMealPlan[];
+    menu: getMealPlan[];
 }
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_PROXY_URL}`;

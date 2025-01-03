@@ -38,13 +38,13 @@ export const authOptions:NextAuthOptions = {
         return {...token,...user}
       },
       async session({ session, user, token }) {
-        // if (token) {
-        //   session.user.accessToken = token.accessToken;
-        // }
+         if (token) {
+           session.user.accessToken = token.accessToken;
+         }
         session.user=token
         console.log("Session: ",session,"User: ",user,"Token ",token)
         return session
-      },
+      }
     },
     pages: {
         signIn: "/login",
