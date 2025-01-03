@@ -6,8 +6,6 @@ import Modal from "@/components/modal";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
 import { UserProfileDataType } from "@/services/types";
-import { useSearchParams } from "next/navigation";
-import { getSession, useSession } from "next-auth/react";
 
 const SingleProfilePage = ({ params }: { params:Promise<{ profileId: number }> }) => {
   // useEffect(()=>{
