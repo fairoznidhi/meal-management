@@ -1,5 +1,5 @@
 import UserMealTable from "@/features/userdash/UserMealTable";
-const UserDash=()=>{
+const UserDashboard=()=>{
     return(
         <div className="mt-40 ">
            <UserMealTable></UserMealTable>
@@ -7,4 +7,4 @@ const UserDash=()=>{
         </div>
     )
 }
-export default UserDash;
+export default UserDashboard;

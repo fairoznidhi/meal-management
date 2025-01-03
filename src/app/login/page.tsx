@@ -2,41 +2,32 @@
 import { Button } from '@/components/button'
 import Input from '@/components/input/Input'
 import Image from 'next/image'
-import React from 'react'
 import loginhero from '../../../public/loginhero.png'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
-import { loginUser } from '@/utils/actions/loginUser'
-import { jwtDecode } from "jwt-decode";
-import { CustomUser } from '../../types/JwtPayload'
-import { signIn } from 'next-auth/react'
+import { signIn} from 'next-auth/react'
 export type Inputs = {
-  // usertype: 'employee'|'admin'
   email: string
   password: string
 }
 const LoginPage = () => {
   const {register,handleSubmit} = useForm<Inputs>();
-  
   const router=useRouter();
   const onSubmit = async (data: Inputs) =>{
-    console.log(data);
     try {
       const result = await signIn("credentials", {
         redirect:false,
         email: data.email,
         password: data.password,
       });
-      console.log("Sign-in result:", result);
       if (result?.error) {
-        alert("Invalid credentials!");
+        alert("Sorry, your email or password is incorrect. Please try again.");
       } else if (result?.ok) {
-        console.log("Login successful!");
         const session = await fetch("/api/auth/session").then((res) => res.json());
         if (session?.user?.is_admin) {
           router.push("/adminDashboard");
         } else {
-          router.push("/UserDash");
+          router.push("/userDashboard");
         }
       }
     } catch (err: unknown) {
