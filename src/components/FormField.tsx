@@ -20,12 +20,12 @@ const FormField: React.FC<FormFieldProps> = ({
   options,
 }) => {
   return (
-    <div className="flex items-center">
+    <div className="flex flex-col">
       <label
         htmlFor={id}
-        className="block w-32 font-medium text-gray-700 capitalize"
+        className="block w-fill mb-2 font-medium text-sm text-gray-500 capitalize"
       >
-        {label}:
+        {label}
       </label>
       {isEditable ? (
         options ? (
@@ -33,7 +33,7 @@ const FormField: React.FC<FormFieldProps> = ({
             id={id}
             value={value}
             onChange={(e) => onChange && onChange(e.target.value)}
-            className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-300"
+            className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-200"
           >
             {options.map((option) => (
               <option key={option} value={option}>
@@ -47,11 +47,11 @@ const FormField: React.FC<FormFieldProps> = ({
             type="text"
             value={value}
             onChange={(e) => onChange && onChange(e.target.value)}
-            className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-300"
+            className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-200"
           />
         )
       ) : (
-        <span className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-300">
+        <span className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-200">
           {value}
         </span>
       )}

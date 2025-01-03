@@ -15,7 +15,7 @@ const ProfileDetails = <FormDataType extends Record<string, any>>({
   onChange,
 }: ProfileDetailsProps<FormDataType>) => {
   return (
-    <div className="grid grid-cols-2 gap-x-6 gap-y-10 mt-6">
+    <div className="grid grid-cols-2 gap-x-4 gap-y-4 mt-6">
       {Object.keys(formData).map((field) => (
         <FormField
           key={field}
