@@ -1,7 +1,8 @@
 "use client"
 import {useEffect, useState } from "react";
 import Image from "next/image";
-import { getSession, signOut, Session, SessionProvider } from "next-auth/react";
+import { getSession, signOut, SessionProvider } from "next-auth/react";
+import { Session } from "next-auth";
 import vslogo from "public/vslogo.png";
 import Sidebar from "@/components/sidebar";
 export default function AuthLayout({
@@ -34,7 +35,6 @@ export default function AuthLayout({
         };
         checkSession();
       }, []);
-      console.log("session",session);
       const toggleSidebar = () => {
         setIsCollapsed((prev) => !prev);
       };
@@ -42,21 +42,21 @@ export default function AuthLayout({
         <SessionProvider session={session}>
             <div className="flex h-screen">
                 {/* Sidebar */}
-                    <div className={`transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"} bg-gray-800 text-white fixed top-0 left-0 h-full`}>
-                        <button
-                        onClick={toggleSidebar}
-                        className="p-2 bg-gray-700 hover:bg-gray-600 w-full text-center"
-                        >
-                        {isCollapsed ? ">>" : "<<"}
-                        </button>
-                        <div className="flex flex-col">
-                        <div className="flex-grow"><Sidebar items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser} isCollapsed={isCollapsed} /></div>
-                        <div className="flex justify-center items-end my-8 absolute bottom-0 left-0 right-0">
-                            {!isCollapsed && 
-                            <button onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</button>}
-                        </div>
-                        </div>
-                    </div>
+              <div className={`transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"} bg-gray-800 text-white fixed top-0 left-0 h-full`}>
+                  <button
+                  onClick={toggleSidebar}
+                  className="p-2 bg-gray-700 hover:bg-gray-600 w-full text-center"
+                  >
+                  {isCollapsed ? ">>" : "<<"}
+                  </button>
+                  <div className="flex flex-col">
+                  <div className="flex-grow"><Sidebar items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser} isCollapsed={isCollapsed} /></div>
+                  <div className="flex justify-center items-end my-8 absolute bottom-0 left-0 right-0">
+                      {!isCollapsed && 
+                      <button onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</button>}
+                  </div>
+                  </div>
+              </div>
                 {/* Main Content */}
                 <div className={`flex-1 transition-all duration-300 ${isCollapsed ? "ml-16" : "ml-64"
                     }`}
