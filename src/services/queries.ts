@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getSingleEmployee } from "./api";
+import { getSingleEmployee, getTokenSingleEmployee } from "./api";
 
 export function useSingleEmployee(id: number) {
     return useQuery({
@@ -7,4 +7,9 @@ export function useSingleEmployee(id: number) {
       queryFn: () => getSingleEmployee(id),
     });
   }
-  
+export function useTokenSingleEmployee(){
+  return useQuery({
+    queryKey: ['tokenEmployee'], 
+    queryFn: () => getTokenSingleEmployee()
+  });
+}

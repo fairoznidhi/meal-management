@@ -8,14 +8,6 @@ import ProfileDisplay from "@/features/profile/ProfileDisplay";
 import { UserProfileDataType } from "@/services/types";
 
 const SingleProfilePage = ({ params }: { params:Promise<{ profileId: number }> }) => {
-  // useEffect(()=>{
-  //   const fetchSession=async()=>{
-  //     const session=await getSession();
-  //     console.log(session)
-  //   }
-  //   fetchSession();
-  // },[])
-
   const { profileId } = use<{ profileId: number }>(params);
   console.log(params)
   console.log(profileId)
@@ -29,13 +21,11 @@ const SingleProfilePage = ({ params }: { params:Promise<{ profileId: number }> }
   useEffect(() => {
     if (data) {
       const profile = data[0];
-      console.log("Fetched data:", profile);
   
       setFormData({
         name: profile.name ?? '',
         email: profile.email ?? '',
         dept_id: profile.dept_id ?? 0,
-        password: '****',
         remarks: profile.remarks ?? ''
       });
     }
@@ -43,7 +33,6 @@ const SingleProfilePage = ({ params }: { params:Promise<{ profileId: number }> }
   
 
   useEffect(() => {
-    console.log("Updated formData:", formData);
   }, [formData]);
 
   const handleInputChange = (field: keyof UserProfileDataType, value: string) => {
