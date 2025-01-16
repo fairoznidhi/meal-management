@@ -1,318 +1,457 @@
 "use client"
 
-{/*import React, { useState } from "react";
+{/*import React, { useEffect, useState } from "react";
+import Table, { Column, Row } from "@/components/Table"; // Adjust the import path as needed
+import { getMealPlanQuery } from "@/services/getMealPlan/queries"; // Import the query
+import axiosInstance from "@/services/AddEmployee/api"
+import dayjs from "dayjs"; // For date manipulation
+import Modal from "@/components/modal";
+import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 
-import Table, {Column, Row} from "@/components/Table";
-const MealPlan=()=>{
+
+const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
+const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
+
+const MealPlanTable = () => {
+  const [mealData, setMealData] = useState<Row[] | null>(null); // Allow `null` for empty data
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState<string>("2025-01-01"); // Initial starting date
+  const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newMeal, setNewMeal] = useState({
+      date: "",
+      meal_type:"",
+      food:"",
+    });
+  // Fetch data based on the current start date
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const data = await getMealPlanQuery(startDate, "7"); // Pass parameters
+        console.log("Fetched Data:", data);
+
+        // Transform data into table format if available
+        if (data && data.length > 0) {
+          const formattedData = data.map((meal) => {
+            const lunch = meal.menu.find((item) => item.meal_type === "lunch")?.food || "";
+            const snack = meal.menu.find((item) => item.meal_type === "snack")?.food || "";
+            return { date: meal.date, lunch, snack };
+          });
+          setMealData(formattedData);
+        } else {
+          setMealData([]); // Set an empty array if no data is returned
+        }
+      } catch (err: any) {
+        setError(err.message || "Error fetching data");
+        setMealData(null); // Set to null on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [startDate]); // Refetch data whenever the start date changes
+
+
+
+  // Define the columns for the table
   const columns: Column[] = [
     { key: "date", label: "Date" },
-    { key: "snacks", label: "Snacks", editable: true },
-    { key: "lunch", label: "Lunch", editable: true },
+    { key: "lunch", label: "Lunch" },
+    { key: "snack", label: "Snack"},
   ];
 
-  const getWeekDates = (startDate: Date): Row[] => {
-    const week: Row[] = [];
-    const currentDate = new Date(startDate);
-    for (let i = 0; i < 7; i++) {
-      week.push({
-        date: currentDate.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }),
-        snacks: "",
-        lunch: "",
-      });
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    return week;
+  // Handle row edits
+  const handleEditRow = (updatedRow: Row, rowIndex: number) => {
+    if (!mealData) return; // Skip if no data
+    const updatedData = [...mealData];
+    updatedData[rowIndex] = updatedRow;
+    setMealData(updatedData);
+    console.log("Updated Row:", updatedRow);
   };
 
-  const [startDate, setStartDate] = useState(new Date());
-  const [data, setData] = useState(getWeekDates(startDate));
+  // Handle input changes in the modal
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMeal({ ...newMeal, [e.target.name]: e.target.value });
+  };
 
+  
+  // Handle modal submission
+  const handleAddMeal = async () => {
+    try {
+      const response = await axiosInstance.post("/mealplan", newMeal);
+      console.log("Meal_Plan Added:", response.data);
+      alert("Meal Plan added successfully!");
+      setIsModalOpen(false);
+      setNewMeal({ date: "", meal_type: "", food: ""}); // Reset form
+    } catch (error) {
+      console.error("Error adding meal:", error);
+      alert("Failed to add meal. Please try again.");
+    }
+  };
+
+  // Navigation functions
   const handlePreviousWeek = () => {
-    const newStartDate = new Date(startDate);
-    newStartDate.setDate(newStartDate.getDate() - 7);
+    const newStartDate = dayjs(startDate).subtract(7, "day").format("YYYY-MM-DD");
     setStartDate(newStartDate);
-    setData(getWeekDates(newStartDate));
   };
 
   const handleNextWeek = () => {
-    const newStartDate = new Date(startDate);
-    newStartDate.setDate(newStartDate.getDate() + 7);
+    const newStartDate = dayjs(startDate).add(7, "day").format("YYYY-MM-DD");
     setStartDate(newStartDate);
-    setData(getWeekDates(newStartDate));
   };
 
-  const handleEditRow = (updatedRow: Row, rowIndex: number) => {
-    const updatedData = [...data];
-    updatedData[rowIndex] = updatedRow;
-    setData(updatedData);
-  };
+  return (
+    <div>
+    <div className="mt-40 mx-10">
+      
 
-
-
-  return(
-    <div className="m-40">
-      <div className="flex justify-between items-center mb-4">
+      
+      <div className="flex justify-between mb-4">
         <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
           onClick={handlePreviousWeek}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Previous Week
         </button>
-       
+        <p className="text-lg font-semibold">{`Week starting: ${startDate}`}</p>
         <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
           onClick={handleNextWeek}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Next Week
         </button>
       </div>
-     <Table
-        columns={columns}
-        data={data}
-        //onAddRow={() => {}} // Disable adding rows for this table
-        //onDeleteRow={() => {}} // Disable deleting rows for this table
-        onEditRow={handleEditRow}
-      />
-      <button className="mt-20 p-2 border rounded-md bg-blue-500 hover:bg-blue-600 text-white">Save changes</button>
-    </div>
-  )
-}
-export default MealPlan;
 
-import React, { useState } from "react";
-import { setMealPlan } from "@/services/MealPlan/api";
-
-const AddMeal = () => {
-  const [formData, setFormData] = useState({
-    date: "",
-    meal_type: "",
-    food: "",
-   
-  });
-
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await setMealPlan(formData);
-      setSuccess("Meal added successfully!");
-      setError(null);
-      console.log("Response:", response);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to add meal");
-      setSuccess(null);
-    }
-  };
-
-  return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Add Meal Plan</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-500">{success}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Date</label>
-          <input
-            type="text"
-            name="date"
-            value={formData.date}
-            onChange={handleInputChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Meal_Type</label>
-          <input
-            type="text"
-            name="meal_type"
-            value={formData.meal_type}
-            onChange={handleInputChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Food</label>
-          <input
-            type="text"
-            name="food"
-            value={formData.food}
-            onChange={handleInputChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
+      
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : mealData && mealData.length > 0 ? (
+        <Table
+          columns={columns}
+          data={mealData}
+          onEditRow={handleEditRow}
         
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Submit
-        </button>
-      </form>
+        />
+      ) : (
+        <p>No data available for this week. Use the navigation bar to explore other weeks.</p>
+      )}
+    </div>
+    
+    <div className="flex justify-end mt-4 me-10">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Add Meal
+          </button>
+        </div>
+
+
+    
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Add New Meal"
+        footer={
+          <div>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="bg-gray-300 px-4 py-2 rounded mr-2"
+            >
+              Cancel
+            </button>
+           <button
+              onClick={handleAddMeal}
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Submit
+            </button>
+          </div>
+        }
+      >
+        <form>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Date
+            </label>
+            <input
+              type="text"
+              name="date"
+              value={newMeal.date}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Meal_Type(Lunch/Snack)
+            </label>
+            <input
+              type="text"
+              name="meal_type"
+              value={newMeal.meal_type}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Food
+            </label>
+            <input
+              type="text"
+              name="food"
+              value={newMeal.food}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+          
+        </form>
+      </Modal>
     </div>
   );
 };
 
-export default AddMeal;
+export default MealPlanTable;
+*/}
 
 
-// src/pages/dashboard.tsx
-import axiosInstance from "@/services/MealPlan/api";
+import React, { useEffect, useState } from "react";
+import Table, { Column, Row } from "@/components/Table"; // Adjust the import path as needed
+import dayjs from "dayjs"; // For date manipulation
+import Modal from "@/components/modal";
+import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 
-export default function Dashboard() {
-  const fetchData = async () => {
+const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
+const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
+
+const MealPlanTable = () => {
+  const [mealData, setMealData] = useState<Row[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState<string>("2025-01-01");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newMeal, setNewMeal] = useState({
+    date: "",
+    meal_type: "",
+    food: "",
+  });
+
+  // Fetch data based on the current start date
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const data = await request({
+          url: `/mealplan`,
+          method: "GET",
+          params:{
+          start: startDate,
+          days: 7
+          },
+          useAuth: true,
+        });
+
+        if (data && data.length > 0) {
+          const formattedData = data.map((meal: any) => {
+            const lunch = meal.menu.find((item: any) => item.meal_type === "lunch")?.food || "";
+            const snack = meal.menu.find((item: any) => item.meal_type === "snack")?.food || "";
+            return { date: meal.date, lunch, snack };
+          });
+          setMealData(formattedData);
+        } else {
+          setMealData([]);
+        }
+      } catch (err: any) {
+        console.error("Error fetching meal plan:", err);
+        setError(err.response?.data?.message || "Error fetching meal plan.");
+        setMealData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [startDate]);
+
+  // Handle modal submission
+  const handleAddMeal = async () => {
     try {
-      const response = await axiosInstance.get("/mealplan");
-      console.log("Response Data:", response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  return (
-    <div>
-      <button onClick={fetchData}>Fetch Data</button>
-    </div>
-  );
-}*/}
-
-
-
-
-import React, { useState, useEffect } from "react";
-import axiosInstance from "@/services/MealPlan/api";
-import Table, { Column, Row } from "@/components/Table";
-
-export default function Dashboard() {
-  // Static dates for the table
-  const staticDates = [
-    "2025-01-01",
-    "2025-01-02",
-    "2025-01-03",
-    "2025-01-04",
-    "2025-01-05",
-    "2025-01-06",
-    "2025-01-07",
-  ];
-
-  const [mealPlans, setMealPlans] = useState<Row[]>(
-    staticDates.map((date) => ({
-      date,
-      lunch: "",
-      snacks: "",
-    }))
-  );
-
-  // Fetch existing meal plans from the API
-  const fetchMealPlans = async () => {
-    try {
-      const response = await axiosInstance.get("/mealplan"); // Adjust the endpoint accordingly
-      const fetchedData = response.data;
-
-      // Update the state with the fetched data
-      const updatedMealPlans = staticDates.map((date) => {
-        const mealsForDate = fetchedData.filter((meal: any) => meal.date === date);
-        const lunch = mealsForDate.find((meal: any) => meal.meal_type === "Lunch")?.food || "";
-        const snacks = mealsForDate.find((meal: any) => meal.meal_type === "Snacks")?.food || "";
-        
-        return {
-          date,
-          lunch,
-          snacks,
-        };
+      const response = await request({
+        url: "/mealplan",
+        method: "POST",
+        data: newMeal,
+        useAuth: true,
       });
 
-      setMealPlans(updatedMealPlans);
-    } catch (error) {
-      console.error("Error fetching meal plans:", error);
+      console.log("Meal Plan Added:", response);
+      alert("Meal Plan added successfully!");
+      setIsModalOpen(false);
+      setNewMeal({ date: "", meal_type: "", food: "" });
+
+      // Optionally, refetch the data after adding a meal
+      const updatedData = await request({
+        url: `/mealplan`,
+        method: "GET",
+        data:{
+          start:startDate,
+          days:7
+        },
+        useAuth: true,
+      });
+
+      if (updatedData && updatedData.length > 0) {
+        const formattedData = updatedData.map((meal: any) => {
+          const lunch = meal.menu.find((item: any) => item.meal_type === "lunch")?.food || "";
+          const snack = meal.menu.find((item: any) => item.meal_type === "snack")?.food || "";
+          return { date: meal.date, lunch, snack };
+        });
+        setMealData(formattedData);
+      }
+    } catch (err: any) {
+      console.error("Error adding meal:", err);
+      alert("Failed to add meal. Please try again.");
     }
   };
 
-  // Fetch meal plans on component mount
-  useEffect(() => {
-    fetchMealPlans();
-  }, []);
+  // Navigation functions
+  const handlePreviousWeek = () => {
+    const newStartDate = dayjs(startDate).subtract(7, "day").format("YYYY-MM-DD");
+    setStartDate(newStartDate);
+  };
 
+  const handleNextWeek = () => {
+    const newStartDate = dayjs(startDate).add(7, "day").format("YYYY-MM-DD");
+    setStartDate(newStartDate);
+  };
+
+  // Define the columns for the table
   const columns: Column[] = [
-    {
-      key: "date",
-      label: "Date",
-      render: (value) => value, // Display the date as a string
-    },
-    {
-      key: "lunch",
-      label: "Lunch",
-      editable: true,
-    },
-    {
-      key: "snacks",
-      label: "Snacks",
-      editable: true,
-    },
+    { key: "date", label: "Date" },
+    { key: "lunch", label: "Lunch" },
+    { key: "snack", label: "Snack" },
   ];
 
+  // Handle row edits
   const handleEditRow = (updatedRow: Row, rowIndex: number) => {
-    const updatedMealPlans = [...mealPlans];
-    updatedMealPlans[rowIndex] = updatedRow;
-    setMealPlans(updatedMealPlans);
+    if (!mealData) return;
+    const updatedData = [...mealData];
+    updatedData[rowIndex] = updatedRow;
+    setMealData(updatedData);
+    console.log("Updated Row:", updatedRow);
   };
 
-  const handleSubmit = async () => {
-    try {
-      // Prepare data for submission: both lunch and snacks for each date
-      const formattedData = mealPlans.flatMap((mealPlan) => [
-        {
-          date: mealPlan.date,
-          meal_type: "Lunch",
-          food: mealPlan.lunch,
-        },
-        {
-          date: mealPlan.date,
-          meal_type: "Snacks",
-          food: mealPlan.snacks,
-        },
-      ]);
-
-      // Filter out empty food fields (no lunch or snacks)
-      const dataToSubmit = formattedData.filter((entry) => entry.food);
-
-      // Submit the data for both lunch and snacks
-      const promises = dataToSubmit.map((entry) => axiosInstance.post("/mealplan", entry));
-
-      await Promise.all(promises);
-      alert("Meal plans submitted successfully!");
-    } catch (error) {
-      console.error("Error posting data:", error);
-      alert("Failed to submit meal plans. Please try again.");
-    }
+  // Handle input changes in the modal
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMeal({ ...newMeal, [e.target.name]: e.target.value });
   };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Meal Plan Table</h1>
-      <Table
-        columns={columns}
-        data={mealPlans}
-        onEditRow={handleEditRow}
-        title="Meal Plans"
-      />
-      <div className="mt-4">
+      <div className="mt-40 mx-10">
+        {/* Navigation Bar */}
+        <div className="flex justify-between mb-4">
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+            onClick={handlePreviousWeek}
+          >
+            Previous Week
+          </button>
+          <p className="text-lg font-semibold">{`Week starting: ${startDate}`}</p>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+            onClick={handleNextWeek}
+          >
+            Next Week
+          </button>
+        </div>
+
+        {/* Render Table or Message */}
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error}</p>
+        ) : mealData && mealData.length > 0 ? (
+          <Table columns={columns} data={mealData} onEditRow={handleEditRow} />
+        ) : (
+          <p>No data available for this week. Use the navigation bar to explore other weeks.</p>
+        )}
+      </div>
+
+      {/* Add Meal Button */}
+      <div className="flex justify-end mt-4 me-10">
         <button
-          onClick={handleSubmit}
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          onClick={() => setIsModalOpen(true)}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
         >
-          Submit
+          Add Meal
         </button>
       </div>
+
+      {/* Modal for Adding Meal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Add New Meal"
+        footer={
+          <div>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="bg-gray-300 px-4 py-2 rounded mr-2"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleAddMeal}
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Submit
+            </button>
+          </div>
+        }
+      >
+        <form>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Date</label>
+            <input
+              type="text"
+              name="date"
+              value={newMeal.date}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Meal Type (Lunch/Snack)
+            </label>
+            <input
+              type="text"
+              name="meal_type"
+              value={newMeal.meal_type}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Food</label>
+            <input
+              type="text"
+              name="food"
+              value={newMeal.food}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+        </form>
+      </Modal>
     </div>
   );
-}
+};
+
+export default MealPlanTable;

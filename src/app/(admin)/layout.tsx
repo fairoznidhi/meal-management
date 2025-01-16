@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import Sidebar from "@/components/sidebar";
 import Image from "next/image";
 import vslogo from "public/vslogo.png";
+import { HomeModernIcon, UsersIcon, ClipboardDocumentListIcon, UserIcon } from "@heroicons/react/24/outline";
 
 
 export default function AdminLayout({
@@ -13,10 +14,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const sidebarItems = [
-    { name: "Dashboard", route: "/dashboard" },
-    { name: "Employee List", route: "/employee" },
-    { name: "Meal Plan", route: "/meal_plan" },
-    { name: "My Profie", route: "/profile"},
+    { name: "Dashboard", route: "/adminDashboard", icon:HomeModernIcon },
+    { name: "Employee List", route: "/employee", icon:UsersIcon },
+    { name: "Meal Plan", route: "/meal_plan", icon:ClipboardDocumentListIcon },
+    { name: "My Profie", route: "/profile", icon:UserIcon},
   ];
 
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -36,13 +37,16 @@ export default function AdminLayout({
       <div
         className={`transition-all duration-300 ${
           isCollapsed ? "w-16" : "w-64"
-        } bg-gray-800 text-white fixed top-0 left-0 h-full`}
+        } bg-[#005A8F] text-white fixed top-0 left-0 h-full`}
       >
         <button
           onClick={toggleSidebar}
-          className="p-2 bg-gray-700 hover:bg-gray-600 w-full text-center"
+          className="p-2 bg-[#005A8F] hover:bg-[#005A8F] w-full text-right text-black"
         >
-          {isCollapsed ? ">>" : "<<"}
+
+          <Image src={vslogo} alt="vlogo" className="w-10 h-10 border rounded-full bg-white ms-1 me-5 "></Image>
+         
+          {isCollapsed ? "" : ""}
         </button>
         <Sidebar items={sidebarItems} isCollapsed={isCollapsed} />
       </div>
@@ -54,7 +58,7 @@ export default function AdminLayout({
         }`}
       >
         <div className="">
-        <div className="relative"><Image src={vslogo} alt="vlogo" className="fixed top-2 right-5 w-20 h-20"></Image></div>
+        {/*<div className="relative"><Image src={vslogo} alt="vlogo" className="fixed top-2 right-5 w-10 h-10 border border-black rounded-full"></Image></div>*/}
           <div>
             {children}</div> 
            
