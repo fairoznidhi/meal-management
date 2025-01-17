@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { fetchMealPlan } from "@/services/fetchMealPlan/api";
-import OptionModal from "@/features/OptionModal/optionModal";
-import axiosInstance from "@/services/AddEmployee/api";
-import Search from "@/components/Search"; 
+import React, { useState, useEffect } from "react";
+import { baseRequest } from "@/services/HttpClientAPI";
+import MealStatusModal from "@/features/dashboard/MealStatusModal";
+import Search from "@/components/Search";
 import TotalBox from "@/features/dashboard/TotalBox";
-import TotalTable from "@/features/dashboard/TotalTable";
-import Table from "@/components/Table";
+
+const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
 interface MealStatus {
   status: boolean;
@@ -27,288 +26,258 @@ interface EmployeeDetail {
 }
 
 interface MealActivityData {
-  employee_id: string;
+  employee_id: number;
   employee_name: string;
   employee_details: EmployeeDetail[];
 }
 
-const MealPlanComponent = () => {
-  const [mealPlan, setMealPlan] = useState<MealActivityData[] | null>(null);
-  const [filteredMealPlan, setFilteredMealPlan] = useState<MealActivityData[] | null>(null);
-  const [loading, setLoading] = useState(true);
+const MealActivityComponent = () => {
+  const [mealActivityData, setMealActivityData] = useState<MealActivityData[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
-  const [selectedMealType, setSelectedMealType] = useState<number>(1);
-  const [startDate, setStartDate] = useState<string>("2025-01-13"); // Initial start date
-  const [days, setDays] = useState<number>(7); // Number of days to fetch
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [startDate, setStartDate] = useState(new Date()); // Use Date object for easy manipulation
+  const [days, setDays] = useState<number>(7);
+  const [mealType, setMealType] = useState<number>(1); // 1 for lunch, 2 for snack
+  const [searchTerm,setSearchTerm]= useState<string>("");
+  const [modalOpen, setModalOpen] = useState(false);
   const [selectedCell, setSelectedCell] = useState<{
-    employeeId: string;
+    employeeId: number;
     employeeName: string;
     date: string;
-    status: MealStatus | null;
+    currentStatus: boolean | null;
+    currentPenalty: boolean;
   } | null>(null);
 
-  // Fetch data when component mounts or startDate changes
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchMealPlan(startDate, days);
-        setMealPlan(data);
-        setFilteredMealPlan(data); // Initialize filtered data
-      } catch (err: any) {
-        setError(err.message || "Error fetching meal plan");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const generateDates = (start: Date, days: number) => {
+    const dates: string[] = [];
+    for (let i = 0; i < days; i++) {
+      const currentDate = new Date(start);
+      currentDate.setDate(start.getDate() + i);
+      dates.push(currentDate.toISOString().split("T")[0]);
+    }
+    return dates;
+  };
 
-    fetchData();
-  }, [startDate]);
-
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-
-    if (mealPlan) {
-      const filtered = mealPlan.filter((employee) =>
-        employee.employee_name.toLowerCase().includes(value.toLowerCase())
-      );
-      setFilteredMealPlan(filtered);
+  const fetchMealActivity = async () => {
+    try {
+      const formattedStartDate = startDate.toISOString().split("T")[0];
+      const response: MealActivityData[] = await request({
+        url: "/meal_activity/admin",
+        method: "GET",
+        params: { start: formattedStartDate, days },
+        useAuth: true,
+      });
+      setMealActivityData(response);
+    } catch (err: any) {
+      console.error("Error fetching meal activity:", err);
+      setError(err.response?.data?.message || "Failed to fetch meal activity.");
     }
   };
 
-  const handleNavigate = (direction: "previous" | "next") => {
-    const currentDate = new Date(startDate);
-    const updatedDate =
-      direction === "previous"
-        ? new Date(currentDate.setDate(currentDate.getDate() - days))
-        : new Date(currentDate.setDate(currentDate.getDate() + days));
+  useEffect(() => {
+    fetchMealActivity();
+  }, [startDate, days]);
 
-    setStartDate(updatedDate.toISOString().split("T")[0]);
+  const dates = generateDates(startDate, days);
+
+  const handleCellClick = (employeeId: number, employeeName: string, date: string, currentStatus: boolean, currentPenalty: boolean) => {
+    setSelectedCell({
+      employeeId,
+      employeeName,
+      date,
+      currentStatus,
+      currentPenalty,
+    });
+    setModalOpen(true);
   };
 
-  const handleCellClick = (
-    employeeId: string,
-    employeeName: string,
-    date: string,
-    status: MealStatus | null
-  ) => {
-    setSelectedCell({ employeeId, employeeName, date, status });
-    setIsModalOpen(true);
-  };
+  const handleUpdateStatus = async (status: boolean, penalty: boolean) => {
+    if (selectedCell) {
+      const { employeeId, date } = selectedCell;
+      const guestCount = 0;
 
-  const handleChangeStatus = async () => {
-    if (selectedCell && mealPlan) {
-      const { employeeId, date, status } = selectedCell;
-
-      // Prepare the updated status
-      const updatedStatus = status ? !status.status : true; // Toggle status or set to true if null
-      const guestCount = status?.guest_count || 0;
-
-      // Create a deep copy of the mealPlan to avoid direct mutation
-      const updatedMealPlan = mealPlan.map((employee) => {
-        if (employee.employee_id === employeeId) {
-          return {
-            ...employee,
-            employee_details: employee.employee_details.map((detail) => {
-              if (detail.date === date) {
-                const updatedMeals = detail.meal.map((meal) => {
-                  if (meal.meal_type === selectedMealType) {
-                    return {
-                      ...meal,
-                      meal_status: meal.meal_status.map((status) => ({
-                        ...status,
-                        status: updatedStatus, // Update the status
-                      })),
-                    };
-                  }
-                  return meal;
-                });
-                return { ...detail, meal: updatedMeals };
-              }
-              return detail;
-            }),
-          };
-        }
-        return employee;
-      });
-
-      setMealPlan(updatedMealPlan);
-      setFilteredMealPlan(updatedMealPlan); // Update the filtered data as well
-      setIsModalOpen(false);
-
-      // Send the updated data to the API
-      try {
-        const response = await axiosInstance.patch("/meal_activity", {
+      const updatedData = [
+        {
           employee_id: employeeId,
           date,
-          changed_status: updatedStatus,
-          guest: guestCount,
-          meal_type: selectedMealType, // Include meal_type
+          meal_type: mealType,
+          status,
+          guest_count: guestCount,
+          penalty,
+        },
+      ];
+
+      try {
+        await request({
+          url: "/meal_activity/group-update",
+          method: "PATCH",
+          data: updatedData,
+          useAuth: true,
         });
 
-        console.log("API Response:", response.data);
-      } catch (error) {
-        console.error("Error updating meal status:", error);
+        fetchMealActivity();
+        setModalOpen(false);
+      } catch (err) {
+        console.error("Error updating meal status:", err);
       }
     }
   };
 
-  const handleAddPenalty = () => {
-    console.log("Add Penalty:", selectedCell);
-    setIsModalOpen(false);
+  const handleMealTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setMealType(Number(event.target.value));
   };
 
-  
-  if (error) return <p>Error: {error}</p>;
+  const handlePreviousWeek = () => {
+    setStartDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setDate(prev.getDate() - 7); // Go back 7 days
+      return newDate;
+    });
+  };
 
-  // Extract dates from the first employee's details for the header
-  const headerDates =
-    filteredMealPlan && filteredMealPlan.length > 0
-      ? filteredMealPlan[0].employee_details.map((detail) => ({
-          fullDate: detail.date,
-          day: new Date(detail.date).toLocaleDateString("en-US", {
-            weekday: "short",
-          }),
-        }))
-      : [];
+  const handleNextWeek = () => {
+    setStartDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setDate(prev.getDate() + 7); // Go forward 7 days
+      return newDate;
+    });
+  };
+   const filteredData= mealActivityData.filter((employee)=>
+  employee.employee_name.toLowerCase().includes(searchTerm.toLowerCase()));
+
 
   return (
-    <div className="">
-      <div className="flex justify-between ms-10"><TotalBox></TotalBox></div>
-      
-         
-            <div className="flex items-center justify-between mb-4 gap-x-10 mt-5">
-                   <div className="ms-6">
-                  <p className="">Filter by <select name="meal" id="meal" className="bg-[#779ecb] p-1 ms-3">
-          <option value="1">Lunch</option>
-          <option value="2">Snacks</option>
-        </select></p>
-        </div>
-        <div className="flex gap-x-2">
-                   <button
-                     onClick={()=>handleNavigate("previous")}
+    <div className="p-4">
+      {/*<div className="fixed justify-between"><div><TotalBox></TotalBox></div></div>*/}
+      <div className="flex justify-between items-center mb-4 gap-x-2 mt-20">
+      <div className="mb-4">
+        <label className="mr-2">Select Meal Type: </label>
+        <select
+          value={mealType}
+          onChange={handleMealTypeChange}
+          className="p-2 border rounded bg-[#779ECB]"
+        >
+          <option value={1}>Lunch</option>
+          <option value={2}>Snack</option>
+        </select>
+      </div>
+      <div className="flex gap-x-2">
+      <button
+                     onClick={handlePreviousWeek}
                      className="p-2 text-base bg-[#779ECB] rounded-md hover:bg-[#D7DFE9] ms-6"
                    >
                      <span className="text-lg">&#171;</span>
                    </button>
                    <h2 className="p-2 text-base font-bold me-2">
-                   {`Start Date: ${startDate}`}
+                   {`Start Date: ${startDate.toISOString().split("T")[0]}`}
                    </h2>
                    <button
-                     onClick={()=>handleNavigate("next")}
+                     onClick={handleNextWeek}
                      className="p-2 text-base bg-[#779ECB] rounded-md hover:bg-[#D7DFE9]"
                    >
                      <span className="text-lg">&raquo;</span> 
                    </button>
-                   </div>
-                   <div className=""><Search searchTerm={searchQuery} onSearchChange={handleSearchChange} /></div>
-                 </div>
-                  
-<div className="relative mx-5 mt-2">
-  <table className="table-auto w-full border-collapse border border-gray-300">
-    <thead>
-      <tr>
-        <th className="border border-gray-300 p-2 w-[40vh]">Employee Name</th>
-        {headerDates.map((header, index) => (
-          <th key={index} className="border border-gray-300 p-2">
-            {header.fullDate}
-            <br />
-            {header.day}
-          </th>
-        ))}
-      </tr>
-    </thead>
-  </table>
-  <div
-    className="overflow-y-auto sm:max-h-[200px] md:max-h-[300px] lg:max-h-[300px] max-lg:max-h-[500px]" // Adjust max height to show 6 rows
-  >
-    <table className="table-auto w-full border-collapse border border-gray-300">
-      <tbody>
-        {filteredMealPlan &&
-          filteredMealPlan.map((employee, index) => (
-            <tr key={index}>
-              <td className="border border-gray-300 p-2 text-center">
-                {employee.employee_name}
-              </td>
-              {employee.employee_details.map((detail, detailIndex) => {
-                const meal = detail.meal.find(
-                  (m) => m.meal_type === selectedMealType
-                );
-                const status = meal?.meal_status[0];
-                return (
-                  <td
-                    key={detailIndex}
-                    className={`border border-gray-300 p-2 text-center ${
-                      detail.holiday ? "bg-blue-100 text-white" : ""
-                    } ${status?.penalty ? "bg-red-300 text-white" : ""}`}
-                    onClick={() =>
-                      handleCellClick(
-                        employee.employee_id,
-                        employee.employee_name,
-                        detail.date,
-                        status || null
-                      )
-                    }
-                  >
-                    <span
-                      className={`${
-                        status?.status ? "text-green-500" : "text-red-500"
-                      } `}
-                    >
-                      {status?.status ? "Yes" : "No"}
-                    </span>
-                  </td>
-                );
-              })}
+        </div>
+        <div><Search searchTerm={searchTerm} onSearchChange={setSearchTerm}></Search></div>
+      </div>
+
+     
+
+      {error && <p className="text-red-500">Error: {error}</p>}
+      {filteredData.length === 0 ? (
+        <p>Loading or no data available...</p>
+      ) : (
+        <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[800px] max-lg:max-h-[800px]">
+        <table className="table-auto w-full border-collapse border border-gray-300">
+          <thead>
+            <tr>
+              <th className="border border-gray-400 p-2 text-center">Employee Name</th>
+              {dates.map((date, index) => (
+                <th key={index} className="border border-gray-400 p-2">
+                  {date}
+                </th>
+              ))}
             </tr>
-          ))}
-        {/* Guests Row */}
-        <tr>
-          <td className="border border-gray-300 p-2 text-center font-bold">
-            Guests
-          </td>
-          {headerDates.map((header, index) => (
-            <td
-              key={index}
-              className="border border-gray-300 p-2 text-center bg-gray-100"
-            >
-              {/* Placeholder or static value */}
-              {Math.floor(Math.random() * 5)}
-            </td>
-          ))}
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+          </thead>
+          <tbody>
+            {filteredData.map((employee) => {
+              const dateStatusMap: Record<
+                string,
+                { status: boolean; holiday: boolean; penalty: boolean }
+              > = {};
+              employee.employee_details.forEach((detail) => {
+                const meal = detail.meal[mealType - 1]; // Use the selected meal type
+                const status = meal?.meal_status[0]?.status;
+                const penalty = meal?.meal_status[0]?.penalty || false;
+                dateStatusMap[detail.date] = {
+                  status,
+                  holiday: detail.holiday,
+                  penalty,
+                };
+              });
 
+              return (
+                <tr key={employee.employee_id}>
+                  <td className="border border-gray-500 p-2 text-center">{employee.employee_name}</td>
+                  {dates.map((date, index) => {
+                    const cellData = dateStatusMap[date] || {
+                      status: null,
+                      holiday: false,
+                      penalty: false,
+                    };
 
+                    let cellStyle = "border border-gray-500 p-2 text-center";
+                    let statusText = "-";
+                    let textColor = "text-black";
 
+                    if (cellData.holiday) {
+                      cellStyle += " bg-blue-100";
+                    } else if (cellData.penalty) {
+                      cellStyle += " bg-red-200";
+                    }
 
+                    if (cellData.status === true) {
+                      statusText = "Yes";
+                      textColor = "text-green-500";
+                    } else if (cellData.status === false) {
+                      statusText = "No";
+                      textColor = "text-red-500";
+                    }
 
+                    return (
+                      <td
+                        key={index}
+                        className={`${cellStyle} ${textColor}`}
+                        onClick={() =>
+                          handleCellClick(
+                            employee.employee_id,
+                            employee.employee_name,
+                            date,
+                            cellData.status,
+                            cellData.penalty
+                          )
+                        }
+                      >
+                        {statusText}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        </div>
+      )}
 
-
-
-
-
-
-
-    
-
-      <OptionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onChangeStatus={handleChangeStatus}
-        onAddPenalty={handleAddPenalty}
+      <MealStatusModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onUpdateStatus={handleUpdateStatus}
+        initialStatus={selectedCell?.currentStatus || null}
+        initialPenalty={selectedCell?.currentPenalty || false}
       />
     </div>
   );
 };
 
-export default MealPlanComponent;
-
-
-
+export default MealActivityComponent;
