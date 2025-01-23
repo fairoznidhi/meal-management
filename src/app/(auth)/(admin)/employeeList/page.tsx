@@ -5,7 +5,7 @@ import Table, { Column, Row } from "@/components/Table";
 import Search from "@/components/Search";
 import Modal from "@/components/modal";
 
-const Employee = () => {
+const EmployeeList = () => {
   // Columns for employee data display
   const columns: Column[] = [
     { key: "name", label: "Name" },
@@ -137,4 +137,4 @@ const Employee = () => {
   );
 };
 
-export default Employee;
+export default EmployeeList;
