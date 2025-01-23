@@ -30,14 +30,14 @@ const Sidebar = ({
                     : "hover:bg-[#007CB1] hover:text-white text-gray-300" // Default styles
                 } ${isCollapsed ? "text-center text-sm" : "text-base"}`}>
              
-                 {/* Render icon */}
+                 {/* Render icon*/} 
                  <div className="flex gap-x-3">
-                 <Icon
+                 {/*<Icon
                   className={`h-6 w-6 ${
                     isActive ? "text-white" : "text-gray-300"
                   }`}
-                />
-
+                />*/}
+              
                 {/*{isCollapsed ? item.name[0] : item.name}*/}
                 {/* Render name only if not collapsed */}
                 {!isCollapsed && <span>{item.name}</span>}
@@ -54,5 +54,3 @@ const Sidebar = ({
 };
 
 export default Sidebar;
-
-

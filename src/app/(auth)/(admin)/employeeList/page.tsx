@@ -514,7 +514,7 @@ const EmployeeComponent: React.FC = () => {
       formData.append("phone", newEmployee.phone_number);
       formData.append("remarks", newEmployee.remarks);
       if (newEmployee.photo) {
-        formData.append("photo", newEmployee.photo, newEmployee.photo.name);
+        formData.append("photo", newEmployee.photo);
       }
 
       const response = await request({
@@ -722,11 +722,3 @@ const EmployeeComponent: React.FC = () => {
 };
 
 export default EmployeeComponent;
-
-
-
-
-
-
-
-
