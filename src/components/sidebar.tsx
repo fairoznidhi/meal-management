@@ -32,11 +32,11 @@ const Sidebar = ({
              
                  {/* Render icon*/} 
                  <div className="flex gap-x-3">
-                 {/*<Icon
+                 <Icon
                   className={`h-6 w-6 ${
                     isActive ? "text-white" : "text-gray-300"
                   }`}
-                />*/}
+                />
               
                 {/*{isCollapsed ? item.name[0] : item.name}*/}
                 {/* Render name only if not collapsed */}

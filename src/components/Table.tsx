@@ -10,12 +10,6 @@ export type Column = {
     rowIndex: number,
     onEdit: (key: string, value: any) => void
   ) => React.ReactNode; // Custom render function
-  render?: (
-    value: any,
-    row: Row,
-    rowIndex: number,
-    onEdit: (key: string, value: any) => void
-  ) => React.ReactNode; // Custom render function
 };
 
 export type Row = {
@@ -24,7 +18,6 @@ export type Row = {
 type TableProps = {
   columns: Column[];
   data: Row[];
-  hideheader?: boolean;
   onEditRow?: (updatedRow: Row, rowIndex: number) => void; // Callback for editing rows
   title?: string; // Optional title for the table
 };
@@ -32,7 +25,6 @@ type TableProps = {
 const Table: React.FC<TableProps> = ({
   columns,
   data,
-  hideheader=false,
 
   onEditRow,
   title,
@@ -47,27 +39,23 @@ const Table: React.FC<TableProps> = ({
   return (
     <div className="overflow-x-auto">
       {title && <p className="text-xl font-bold my-4">{title}</p>}
-      <table className="table-auto w-full">
-        {!hideheader&&(<thead>
+      <table className="table-auto border-collapse border border-gray-300 w-full">
+        <thead>
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
-                className="border border-gray-300 px-4 py-2 bg-[#D7DFE9] text-center"
+                className="border border-gray-300 px-4 py-2 bg-gray-100 text-center"
               >
                 {col.label}
               </th>
             ))}
           </tr>
-        </thead>)}
+        </thead>
         <tbody>
           {data.map((row, rowIndex) => (
             <tr key={rowIndex}>
               {columns.map((col) => (
-                <td
-                  key={col.key}
-                  className="border border-gray-300 px-4 py-2 text-center"
-                >
                 <td
                   key={col.key}
                   className="border border-gray-300 px-4 py-2 text-center"
