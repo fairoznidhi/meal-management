@@ -73,22 +73,30 @@ const MealActivityComponent = () => {
     }
   };
 
+
   useEffect(() => {
     fetchMealActivity();
   }, [startDate, days]);
 
   const dates = generateDates(startDate, days);
 
-  const handleCellClick = (employeeId: number, employeeName: string, date: string, currentStatus: boolean, currentPenalty: boolean) => {
+  const handleCellClick = (
+    employeeId: number,
+    employeeName: string,
+    date: string,
+    currentStatus: boolean | null,
+    currentPenalty: boolean
+  ) => {
     setSelectedCell({
       employeeId,
       employeeName,
       date,
-      currentStatus,
-      currentPenalty,
+      currentStatus: currentStatus ?? null, // Ensure null is passed if no status exists
+      currentPenalty: currentPenalty ?? false, // Default penalty to false if undefined
     });
     setModalOpen(true);
   };
+  
 
   const handleUpdateStatus = async (status: boolean, penalty: boolean) => {
     if (selectedCell) {
@@ -100,7 +108,7 @@ const MealActivityComponent = () => {
           employee_id: employeeId,
           date,
           meal_type: mealType,
-          status,
+          status: status,
           guest_count: guestCount,
           penalty,
         },
@@ -264,6 +272,7 @@ const MealActivityComponent = () => {
                 </tr>
               );
             })}
+          
           </tbody>
         </table>
         </div>
@@ -273,8 +282,9 @@ const MealActivityComponent = () => {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onUpdateStatus={handleUpdateStatus}
-        initialStatus={selectedCell?.currentStatus || null}
+        initialStatus={selectedCell?.currentStatus??false}
         initialPenalty={selectedCell?.currentPenalty || false}
+        selectedDate={selectedCell?.date??""}
       />
     </div>
   );
