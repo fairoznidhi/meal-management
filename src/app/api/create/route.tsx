@@ -13,15 +13,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Replace 'YOUR_API_TOKEN' with the actual token provided by the external API
-    //const API_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpdmFzb2Z0QGdtYWlsLmNvbSIsImVtcGxveWVlX2lkIjoxLCJleHAiOjE3MzUzNzQzMTAsImlzX2FkbWluIjp0cnVlfQ.307XPKwtBhk8LUgyB8KL5-v9l4bht6v4InRH6VbB4IY';
+    
 
     // Forward the request to the external API
-    const response = await fetch('http://46.137.193.141:50000/employee?=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpdmFzb2Z0QGdtYWlsLmNvbSIsImVtcGxveWVlX2lkIjoxLCJleHAiOjE3MzU4MDI4NjYsImlzX2FkbWluIjp0cnVlfQ.XomdnczTQJOdJRAe9b0vKJMwH_yIPTFgsFqKjSsWeA0', {
+    const response = await fetch('http://46.137.193.141:50000/employee', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpdmFzb2Z0QGdtYWlsLmNvbSIsImVtcGxveWVlX2lkIjoxLCJleHAiOjE3MzU4MDI4NjYsImlzX2FkbWluIjp0cnVlfQ.XomdnczTQJOdJRAe9b0vKJMwH_yIPTFgsFqKjSsWeA0`, // Add the Authorization header
+        //'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpdmFzb2Z0QGdtYWlsLmNvbSIsImVtcGxveWVlX2lkIjoxLCJleHAiOjE3MzU4MDI4NjYsImlzX2FkbWluIjp0cnVlfQ.XomdnczTQJOdJRAe9b0vKJMwH_yIPTFgsFqKjSsWeA0`, // Add the Authorization header
       },
       body: JSON.stringify({ name, email, password, dept_id, remarks, status }),
     });
