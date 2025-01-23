@@ -29,6 +29,7 @@ export default function AuthLayout({
           if (session) {
             setIsAdmin(session.user?.is_admin || false);
             setSession(session);
+            console.log("session from auth layout",session)
           } else {
             setIsAdmin(false);
           }
@@ -62,7 +63,6 @@ export default function AuthLayout({
                     }`}
                 >
                     <div className="">
-                    <div className="relative"><Image src={vslogo} alt="vlogo" className="fixed top-2 right-5 w-20 h-20"></Image></div>
                     <div>
                         {children}
                         </div> 

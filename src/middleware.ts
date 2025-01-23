@@ -9,7 +9,7 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         const pathname = req.nextUrl.pathname;
-        console.log("Pathname:", pathname);
+        if (!token) return false;
         if (token?.is_admin) {
           return ["/adminDashboard", 
                 "/adminProfile", 
@@ -17,7 +17,9 @@ export default withAuth(
                 "/mealPlan"].includes(pathname);
         } else {
           return ["/userDashboard", 
-                  "/userProfile"].includes(pathname);
+                  "/userProfile",
+                  "/profile",
+                ].includes(pathname);
         }
       },
     },
@@ -31,5 +33,6 @@ export const config = {
             "/mealPlan",
             "/userDashboard", 
             "/userProfile",
+            "/profile",
           ] 
 };
