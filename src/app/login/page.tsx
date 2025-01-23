@@ -6,6 +6,7 @@ import loginhero from '../../../public/loginhero.png'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { signIn} from 'next-auth/react'
+import ForgetPassword from '@/components/ForgetPassword'
 export type Inputs = {
   email: string
   password: string
@@ -67,6 +68,7 @@ const LoginPage = () => {
               <Input type='password' placeholder='Password' {...register("password")}></Input>
               <Button label='Log In' size='md' className='w-full' ></Button>
             </form>
+            <ForgetPassword></ForgetPassword>
           </div>
         </div>
       </div>

@@ -3,8 +3,9 @@ export type UserProfileDataType = {
   name?: string;
   email?: string;
   phone_number?:string;
-  dept_id?:number;
+  dept_name?:string;
   remarks?:string;
   default_status?:boolean;
   is_admin?:boolean;
 }
+
