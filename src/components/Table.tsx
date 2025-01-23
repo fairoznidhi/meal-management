@@ -10,6 +10,12 @@ export type Column = {
     rowIndex: number,
     onEdit: (key: string, value: any) => void
   ) => React.ReactNode; // Custom render function
+  render?: (
+    value: any,
+    row: Row,
+    rowIndex: number,
+    onEdit: (key: string, value: any) => void
+  ) => React.ReactNode; // Custom render function
 };
 
 export type Row = {
@@ -58,6 +64,10 @@ const Table: React.FC<TableProps> = ({
           {data.map((row, rowIndex) => (
             <tr key={rowIndex}>
               {columns.map((col) => (
+                <td
+                  key={col.key}
+                  className="border border-gray-300 px-4 py-2 text-center"
+                >
                 <td
                   key={col.key}
                   className="border border-gray-300 px-4 py-2 text-center"
