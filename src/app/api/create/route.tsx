@@ -20,7 +20,6 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        //'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZpdmFzb2Z0QGdtYWlsLmNvbSIsImVtcGxveWVlX2lkIjoxLCJleHAiOjE3MzU4MDI4NjYsImlzX2FkbWluIjp0cnVlfQ.XomdnczTQJOdJRAe9b0vKJMwH_yIPTFgsFqKjSsWeA0`, // Add the Authorization header
       },
       body: JSON.stringify({ name, email, password, dept_id, remarks, status }),
     });
