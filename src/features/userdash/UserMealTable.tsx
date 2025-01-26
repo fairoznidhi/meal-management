@@ -51,7 +51,7 @@ const MealPlanTable = () => {
     return rowDate >= today && editTable;
   };
   const [session, setSession] = useState<Session | null>(null);
-  const { mutate } = usePatchGroupMealUpdate();
+  const { mutate} = usePatchGroupMealUpdate();
   useEffect(() => {
     const checkSession = async () => {
       const session = await getSession();

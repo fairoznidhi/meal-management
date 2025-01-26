@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { patchEmployeeProfile, patchGroupMealUpdate, patchToggleDefaultMealStatus } from "./api";
+import { patchEmployeeProfile, patchForgetPassword, patchGroupMealUpdate, patchToggleDefaultMealStatus } from "./api";
 
 export function useToggleDefaultMealStatus(date:string) {
     return useMutation({
@@ -32,6 +32,17 @@ export function useToggleDefaultMealStatus(date:string) {
       },
       onError: (error) => {
         console.error("Error updating meal:", error);
+      },
+    });
+  }
+  export function usePatchForgetPassword() {
+    return useMutation({
+      mutationFn: (data:object) => patchForgetPassword(data),
+      onSuccess: () => {
+        console.log("Mail sent");
+      },
+      onError: (error) => {
+        console.error("Error mail", error);
       },
     });
   }
