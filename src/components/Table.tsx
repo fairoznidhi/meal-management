@@ -25,7 +25,6 @@ type TableProps = {
 const Table: React.FC<TableProps> = ({
   columns,
   data,
-
   onEditRow,
   title,
 }) => {

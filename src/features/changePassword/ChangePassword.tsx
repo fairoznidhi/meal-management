@@ -1,8 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import FormField from './FormField';
 import { getSession } from 'next-auth/react';
 import { usePatchEmployeeProfile } from '@/services/mutations';
+import FormField from '@/components/FormField';
 
 const ChangePassword = () => {
     const [session, setSession] = useState<Session | null>(null);

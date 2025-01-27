@@ -5,9 +5,9 @@ import Modal from "@/components/modal";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
 import { UserProfileDataType } from "@/services/types";
-import ChangePassword from "@/components/ChangePassword";
 import { getSession, useSession } from "next-auth/react";
 import { usePatchEmployeeProfile } from "@/services/mutations";
+import ChangePassword from "@/features/changePassword/ChangePassword";
 
 const ProfilePage = () => {
   const { data: profileList, refetch: employeeRefetch } =
@@ -164,7 +164,7 @@ const ProfilePage = () => {
         />
       )}
       <div className="mb-12"></div>
-      {!isEditProfile && <ChangePassword />}
+      {!isEditProfile && <ChangePassword/>}
     </div>
   );
 };

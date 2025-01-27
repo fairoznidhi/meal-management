@@ -8,7 +8,7 @@ import { IoMdSettings } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 
 const UserSettings = () => {
-    const {mealStatusToggle,setMealStatusToggle}=useContext(MealStatusContext);
+    const {mealStatusToggle,setMealStatusToggle,update,setUpdate}=useContext(MealStatusContext);
     const { data:profileList} = useTokenSingleEmployee();
     const date=new Date();
       const today = format(date, "yyyy-MM-dd");
@@ -27,6 +27,7 @@ const UserSettings = () => {
         toggleMealStatusMutation.mutate(undefined, {
             onSuccess: () => {
                 setMealStatusToggle(!mealStatusToggle);
+                setUpdate(!update);
             },
         });
     }

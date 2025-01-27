@@ -92,3 +92,12 @@ export const patchGroupMealUpdate=async(mealData:Array)=>{
     })
     return res;
 }
+
+export const patchForgetPassword=async(forgetPassData:object)=>{
+    const res=await apiClient({
+        url: "/employee/forget-password",
+        data:forgetPassData,
+        method: "PATCH",
+    })
+    return res;
+}
