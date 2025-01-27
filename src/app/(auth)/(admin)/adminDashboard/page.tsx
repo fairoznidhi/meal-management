@@ -1,106 +1,293 @@
 "use client";
 
-
-
-import React, { useState } from "react";
-import Table, { Column, Row } from "@/components/Table";
-import SearchBar from "@/components/Search";
+import React, { useState, useEffect } from "react";
+import { baseRequest } from "@/services/HttpClientAPI";
+import MealStatusModal from "@/features/dashboard/MealStatusModal";
+import Search from "@/components/Search";
 import TotalBox from "@/features/dashboard/TotalBox";
-import TotalTable from "@/features/dashboard/TotalTable";
-import { addDays, startOfWeek, endOfWeek, format } from "date-fns";
 
-const Dashboard = () => {
-  const employees = ["Alice", "Bob", "Charlie", "Diana","Guest"]; // Static employee names
-  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
-  // Define columns
-  const columns: Column[] = [
-    { key: "name", label: "Employee Name", editable: false },
-    ...daysOfWeek.map((day) => ({ key: day.toLowerCase(), label: day, editable: true })),
-  ];
+interface MealStatus {
+  status: boolean;
+  guest_count: number;
+  penalty: boolean;
+}
 
-  // Initialize data
-  const initialData: Row[] = employees.map((name) => {
-    const row: Row = { name };
-    daysOfWeek.forEach((day) => {
-      row[day.toLowerCase()] = 1; // Default value
+interface Meal {
+  meal_type: number;
+  meal_status: MealStatus[];
+}
+
+interface EmployeeDetail {
+  date: string;
+  holiday: boolean;
+  meal: Meal[];
+}
+
+interface MealActivityData {
+  employee_id: number;
+  employee_name: string;
+  employee_details: EmployeeDetail[];
+}
+
+const MealActivityComponent = () => {
+  const [mealActivityData, setMealActivityData] = useState<MealActivityData[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState(new Date()); // Use Date object for easy manipulation
+  const [days, setDays] = useState<number>(7);
+  const [mealType, setMealType] = useState<number>(1); // 1 for lunch, 2 for snack
+  const [searchTerm,setSearchTerm]= useState<string>("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCell, setSelectedCell] = useState<{
+    employeeId: number;
+    employeeName: string;
+    date: string;
+    currentStatus: boolean | null;
+    currentPenalty: boolean;
+  } | null>(null);
+
+  const generateDates = (start: Date, days: number) => {
+    const dates: string[] = [];
+    for (let i = 0; i < days; i++) {
+      const currentDate = new Date(start);
+      currentDate.setDate(start.getDate() + i);
+      dates.push(currentDate.toISOString().split("T")[0]);
+    }
+    return dates;
+  };
+
+  const fetchMealActivity = async () => {
+    try {
+      const formattedStartDate = startDate.toISOString().split("T")[0];
+      const response: MealActivityData[] = await request({
+        url: "/meal_activity/admin",
+        method: "GET",
+        params: { start: formattedStartDate, days },
+        useAuth: true,
+      });
+      setMealActivityData(response);
+    } catch (err: any) {
+      console.error("Error fetching meal activity:", err);
+      setError(err.response?.data?.message || "Failed to fetch meal activity.");
+    }
+  };
+
+
+  useEffect(() => {
+    fetchMealActivity();
+  }, [startDate, days]);
+
+  const dates = generateDates(startDate, days);
+
+  const handleCellClick = (
+    employeeId: number,
+    employeeName: string,
+    date: string,
+    currentStatus: boolean | null,
+    currentPenalty: boolean
+  ) => {
+    setSelectedCell({
+      employeeId,
+      employeeName,
+      date,
+      currentStatus: currentStatus ?? null, // Ensure null is passed if no status exists
+      currentPenalty: currentPenalty ?? false, // Default penalty to false if undefined
     });
-    return row;
-  });
+    setModalOpen(true);
+  };
+  
 
-  const [data, setData] = useState(initialData);
-  const [currentDate, setCurrentDate] = useState(new Date()); // Track the current date
-  const [searchTerm, setSearchTerm] = useState(""); // Track the search term
+  const handleUpdateStatus = async (status: boolean, penalty: boolean) => {
+    if (selectedCell) {
+      const { employeeId, date } = selectedCell;
+      const guestCount = 0;
 
-  // Filter data based on the search term
-  const filteredData = data.filter((row) =>
-    row.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      const updatedData = [
+        {
+          employee_id: employeeId,
+          date,
+          meal_type: mealType,
+          status: status,
+          guest_count: guestCount,
+          penalty,
+        },
+      ];
 
-  // Calculate the current week's range
-  const startDate = startOfWeek(currentDate, { weekStartsOn: 1 }); // Week starts on Monday
-  const endDate = endOfWeek(currentDate, { weekStartsOn: 1 });
+      try {
+        await request({
+          url: "/meal_activity/group-update",
+          method: "PATCH",
+          data: updatedData,
+          useAuth: true,
+        });
 
-  const handleToggleCell = (rowIndex: number, key: string) => {
-    const updatedData = [...data];
-    updatedData[rowIndex][key] = updatedData[rowIndex][key] === 1 ? 0 : 1; // Toggle between 1 and 0
-    setData(updatedData);
+        fetchMealActivity();
+        setModalOpen(false);
+      } catch (err) {
+        console.error("Error updating meal status:", err);
+      }
+    }
+  };
+
+  const handleMealTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setMealType(Number(event.target.value));
   };
 
   const handlePreviousWeek = () => {
-    setCurrentDate((prevDate) => addDays(prevDate, -7)); // Move back by 7 days
+    setStartDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setDate(prev.getDate() - 7); // Go back 7 days
+      return newDate;
+    });
   };
 
   const handleNextWeek = () => {
-    setCurrentDate((prevDate) => addDays(prevDate, 7)); // Move forward by 7 days
+    setStartDate((prev) => {
+      const newDate = new Date(prev);
+      newDate.setDate(prev.getDate() + 7); // Go forward 7 days
+      return newDate;
+    });
   };
+   const filteredData= mealActivityData.filter((employee)=>
+  employee.employee_name.toLowerCase().includes(searchTerm.toLowerCase()));
+
 
   return (
     <div className="p-4">
-      {/* SearchBar */}
-      <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-      <div className="mt-10 p-2 bg-gray-100 w-96">
-      <TotalBox></TotalBox>
-      </div>
-      <div >
-        <select name="meal" id="meal" className="border bordre-black p-1 mt-20">
-          <option value="1">Lunch</option>
-          <option value="2">Snacks</option>
+      {/*<div className="fixed justify-between"><div><TotalBox></TotalBox></div></div>*/}
+      <div className="flex justify-between items-center mb-4 gap-x-2 mt-20">
+      <div className="mb-4">
+        <label className="mr-2">Select Meal Type: </label>
+        <select
+          value={mealType}
+          onChange={handleMealTypeChange}
+          className="p-2 border rounded bg-[#779ECB]"
+        >
+          <option value={1}>Lunch</option>
+          <option value={2}>Snack</option>
         </select>
       </div>
-      {/*Navigation */}
-      
-            <div className="flex items-center justify-center mb-4 gap-x-2 mt-20">
-                   <button
+      <div className="flex gap-x-2">
+      <button
                      onClick={handlePreviousWeek}
-                     className="p-2 text-base bg-gray-300 rounded-md hover:bg-gray-400"
+                     className="p-2 text-base bg-[#779ECB] rounded-md hover:bg-[#D7DFE9] ms-6"
                    >
                      <span className="text-lg">&#171;</span>
                    </button>
                    <h2 className="p-2 text-base font-bold me-2">
-                     {format(startDate, "MMMM dd, yyyy")} - {format(endDate, "MMMM dd, yyyy")}
+                   {`Start Date: ${startDate.toISOString().split("T")[0]}`}
                    </h2>
                    <button
                      onClick={handleNextWeek}
-                     className="p-2 text-base bg-gray-300 rounded-md hover:bg-gray-400"
+                     className="p-2 text-base bg-[#779ECB] rounded-md hover:bg-[#D7DFE9]"
                    >
                      <span className="text-lg">&raquo;</span> 
                    </button>
-                 </div>
-                  
-      
-      <Table
-        columns={columns}
-        data={filteredData}
-       
-      />
-
-      <div className="mt-5">
-        <TotalTable></TotalTable>
+        </div>
+        <div><Search searchTerm={searchTerm} onSearchChange={setSearchTerm}></Search></div>
       </div>
-      
+
+     
+
+      {error && <p className="text-red-500">Error: {error}</p>}
+      {filteredData.length === 0 ? (
+        <p>Loading or no data available...</p>
+      ) : (
+        <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[800px] max-lg:max-h-[800px]">
+        <table className="table-auto w-full border-collapse border border-gray-300">
+          <thead>
+            <tr>
+              <th className="border border-gray-400 p-2 text-center">Employee Name</th>
+              {dates.map((date, index) => (
+                <th key={index} className="border border-gray-400 p-2">
+                  {date}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.map((employee) => {
+              const dateStatusMap: Record<
+                string,
+                { status: boolean; holiday: boolean; penalty: boolean }
+              > = {};
+              employee.employee_details.forEach((detail) => {
+                const meal = detail.meal[mealType - 1]; // Use the selected meal type
+                const status = meal?.meal_status[0]?.status;
+                const penalty = meal?.meal_status[0]?.penalty || false;
+                dateStatusMap[detail.date] = {
+                  status,
+                  holiday: detail.holiday,
+                  penalty,
+                };
+              });
+
+              return (
+                <tr key={employee.employee_id}>
+                  <td className="border border-gray-500 p-2 text-center">{employee.employee_name}</td>
+                  {dates.map((date, index) => {
+                    const cellData = dateStatusMap[date] || {
+                      status: null,
+                      holiday: false,
+                      penalty: false,
+                    };
+
+                    let cellStyle = "border border-gray-500 p-2 text-center";
+                    let statusText = "-";
+                    let textColor = "text-black";
+
+                    if (cellData.holiday) {
+                      cellStyle += " bg-blue-100";
+                    } else if (cellData.penalty) {
+                      cellStyle += " bg-red-200";
+                    }
+
+                    if (cellData.status === true) {
+                      statusText = "Yes";
+                      textColor = "text-green-500";
+                    } else if (cellData.status === false) {
+                      statusText = "No";
+                      textColor = "text-red-500";
+                    }
+
+                    return (
+                      <td
+                        key={index}
+                        className={`${cellStyle} ${textColor}`}
+                        onClick={() =>
+                          handleCellClick(
+                            employee.employee_id,
+                            employee.employee_name,
+                            date,
+                            cellData.status,
+                            cellData.penalty
+                          )
+                        }
+                      >
+                        {statusText}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          
+          </tbody>
+        </table>
+        </div>
+      )}
+
+      <MealStatusModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onUpdateStatus={handleUpdateStatus}
+        initialStatus={selectedCell?.currentStatus??false}
+        initialPenalty={selectedCell?.currentPenalty || false}
+        selectedDate={selectedCell?.date??""}
+      />
     </div>
   );
 };
 
-export default Dashboard;
+export default MealActivityComponent;
