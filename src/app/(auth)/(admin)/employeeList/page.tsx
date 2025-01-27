@@ -363,6 +363,7 @@ import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 import Table, { Column, Row } from "@/components/Table"; // Adjust the import path
 import Search from "@/components/Search";
 import Modal from "@/components/modal";
+import { headers } from "next/headers";
 
 const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
@@ -515,10 +516,10 @@ const EmployeeComponent: React.FC = () => {
       formData.append("password", newEmployee.password);
       formData.append("dept_id", newEmployee.dept_id);
       formData.append("phone", newEmployee.phone_number);
-      formData.append("remarks", newEmployee.remarks);
-      if (newEmployee.photo) {
-        formData.append("photo", newEmployee.photo,newEmployee.photo.name); // Append the photo
-      }
+      //formData.append("remarks", newEmployee.remarks);
+      //if (newEmployee.photo) {
+        //formData.append("photo", newEmployee.photo,newEmployee.photo.name); // Append the photo
+      //}
 
       const response = await request({
         url: "/employee",
@@ -529,13 +530,25 @@ const EmployeeComponent: React.FC = () => {
         },
         useAuth: true,
       });
-
-      setResponseData((prevData) => [...prevData, response]);
+     // setResponseData((prevData) => [...prevData, response]);
+     setResponseData((prevData) => [
+      ...prevData,
+      {
+        employee_id: response.employee_id, // Ensure this matches the response format
+        name: newEmployee.name,
+        email: newEmployee.email,
+        dept_id: newEmployee.dept_id,
+        phone_number: newEmployee.phone_number,
+        remarks: newEmployee.remarks || "", // Default to empty string if no remarks
+        penalties: 0, // Initialize penalties to 0 or as per your requirement
+      },
+    ]);
       setShowAddModal(false);
       resetForm();
     } catch (err: any) {
       console.error("Error adding employee:", err);
-      setError(err.response?.data?.message || "Failed to add employee.");
+      alert("Failed To add Employee");
+      setError(err.response?.data?.message);
     }
   };
 
@@ -733,8 +746,9 @@ const EmployeeComponent: React.FC = () => {
               value={newEmployee.dept_id}
               onChange={(e) => setNewEmployee({ ...newEmployee, dept_id: e.target.value })}
               className="border px-4 py-2 w-full rounded"
-            />
+            ></input>
           </div>
+          
           <div>
             <label className="block mb-2">Phone No.:</label>
             <input
@@ -744,16 +758,8 @@ const EmployeeComponent: React.FC = () => {
               className="border px-4 py-2 w-full rounded"
             />
           </div>
-          <div>
-            <label className="block mb-2">Remarks:</label>
-            <input
-              type="text"
-              value={newEmployee.remarks}
-              onChange={(e) => setNewEmployee({ ...newEmployee, remarks: e.target.value })}
-              className="border px-4 py-2 w-full rounded"
-            />
-          </div>
-          <div>
+          
+        {/*  <div>
             <label className="block mb-2">Photo:</label>
             <input
               type="file"
@@ -762,7 +768,7 @@ const EmployeeComponent: React.FC = () => {
               }
               className="border px-4 py-2 w-full rounded"
             />
-          </div>
+          </div>*/}
         </div>
       </Modal>
     </div>

@@ -68,18 +68,24 @@ export default function AuthLayout({
       >
         <button
           onClick={toggleSidebar}
-          className="p-2 bg-[#005A8F] hover:bg-[#005A8F] w-full text-right text-black"
+          className="p-2 bg-[#007CB1] hover:bg-[#] w-full  text-black text-center mb-7"
         >
-
-          <Image src={vslogo} alt="vlogo" className="w-10 h-10 border rounded-full bg-white ms-1 me-5 "></Image>
-         
-          {isCollapsed ? "" : ""}
+          
+          
+          
+          {isCollapsed ? ">>" : "<<"}
         </button>
+        <div className="flex">
+          <Image src={vslogo} alt="vlogo" className="w-10 h-10 border rounded-full bg-white ms-3 me-5 "></Image>
+          <p className="text-white font-semibold mt-1 text-2xl font-serif">VivaMeal</p>
+          </div>
         <Sidebar items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser} isCollapsed={isCollapsed} />
-        <div className="flex justify-center items-end my-8 absolute bottom-0 left-0 right-0">
+        <div className="flex justify-center items-end my-8 absolute bottom-5 left-0 right-0">
                       {!isCollapsed && 
                       <button onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</button>}
                   </div>
+        
+                  
       </div>
 
 

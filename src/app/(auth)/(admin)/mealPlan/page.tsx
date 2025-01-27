@@ -247,26 +247,43 @@ const MealPlanTable = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+  
+        // Generate a sequence of dates for the week
+        const start = dayjs(startDate);
+        const end = start.add(6, "day");
+        const dateSequence = [];
+        for (let d = start; d.isBefore(end) || d.isSame(end); d = d.add(1, "day")) {
+          dateSequence.push(d.format("YYYY-MM-DD"));
+        }
+  
+        // Fetch meal data from the API
         const data = await request({
           url: `/mealplan`,
           method: "GET",
-          params:{
-          start: startDate,
-          days: 7
+          params: {
+            start: startDate,
+            days: 7,
           },
           useAuth: true,
         });
-
-        if (data && data.length > 0) {
-          const formattedData = data.map((meal: any) => {
-            const lunch = meal.menu.find((item: any) => item.meal_type === "lunch")?.food || "";
-            const snack = meal.menu.find((item: any) => item.meal_type === "snack")?.food || "";
-            return { date: meal.date, lunch, snack };
-          });
-          setMealData(formattedData);
-        } else {
-          setMealData([]);
-        }
+  
+        // Map API data to a dictionary for easy lookup
+        const mealDataMap = data.reduce((acc: any, meal: any) => {
+          acc[meal.date] = meal.menu.reduce((mealAcc: any, item: any) => {
+            mealAcc[item.meal_type] = item.food;
+            return mealAcc;
+          }, {});
+          return acc;
+        }, {});
+  
+        // Merge date sequence with meal data
+        const formattedData = dateSequence.map((date) => ({
+          date,
+          lunch: mealDataMap[date]?.lunch || "",
+          snack: mealDataMap[date]?.snack || "",
+        }));
+  
+        setMealData(formattedData);
       } catch (err: any) {
         console.error("Error fetching meal plan:", err);
         setError(err.response?.data?.message || "Error fetching meal plan.");
@@ -275,49 +292,60 @@ const MealPlanTable = () => {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, [startDate]);
-
+  
   // Handle modal submission
   const handleAddMeal = async () => {
     try {
+      // Post the new meal as an array to the API
       const response = await request({
         url: "/mealplan",
         method: "POST",
-        data: newMeal,
+        data: [newMeal], // Wrap newMeal in an array
         useAuth: true,
       });
-
+      console.log(response);
       console.log("Meal Plan Added:", response);
       alert("Meal Plan added successfully!");
       setIsModalOpen(false);
       setNewMeal({ date: "", meal_type: "", food: "" });
-
-      // Optionally, refetch the data after adding a meal
-      const updatedData = await request({
-        url: `/mealplan`,
-        method: "GET",
-        data:{
-          start:startDate,
-          days:7
-        },
-        useAuth: true,
+  
+      // Update the local state without refetching
+      setMealData((prevMealData) => {
+        if (!prevMealData) return null;
+  
+        // Find the index of the row with the matching date
+        const rowIndex = prevMealData.findIndex((row) => row.date === newMeal.date);
+  
+        if (rowIndex !== -1) {
+          // Update the existing row
+          const updatedData = [...prevMealData];
+          updatedData[rowIndex] = {
+            ...updatedData[rowIndex],
+            [newMeal.meal_type]: newMeal.food,
+          };
+          return updatedData;
+        } else {
+          // Add a new row for the date
+          return [
+            ...prevMealData,
+            {
+              date: newMeal.date,
+              lunch: newMeal.meal_type === "lunch" ? newMeal.food : "",
+              snack: newMeal.meal_type === "snack" ? newMeal.food : "",
+            },
+          ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Keep rows sorted by date
+        }
       });
-
-      if (updatedData && updatedData.length > 0) {
-        const formattedData = updatedData.map((meal: any) => {
-          const lunch = meal.menu.find((item: any) => item.meal_type === "lunch")?.food || "";
-          const snack = meal.menu.find((item: any) => item.meal_type === "snack")?.food || "";
-          return { date: meal.date, lunch, snack };
-        });
-        setMealData(formattedData);
-      }
     } catch (err: any) {
       console.error("Error adding meal:", err);
       alert("Failed to add meal. Please try again.");
     }
   };
+  
+  
 
   // Navigation functions
   const handlePreviousWeek = () => {
@@ -396,7 +424,9 @@ const MealPlanTable = () => {
       {/* Modal for Adding Meal */}
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {setIsModalOpen(false);
+          setNewMeal({date:"",meal_type:"",food:""});
+        }}
         title="Add New Meal"
         footer={
           <div>
@@ -410,7 +440,7 @@ const MealPlanTable = () => {
               onClick={handleAddMeal}
               className="bg-blue-500 text-white px-4 py-2 rounded"
             >
-              Submit
+              Add Meal
             </button>
           </div>
         }
@@ -438,6 +468,7 @@ const MealPlanTable = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             />
           </div>
+
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Food</label>
             <input

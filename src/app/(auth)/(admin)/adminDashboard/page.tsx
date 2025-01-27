@@ -194,7 +194,7 @@ const MealActivityComponent = () => {
       {filteredData.length === 0 ? (
         <p>Loading or no data available...</p>
       ) : (
-        <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[800px] max-lg:max-h-[800px]">
+        <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[650px] max-lg:max-h-[800px]">
         <table className="table-auto w-full border-collapse border border-gray-300">
           <thead>
             <tr>
