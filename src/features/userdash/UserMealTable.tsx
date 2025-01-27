@@ -3,8 +3,8 @@
 import React, { createContext, useEffect, useState } from "react";
 import Table, { Column, Row } from "@/components/Table";
 import { startOfWeek, endOfWeek, addDays, format, setWeek } from "date-fns";
-import UserSettings from "@/components/UserSettings";
-import UserStats from "@/components/UserStats";
+import UserSettings from "@/features/userdash/UserSettings";
+import UserStats from "@/features/userdash/UserStats";
 import {
   useRangeMealPlan,
   useSingleEmployeeMealActivity,
@@ -24,6 +24,8 @@ type MealStatusContextType = {
   setSnacksStatus: React.Dispatch<React.SetStateAction<boolean>>;
   mealStatusToggle: boolean;
   setMealStatusToggle: React.Dispatch<React.SetStateAction<boolean>>;
+  update:boolean;
+  setUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const defaultValue: MealStatusContextType = {
@@ -33,6 +35,8 @@ const defaultValue: MealStatusContextType = {
   setSnacksStatus: () => {},
   mealStatusToggle: false,
   setMealStatusToggle: () => {},
+  update: false,
+  setUpdate: () => {},
 };
 
 export const MealStatusContext =
@@ -42,6 +46,7 @@ const MealPlanTable = () => {
   const [lunchStatus, setLunchStatus] = useState(false);
   const [snacksStatus, setSnacksStatus] = useState(false);
   const [mealStatusToggle, setMealStatusToggle] = useState(false);
+  const [update, setUpdate] = useState(false);
   const [currentDate, setCurrentDate] = useState(
     format(startOfWeek(new Date(), { weekStartsOn: 1 }), "yyyy-MM-dd")
   );
@@ -51,7 +56,7 @@ const MealPlanTable = () => {
     return rowDate >= today && editTable;
   };
   const [session, setSession] = useState<Session | null>(null);
-  const { mutate} = usePatchGroupMealUpdate();
+  const { mutate } = usePatchGroupMealUpdate();
   useEffect(() => {
     const checkSession = async () => {
       const session = await getSession();
@@ -236,6 +241,9 @@ const MealPlanTable = () => {
     setCurrentDate(newDate);
     // refetch();
   };
+  useEffect(()=>{
+    mealActivityRefetch();
+  },[update])
   const handleEditRow = (updatedRow: Row, rowIndex: number) => {
     const updatedData = [...data];
     updatedData[rowIndex] = updatedRow;
@@ -272,7 +280,11 @@ const MealPlanTable = () => {
       return [lunchEntry, snacksEntry];
     });
     console.log("Formatted Data:", formattedData);
-    mutate(formattedData);
+    mutate(formattedData,{
+      onSuccess: ()=>{
+        setUpdate(!update)
+      }
+    });
   };
   const toggleRowStatus = (
     rowIndex: number,
@@ -298,6 +310,8 @@ const MealPlanTable = () => {
           setLunchStatus,
           snacksStatus,
           setSnacksStatus,
+          update,
+          setUpdate
         }}
       >
         <div className="flex justify-between mb-8">

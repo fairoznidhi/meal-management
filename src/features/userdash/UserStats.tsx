@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { startOfWeek, endOfWeek, addDays, format } from "date-fns";
 
 const UserStats = () => {
-    const {lunchStatus,setLunchStatus,snacksStatus,setSnacksStatus,mealStatusToggle}=useContext(MealStatusContext);
+    const {lunchStatus,setLunchStatus,snacksStatus,setSnacksStatus,mealStatusToggle,update}=useContext(MealStatusContext);
     const date=new Date();
     const today = format(date, "yyyy-MM-dd");
       const {data:todayData,refetch}=useSingleEmployeeMealActivity(today,'1');
@@ -16,7 +16,7 @@ const UserStats = () => {
             setLunchStatus(lunch)
             setSnacksStatus(snacks);
         }
-      },[todayData])
+      },[todayData,update])
       useEffect(()=>{
         refetch();
         if(todayData){
@@ -25,7 +25,7 @@ const UserStats = () => {
         setLunchStatus(lunch)
         setSnacksStatus(snacks);
       }
-      },[mealStatusToggle])
+      },[mealStatusToggle,update])
     return (
         <div className="stats shadow">
           <div className="stat place-items-center">
