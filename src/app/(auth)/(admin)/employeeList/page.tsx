@@ -452,6 +452,9 @@ const EmployeeComponent: React.FC = () => {
       return {
         employee_id: employee.employee_id,
         name: employee.name,
+        email:employee.email,
+        dept_id:employee.dept_id,
+        phone_number:employee.phone_number,
         remarks: employee.remarks,
         penalties: response,
       };
@@ -595,7 +598,7 @@ const EmployeeComponent: React.FC = () => {
         )}
       </div>
 
-      {/* Delete Modal */}
+      {/* Delete Modal 
       {showDeleteModal && selectedEmployee && (
         <Modal
           isOpen={showDeleteModal}
@@ -620,7 +623,52 @@ const EmployeeComponent: React.FC = () => {
         >
           <p>Are you sure you want to delete this employee?</p>
         </Modal>
-      )}
+      )}*/}
+
+
+      {/* Delete Modal */}
+{showDeleteModal && selectedEmployee && (
+  <Modal
+    isOpen={showDeleteModal}
+    onClose={() => setShowDeleteModal(false)}
+    title={`Delete Employee: ${selectedEmployee.name}`}
+    footer={
+      <>
+        <button
+          onClick={() => setShowDeleteModal(false)}
+          className="px-4 py-2 bg-gray-300 rounded"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => deleteEmployee(selectedEmployee.employee_id)}
+          className="px-4 py-2 bg-red-500 text-white rounded"
+        >
+          Delete
+        </button>
+      </>
+    }
+  >
+    <div className="space-y-4">
+      <div>
+        <strong>Name:</strong> {selectedEmployee.name}
+      </div>
+      <div>
+        <strong>Email:</strong> {selectedEmployee.email || "N/A"}
+      </div>
+      <div>
+        <strong>Phone Number:</strong> {selectedEmployee.phone_number || "N/A"}
+      </div>
+      <div>
+        <strong>Department ID:</strong> {selectedEmployee.dept_id || "N/A"}
+      </div>
+      <div>
+        <strong>Remarks:</strong> {selectedEmployee.remarks || "N/A"}
+      </div>
+    </div>
+  </Modal>
+)}
+
 
       {/* Add Employee Modal */}
       <Modal
