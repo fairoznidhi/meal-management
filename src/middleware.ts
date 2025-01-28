@@ -14,8 +14,9 @@ export default withAuth(
           return ["/adminDashboard", 
                 "/adminProfile", 
                 "/employeeList",
-                "/mealPlan",
-                "/profile"].includes(pathname);
+                "/adminmealPlan",
+                "/profile",
+              "/menuPlan"].includes(pathname);
         } else {
           return ["/userDashboard", 
                   "/userProfile",

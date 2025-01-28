@@ -15,7 +15,8 @@ export default function AuthLayout({
     const sidebarItemsAdmin = [
         { name: "Dashboard", route: "/adminDashboard", icon:HomeModernIcon },
         { name: "Employee List", route: "/employeeList", icon:UsersIcon },
-        { name: "Meal Plan", route: "/mealPlan", icon:ClipboardDocumentListIcon },  
+        { name: "Meal Plan", route: "/adminmealPlan", icon:ClipboardDocumentListIcon }, 
+        { name: "Menu Plan", route: "/menuPlan", icon:ClipboardDocumentListIcon }, 
         { name: "My Profie", route: "/profile", icon:UserIcon},
       ];
       const sidebarItemsUser = [
