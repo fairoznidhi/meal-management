@@ -515,7 +515,7 @@ const EmployeeComponent: React.FC = () => {
       formData.append("email", newEmployee.email);
       formData.append("password", newEmployee.password);
       formData.append("dept_id", newEmployee.dept_id);
-      formData.append("phone", newEmployee.phone_number);
+      formData.append("phone_number", newEmployee.phone_number);
       //formData.append("remarks", newEmployee.remarks);
       //if (newEmployee.photo) {
         //formData.append("photo", newEmployee.photo,newEmployee.photo.name); // Append the photo
