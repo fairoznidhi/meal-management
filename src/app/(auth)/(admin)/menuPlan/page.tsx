@@ -230,17 +230,38 @@ import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
+const getCurrentYear = new Date().getFullYear();
+const years = Array.from({ length: 11 }, (_, i) => getCurrentYear + i);
+const months = Array.from({ length: 12 }, (_, i) => ({
+  name: new Date(0, i).toLocaleString("default", { month: "long" }),
+  value: String(i + 1).padStart(2, "0"),
+}));
+const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0"));
+
+
 const MealPlanTable = () => {
   const [mealData, setMealData] = useState<Row[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<string>("2025-01-01");
+  const [startDate, setStartDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newMeal, setNewMeal] = useState({
+  {/*const [newMeal, setNewMeal] = useState({
     date: "",
     meal_type: "",
     food: "",
+  });*/}
+
+  const [newMeal, setNewMeal] = useState({
+    year: String(getCurrentYear),
+    month: "01",
+    day: "01",
+    meal_type: "",
+    food: "",
   });
+  
+
+  const mealTypes = ["lunch","snack"];
+
 
   // Fetch data based on the current start date
   useEffect(() => {
@@ -297,7 +318,8 @@ const MealPlanTable = () => {
   }, [startDate]);
   
   // Handle modal submission
-  const handleAddMeal = async () => {
+  {/*const handleAddMeal = async () => {
+    
     try {
       // Post the new meal as an array to the API
       const response = await request({
@@ -344,6 +366,117 @@ const MealPlanTable = () => {
       alert("Failed to add meal. Please try again.");
     }
   };
+
+  const handleAddMeal = async () => {
+    const formattedDate = `${newMeal.year}-${newMeal.month}-${newMeal.day}`;
+    const mealToSubmit = { ...newMeal, date: formattedDate };
+    delete mealToSubmit.year;
+    delete mealToSubmit.month;
+    delete mealToSubmit.day;
+
+    try {
+      await request({
+        url: "/mealplan",
+        method: "POST",
+        data: [mealToSubmit],
+        useAuth: true,
+      });
+
+      alert("Meal Plan added successfully!");
+      setIsModalOpen(false);
+      setNewMeal({ year: String(getCurrentYear), month: "01", day: "01", meal_type: "", food: "" });
+
+      {/*setMealData((prevMealData) => {
+        if (!prevMealData) return null;
+        return [...prevMealData, { ...mealToSubmit }].sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+      });
+
+      setMealData((prevMealData) => {
+        if (!prevMealData) return null;
+  
+        // Find the index of the row with the matching date
+        const rowIndex = prevMealData.findIndex((row) => row.date === newMeal.date);
+  
+        if (rowIndex !== -1) {
+          // Update the existing row
+          const updatedData = [...prevMealData];
+          updatedData[rowIndex] = {
+            ...updatedData[rowIndex],
+            [newMeal.meal_type]: newMeal.food,
+          };
+          return updatedData;
+        } else {
+          // Add a new row for the date
+          return [
+            ...prevMealData,
+            {
+              date: newMeal.day,
+              lunch: newMeal.meal_type === "lunch" ? newMeal.food : "",
+              snack: newMeal.meal_type === "snack" ? newMeal.food : "",
+            },
+          ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Keep rows sorted by date
+        }
+      });
+    } catch (err: any) {
+      console.error("Error adding meal:", err);
+      alert("Failed to add meal. Please try again.");
+    }
+  };*/}
+
+  const handleAddMeal = async () => {
+  const formattedDate = `${newMeal.year}-${newMeal.month}-${newMeal.day}`;
+  const mealToSubmit = { ...newMeal, date: formattedDate };
+  delete mealToSubmit.year;
+  delete mealToSubmit.month;
+  delete mealToSubmit.day;
+
+  try {
+    await request({
+      url: "/mealplan",
+      method: "POST",
+      data: [mealToSubmit],
+      useAuth: true,
+    });
+
+    alert("Meal Plan added successfully!");
+    setIsModalOpen(false);
+    setNewMeal({ year: String(getCurrentYear), month: "01", day: "01", meal_type: "", food: "" });
+
+    // Update the mealData state immediately without refetching
+    setMealData((prevMealData) => {
+      if (!prevMealData) return null;
+
+      // Find the index of the row with the matching date
+      const rowIndex = prevMealData.findIndex((row) => row.date === formattedDate);
+
+      if (rowIndex !== -1) {
+        // Update the existing row
+        const updatedData = [...prevMealData];
+        updatedData[rowIndex] = {
+          ...updatedData[rowIndex],
+          [mealToSubmit.meal_type]: mealToSubmit.food,
+        };
+        return updatedData;
+      } else {
+        // Add a new row for the date if it doesn't exist
+        return [
+          ...prevMealData,
+          {
+            date: formattedDate,
+            lunch: mealToSubmit.meal_type === "lunch" ? mealToSubmit.food : "",
+            snack: mealToSubmit.meal_type === "snack" ? mealToSubmit.food : "",
+          },
+        ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Keep rows sorted by date
+      }
+    });
+  } catch (err: any) {
+    console.error("Error adding meal:", err);
+    alert("Failed to add meal. Please try again.");
+  }
+};
+
   
   
 
@@ -382,7 +515,7 @@ const MealPlanTable = () => {
   return (
     <div>
       <div className="mt-40 mx-10">
-        {/* Navigation Bar */}
+      
         <div className="flex justify-between mb-4">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded"
@@ -399,7 +532,7 @@ const MealPlanTable = () => {
           </button>
         </div>
 
-        {/* Render Table or Message */}
+        
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
@@ -411,7 +544,7 @@ const MealPlanTable = () => {
         )}
       </div>
 
-      {/* Add Meal Button */}
+      
       <div className="flex justify-end mt-4 me-10">
         <button
           onClick={() => setIsModalOpen(true)}
@@ -421,8 +554,8 @@ const MealPlanTable = () => {
         </button>
       </div>
 
-      {/* Modal for Adding Meal */}
-      <Modal
+      
+      {/*<Modal
         isOpen={isModalOpen}
         onClose={() => {setIsModalOpen(false);
           setNewMeal({date:"",meal_type:"",food:""});
@@ -480,9 +613,111 @@ const MealPlanTable = () => {
             />
           </div>
         </form>
+      </Modal>*/}
+
+
+
+<Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setNewMeal({ year: String(getCurrentYear), month: "01", day: "01", meal_type: "", food: "" });
+        }}
+        title="Add New Meal"
+        footer={
+          <div>
+            <button onClick={() => setIsModalOpen(false)} className="bg-gray-300 px-4 py-2 rounded mr-2">
+              Cancel
+            </button>
+            <button onClick={handleAddMeal} className="bg-blue-500 text-white px-4 py-2 rounded">
+              Add Meal
+            </button>
+          </div>
+        }
+      >
+        <form>
+          {/* Date Selection */}
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Year</label>
+              <select
+                name="year"
+                value={newMeal.year}
+                onChange={(e) => setNewMeal({ ...newMeal, year: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Month</label>
+              <select
+                name="month"
+                value={newMeal.month}
+                onChange={(e) => setNewMeal({ ...newMeal, month: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              >
+                {months.map((month) => (
+                  <option key={month.value} value={month.value}>{month.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Day</label>
+              <select
+                name="day"
+                value={newMeal.day}
+                onChange={(e) => setNewMeal({ ...newMeal, day: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              >
+                {days.map((day) => (
+                  <option key={day} value={day}>{day}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Meal Type Selection */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Meal Type</label>
+            <select
+              name="meal_type"
+              value={newMeal.meal_type}
+              onChange={(e) => setNewMeal({ ...newMeal, meal_type: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">Select Meal Type</option>
+              {mealTypes.map((type) => (
+                <option key={type} value={type.toLowerCase()}>{type}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Food Input */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Food</label>
+            <input
+              type="text"
+              name="food"
+              value={newMeal.food}
+              onChange={(e) => setNewMeal({ ...newMeal, food: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="Enter food item"
+            />
+          </div>
+        </form>
       </Modal>
     </div>
   );
 };
 
 export default MealPlanTable;
+
+
+
+
+
