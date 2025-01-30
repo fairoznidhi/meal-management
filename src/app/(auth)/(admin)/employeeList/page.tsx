@@ -259,11 +259,6 @@ const EmployeeComponent: React.FC = () => {
       label: "Penalties",
     },
 
-    {
-      key: "total_meals", // New column for total meals
-      label: "Total Meals",
-      render: (value) => value || "0", // Default value if no data
-    },
   ];
 
   return (

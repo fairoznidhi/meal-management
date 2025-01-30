@@ -41,7 +41,7 @@ const MealPlanTable = () => {
   });
   
 
-  const mealTypes = ["lunch","snack"];
+  const mealTypes = ["lunch","snacks"];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,7 +80,7 @@ const MealPlanTable = () => {
         const formattedData = dateSequence.map((date) => ({
           date,
           lunch: mealDataMap[date]?.lunch || "", // Ensure it shows an empty string if no meal
-          snack: mealDataMap[date]?.snack || "", // Ensure it shows an empty string if no meal
+          snacks: mealDataMap[date]?.snacks || "", // Ensure it shows an empty string if no meal
         }));
   
         setMealData(formattedData);
@@ -136,7 +136,7 @@ const handleAddMeal = async () => {
           {
             date: formattedDate,
             lunch: mealToSubmit.meal_type === "lunch" ? mealToSubmit.food : "",
-            snack: mealToSubmit.meal_type === "snack" ? mealToSubmit.food : "",
+            snacks: mealToSubmit.meal_type === "snacks" ? mealToSubmit.food : "",
           },
         ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Keep rows sorted by date
       }
@@ -180,7 +180,7 @@ const handleRepeatMealsForNextWeek = async () => {
     if (meal.snack) {
       newMeals.push({
         date: formattedDate,
-        meal_type: "snack",
+        meal_type: "snacks",
         food: meal.snack,
       });
     }
@@ -388,6 +388,7 @@ const handleRepeatMealsForNextWeek = async () => {
 };
 
 export default MealPlanTable;
+
 
 
 
