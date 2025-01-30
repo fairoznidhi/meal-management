@@ -11,13 +11,12 @@ export default withAuth(
         const pathname = req.nextUrl.pathname;
         if (!token) return false;
         if (token?.is_admin) {
-          return [
-            "/adminDashboard",
-            "/adminProfile",
-            "/employeeList",
-            "/mealPlan",
-            "/profile",
-          ].includes(pathname);
+          return ["/adminDashboard", 
+                "/adminProfile", 
+                "/employeeList",
+                "/adminmealPlan",
+                "/profile",
+              "/menuPlan"].includes(pathname);
         } else {
           return ["/userDashboard", "/userProfile", "/profile"].includes(
             pathname
