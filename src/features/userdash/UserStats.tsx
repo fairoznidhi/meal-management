@@ -11,8 +11,8 @@ const UserStats = () => {
       const {data:todayData,refetch}=useSingleEmployeeMealActivity(today,'1');
       useEffect(()=>{
         if(todayData){
-            const lunch=todayData[0].employee_details[0].meal[0].meal_status[0].status;
-            const snacks=todayData[0].employee_details[0].meal[1].meal_status[0].status;
+            const lunch=todayData[0].employee_details?.[0].meal?.[0].meal_status?.[0].status ?? false;
+            const snacks=todayData[0].employee_details?.[0].meal?.[1].meal_status?.[0].status ?? false;
             setLunchStatus(lunch)
             setSnacksStatus(snacks);
         }
@@ -20,8 +20,8 @@ const UserStats = () => {
       useEffect(()=>{
         refetch();
         if(todayData){
-        const lunch=todayData[0].employee_details[0].meal[0].meal_status[0].status;
-        const snacks=todayData[0].employee_details[0].meal[1].meal_status[0].status;
+        const lunch=todayData[0].employee_details?.[0].meal?.[0].meal_status?.[0].status ?? false;
+        const snacks=todayData[0].employee_details?.[0].meal?.[1].meal_status?.[0].status ?? false;
         setLunchStatus(lunch)
         setSnacksStatus(snacks);
       }

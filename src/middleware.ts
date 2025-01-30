@@ -11,28 +11,32 @@ export default withAuth(
         const pathname = req.nextUrl.pathname;
         if (!token) return false;
         if (token?.is_admin) {
-          return ["/adminDashboard", 
-                "/adminProfile", 
-                "/employeeList",
-                "/mealPlan"].includes(pathname);
+          return [
+            "/adminDashboard",
+            "/adminProfile",
+            "/employeeList",
+            "/mealPlan",
+            "/profile",
+          ].includes(pathname);
         } else {
-          return ["/userDashboard", 
-                  "/userProfile",
-                  "/profile",
-                ].includes(pathname);
+          return ["/userDashboard", "/userProfile", "/profile"].includes(
+            pathname
+          );
         }
       },
     },
   }
 );
 
-export const config = { 
-  matcher: ["/adminDashboard", 
-            "/adminProfile", 
-            "/employeeList",
-            "/mealPlan",
-            "/userDashboard", 
-            "/userProfile",
-            "/profile",
-          ] 
+export const config = {
+  matcher: [
+    "/adminDashboard",
+    "/adminProfile",
+    "/employeeList",
+    "/mealPlan",
+    "/userDashboard",
+    "/userProfile",
+    "/profile",
+    "/",
+  ],
 };

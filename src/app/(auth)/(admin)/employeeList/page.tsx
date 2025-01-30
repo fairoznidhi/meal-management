@@ -426,7 +426,7 @@ const EmployeeComponent: React.FC = () => {
         method: "GET",
         useAuth: true,
       });
-      return employees as any;
+      return employees as any[];
     } catch (err: any) {
       console.error("Error fetching employees:", err);
       setError(err.response?.data?.message || "Failed to fetch employees.");
@@ -533,7 +533,7 @@ const EmployeeComponent: React.FC = () => {
           "Content-Type": "multipart/form-data",
         },
         useAuth: true,
-      });
+      }) as Row;
 
       setResponseData(prevData => [...prevData, response as Row]);
       setShowAddModal(false);

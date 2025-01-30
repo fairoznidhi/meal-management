@@ -15,5 +15,5 @@ export type EmployeeEachDayMealDetails={
 export type EmployeeMealDetails={
   employee_id?: number;
   employee_name?: string;
-  employee_details?: EmployeeMealDetails[]
+  employee_details?: EmployeeEachDayMealDetails[]
 }

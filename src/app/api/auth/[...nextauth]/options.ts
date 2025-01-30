@@ -25,7 +25,7 @@ export const authOptions:NextAuthOptions = {
           if (accessToken) {
             return {...decoded,accessToken};
           }
-          return null;
+          return accessToken;
         },
       }),
     ],

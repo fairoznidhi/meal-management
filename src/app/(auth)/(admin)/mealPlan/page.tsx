@@ -255,7 +255,7 @@ const MealPlanTable = () => {
           days: 7
           },
           useAuth: true,
-        });
+        }) as any[];
 
         if (data && data.length > 0) {
           const formattedData = data.map((meal: any) => {
@@ -303,7 +303,7 @@ const MealPlanTable = () => {
           days:7
         },
         useAuth: true,
-      });
+      }) as any[];
 
       if (updatedData && updatedData.length > 0) {
         const formattedData = updatedData.map((meal: any) => {
