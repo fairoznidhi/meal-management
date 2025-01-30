@@ -5,6 +5,8 @@ import Table, { Column, Row } from "@/components/Table";
 import { startOfWeek, endOfWeek, addDays, format, setWeek } from "date-fns";
 import UserSettings from "@/features/userdash/UserSettings";
 import UserStats from "@/features/userdash/UserStats";
+import { BsPlus } from "react-icons/bs";
+import { BsMinus } from "react-icons/bs";
 import {
   useRangeMealPlan,
   useSingleEmployeeMealActivity,
@@ -16,6 +18,9 @@ import {
 import { MenuDetails } from "@/model/rangeMealPlan";
 import { getSession } from "next-auth/react";
 import { usePatchGroupMealUpdate } from "@/services/mutations";
+import { FaCaretSquareLeft } from "react-icons/fa";
+import { FaCaretSquareRight } from "react-icons/fa";
+
 
 type MealStatusContextType = {
   lunchStatus: boolean;
@@ -24,7 +29,7 @@ type MealStatusContextType = {
   setSnacksStatus: React.Dispatch<React.SetStateAction<boolean>>;
   mealStatusToggle: boolean;
   setMealStatusToggle: React.Dispatch<React.SetStateAction<boolean>>;
-  update:boolean;
+  update: boolean;
   setUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -53,9 +58,21 @@ const MealPlanTable = () => {
   const today = format(new Date(), "yyyy-MM-dd");
   const [editTable, setEditTable] = useState(false);
   const isRowEditable = (rowDate: string) => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+    const isBefore10AM =
+      currentHour < 10 || (currentHour === 10 && currentMinutes === 0);
+    if (!isBefore10AM) {
+      return (
+        rowDate >= format(addDays(new Date(), 1), "yyyy-MM-dd") && editTable
+      );
+    }
     return rowDate >= today && editTable;
   };
   const [session, setSession] = useState<Session | null>(null);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [progress, setProgress] = useState(100);
   const { mutate } = usePatchGroupMealUpdate();
   useEffect(() => {
     const checkSession = async () => {
@@ -67,7 +84,11 @@ const MealPlanTable = () => {
     checkSession();
   }, []);
   const columns: Column[] = [
-    { key: "date", label: "Date" },
+    { key: "date", label: "Date" ,
+      render:(value)=>{
+        return <span>{format(new Date(value), "dd-MMM")}</span>;
+      }
+    },
     { key: "lunch", label: "Lunch" },
     {
       key: "lunchStatus",
@@ -75,18 +96,22 @@ const MealPlanTable = () => {
       render: (value, row, rowIndex) => {
         const isEditable = isRowEditable(row.date);
         return (
-          <button
-            onClick={() => {
+          <div>
+          <input
+            type="checkbox"
+            className={`toggle border-white bg-white hover:bg-white ${
+              value === 1
+                ? `${isEditable ? "[--tglbg:#00aa68]" : "[--tglbg:#66cc99]"}`
+                : `${isEditable ? "[--tglbg:#d73545]" : "[--tglbg:#f06d7a]"}`
+            } ${isEditable?'':'cursor-not-allowed'}`}
+            checked={value === 1}
+            onChange={() => {
               if (isEditable) {
                 toggleRowStatus(rowIndex, row, "lunchStatus");
               }
             }}
-            className={`px-4 py-1 rounded ${
-              value === 1 ? " text-green-500" : " text-red-500"
-            }`}
-          >
-            {value === 1 ? "On" : "Off"}
-          </button>
+          />
+          </div>
         );
       },
     },
@@ -103,7 +128,7 @@ const MealPlanTable = () => {
                   const newValue = Math.max(0, parseInt(value, 10) - 1); // Decrease guest count, but not below 0
                   toggleRowStatus(rowIndex, row, "lunchGuest", newValue); // Pass the new value
                 }}
-                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                className="px-2 text-gray-500 bg-gray-100 rounded hover:bg-gray-200"
               >
                 -
               </button>
@@ -115,7 +140,7 @@ const MealPlanTable = () => {
                   const newValue = parseInt(value, 10) + 1;
                   toggleRowStatus(rowIndex, row, "lunchGuest", newValue);
                 }}
-                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                className="px-2 text-gray-500 bg-gray-100 rounded hover:bg-gray-200"
               >
                 +
               </button>
@@ -131,18 +156,20 @@ const MealPlanTable = () => {
       render: (value, row, rowIndex) => {
         const isEditable = isRowEditable(row.date);
         return (
-          <button
-            onClick={() => {
+          <input
+            type="checkbox"
+            className={`toggle border-white bg-white hover:bg-white ${
+              value === 1
+                ? `${isEditable ? "[--tglbg:#00aa68]" : "[--tglbg:#66cc99]"}`
+                : `${isEditable ? "[--tglbg:#d73545]" : "[--tglbg:#f06d7a]"}`
+            } ${isEditable?'':'cursor-not-allowed'}`}
+            checked={value === 1}
+            onChange={() => {
               if (isEditable) {
                 toggleRowStatus(rowIndex, row, "snacksStatus");
               }
             }}
-            className={`px-4 py-1 rounded ${
-              value === 1 ? " text-green-500" : " text-red-500"
-            }`}
-          >
-            {value === 1 ? "On" : "Off"}
-          </button>
+          />
         );
       },
     },
@@ -159,7 +186,7 @@ const MealPlanTable = () => {
                   const newValue = Math.max(0, parseInt(value, 10) - 1);
                   toggleRowStatus(rowIndex, row, "snacksGuest", newValue);
                 }}
-                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                className="px-2 text-gray-500 bg-gray-100 rounded hover:bg-gray-200"
               >
                 -
               </button>
@@ -171,7 +198,7 @@ const MealPlanTable = () => {
                   const newValue = parseInt(value, 10) + 1; // Increase guest count
                   toggleRowStatus(rowIndex, row, "snacksGuest", newValue); // Pass the new value
                 }}
-                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                className="px-2 text-gray-500 bg-gray-100 rounded hover:bg-gray-200"
               >
                 +
               </button>
@@ -184,6 +211,30 @@ const MealPlanTable = () => {
   const { data: mealActivityData, refetch: mealActivityRefetch } =
     useSingleEmployeeMealActivity(currentDate, "7");
   const { data: mealPlan } = useRangeMealPlan(currentDate, "7");
+  const { data: nextWeekMealActivityData } = useSingleEmployeeMealActivity(
+    format(addDays(currentDate, 7), "yyyy-MM-dd"),
+    "7"
+  );
+  const [nextWeekDataAvailable, setNextWeekDataAvailable] = useState(false);
+  useEffect(() => {
+    if (nextWeekMealActivityData && nextWeekMealActivityData.length > 0) {
+      setNextWeekDataAvailable(true);
+    } else {
+      setNextWeekDataAvailable(false);
+    }
+  }, [nextWeekMealActivityData]);
+  const { data: prevWeekMealActivityData } = useSingleEmployeeMealActivity(
+    format(addDays(currentDate, -7), "yyyy-MM-dd"),
+    "7"
+  );
+  const [prevWeekDataAvailable, setPrevWeekDataAvailable] = useState(false);
+  useEffect(() => {
+    if (prevWeekMealActivityData && prevWeekMealActivityData.length > 0) {
+      setPrevWeekDataAvailable(true);
+    } else {
+      setPrevWeekDataAvailable(false);
+    }
+  }, [prevWeekMealActivityData]);
   const getWeekData = () => {
     const weekData: Row[] = [];
     if (mealActivityData) {
@@ -203,14 +254,14 @@ const MealPlanTable = () => {
             lunch: currentDayMenu
               ? currentDayMenu.menu?.find(
                   (m: MenuDetails) => m.meal_type === "lunch"
-                )?.food || "Not Set"
+                )?.food || "Meal Plan Missing"
               : "Meal Plan Missing",
             lunchStatus: employee.meal?.[0]?.meal_status?.[0]?.status ? 1 : 0,
             lunchGuest: employee.meal?.[0]?.meal_status?.[0]?.guest_count,
             snacks: currentDayMenu
               ? currentDayMenu.menu?.find(
                   (m: MenuDetails) => m.meal_type === "snacks"
-                )?.food || "Not Set"
+                )?.food || "Meal Plan Missing"
               : "Meal Plan Missing",
             snacksStatus: employee.meal?.[1]?.meal_status?.[0]?.status ? 1 : 0,
             snacksGuest: employee.meal?.[1]?.meal_status?.[0]?.guest_count,
@@ -241,9 +292,9 @@ const MealPlanTable = () => {
     setCurrentDate(newDate);
     // refetch();
   };
-  useEffect(()=>{
+  useEffect(() => {
     mealActivityRefetch();
-  },[update])
+  }, [update]);
   const handleEditRow = (updatedRow: Row, rowIndex: number) => {
     const updatedData = [...data];
     updatedData[rowIndex] = updatedRow;
@@ -280,10 +331,19 @@ const MealPlanTable = () => {
       return [lunchEntry, snacksEntry];
     });
     console.log("Formatted Data:", formattedData);
-    mutate(formattedData,{
-      onSuccess: ()=>{
-        setUpdate(!update)
-      }
+    mutate(formattedData, {
+      onSuccess: () => {
+        setUpdate(!update);
+        setAlertMessage("Meal updated successfully!");
+        setProgress(100);
+        const interval = setInterval(() => {
+          setProgress((prev) => Math.max(prev - 5, 0));
+        }, 150);
+        setTimeout(() => {
+          setAlertMessage(null);
+          clearInterval(interval);
+        }, 3000);
+      },
     });
   };
   const toggleRowStatus = (
@@ -311,7 +371,7 @@ const MealPlanTable = () => {
           snacksStatus,
           setSnacksStatus,
           update,
-          setUpdate
+          setUpdate,
         }}
       >
         <div className="flex justify-between mb-8">
@@ -322,31 +382,68 @@ const MealPlanTable = () => {
         </div>
 
         {/* Week Navigation */}
-        <div
-          className={`flex items-center mb-6 ${
-            editTable ? "justify-center" : "justify-between "
-          }`}
-        >
-          {!editTable && (
+        <div className={`flex items-center min-h-12 mb-4 relative`}>
+          <h1 className="pl-2 text-3xl font-extrabold">Meal Entry</h1>
+          <div className="flex items-center absolute left-1/2 transform -translate-x-1/2 ">
             <button
               onClick={handlePreviousWeek}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className={`px-4 text-gray-300 text-4xl rounded hover:text-gray-400 
+                ${
+                  editTable
+                    ? "text-gray-100 cursor-not-allowed hover:text-gray-100"
+                    : ""
+                }
+                ${!prevWeekDataAvailable ? "hover:text-gray-300" : ""}`}
+              disabled={editTable || !prevWeekDataAvailable}
             >
-              Previous Week
+              <FaCaretSquareLeft />
             </button>
-          )}
-          <h3 className="text-lg font-bold">
-            {format(currentDate, "MMMM dd, yyyy")} -{" "}
-            {format(addDays(currentDate, 7), "MMMM dd, yyyy")}
-          </h3>
-          {!editTable && (
+            <h3 className="text-lg text-center font-bold min-w-40 select-none">
+              {format(currentDate, "dd MMM")} -{" "}
+              {format(addDays(currentDate, 6), "dd MMM")}
+            </h3>
             <button
               onClick={handleNextWeek}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className={`px-4 text-gray-300 text-4xl rounded hover:text-gray-400 
+                ${
+                  editTable
+                    ? "text-gray-100 cursor-not-allowed hover:text-gray-100"
+                    : ""
+                }
+                ${!nextWeekDataAvailable ? "hover:text-gray-300" : ""}`}
+              disabled={editTable || !nextWeekDataAvailable}
             >
-              Next Week
+              <FaCaretSquareRight />
             </button>
-          )}
+          </div>
+          <div className="min-w-64 text-end flex flex-row justify-end ml-auto">
+            {!editTable ? (
+              <button
+                className="px-4 py-2 border bg-blue-500 text-white rounded hover:bg-blue-600"
+                onClick={() => {
+                  setEditTable(true);
+                }}
+              >
+                Update Meal
+              </button>
+            ) : (
+              <div className="min-w-64">
+                <button
+                  className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 mr-2"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 "
+                  onClick={handleEditSave}
+                >
+                  Save
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Table */}
@@ -356,34 +453,16 @@ const MealPlanTable = () => {
           // onEditRow={handleEditRow}
           {...(editTable ? { onEditRow: handleEditRow } : {})}
         />
-        <div className="flex flex-row justify-end">
-          {!editTable ? (
-            <button
-              className="mt-4 px-4 py-2 border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white"
-              onClick={() => {
-                setEditTable(true);
-              }}
-            >
-              Update Meal
-            </button>
-          ) : (
-            <div className="mt-4">
-              <button
-                className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 mr-2"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 "
-                onClick={handleEditSave}
-              >
-                Save
-              </button>
-            </div>
-          )}
+        {/* Alert Notification */}
+      {alertMessage && (
+        <div className="fixed top-5 right-5 bg-gray-500 text-white px-4 pt-2 rounded-md shadow-md min-w-64">
+          <p>{alertMessage}</p>
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-700 h-1 mt-4">
+            <div className="bg-white h-1 transition-all duration-150" style={{ width: `${progress}%` }}></div>
+          </div>
         </div>
+      )}
       </MealStatusContext.Provider>
     </div>
   );

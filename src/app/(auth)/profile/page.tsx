@@ -18,6 +18,8 @@ const ProfilePage = () => {
   const [actualData, setActualData] = useState<UserProfileDataType | null>(
     null
   );
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+    const [progress, setProgress] = useState(100);
   const [profilePicture, setProfilePicture] = useState(
     "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
   );
@@ -88,8 +90,16 @@ const ProfilePage = () => {
     }
     mutate(data, {
       onSettled: () => {
-        alert("Profile Updated Successfully");
         setIsEditProfile(false);
+        setAlertMessage("Profile updated successfully!");
+        setProgress(100);
+        const interval = setInterval(() => {
+          setProgress((prev) => Math.max(prev - 5, 0));
+        }, 150);
+        setTimeout(() => {
+          setAlertMessage(null);
+          clearInterval(interval);
+        }, 3000);
       },
       onError: (error) => {
         console.error("Error updating password:", error);
@@ -165,6 +175,16 @@ const ProfilePage = () => {
       )}
       <div className="mb-12"></div>
       {!isEditProfile && <ChangePassword/>}
+      {/* Alert Notification */}
+      {alertMessage && (
+        <div className="fixed top-5 right-5 bg-gray-500 text-white px-4 pt-2 rounded-md shadow-md min-w-64">
+          <p>{alertMessage}</p>
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-700 h-1 mt-4">
+            <div className="bg-white h-1 transition-all duration-150" style={{ width: `${progress}%` }}></div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
