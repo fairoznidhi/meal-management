@@ -63,7 +63,7 @@ const MealActivityComponent = () => {
       const response = await request({
         url: "/meal_activity/admin",
         method: "GET",
-        params: { start: formattedStartDate, days },
+        params: {start: formattedStartDate, days},
         useAuth: true,
       }) as MealActivityData[];
       setMealActivityData(response);
