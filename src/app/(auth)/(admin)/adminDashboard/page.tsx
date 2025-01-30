@@ -66,7 +66,7 @@ const MealActivityComponent = () => {
         method: "GET",
         params: { start: formattedStartDate, days },
         useAuth: true,
-      });
+      })as MealActivityData[];
       setMealActivityData(response);
     } catch (err: any) {
       console.error("Error fetching meal activity:", err);

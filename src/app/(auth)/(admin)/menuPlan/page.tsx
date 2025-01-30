@@ -17,7 +17,11 @@ const months = Array.from({ length: 12 }, (_, i) => ({
 }));
 const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0"));
 
-
+type Meal={
+  date:string,
+  meal_type:string,
+  food:string
+};
 const MealPlanTable = () => {
   const [selectedMeal, setSelectedMeal] = useState<{ date: string; meal_type: string; food: string } | null>(null);
  const [isEditing, setIsEditing] = useState(false);
@@ -63,7 +67,7 @@ const MealPlanTable = () => {
             days: 7,
           },
           useAuth: true,
-        });
+        })as Meal[];
   
         // Map API data to a dictionary for easy lookup
         const mealDataMap = data.reduce((acc: any, meal: any) => {
@@ -95,7 +99,7 @@ const MealPlanTable = () => {
   }, [startDate]);
   
   
-  const handleAddMeal = async () => {
+  {/*const handleAddMeal = async () => {
   const formattedDate = `${newMeal.year}-${newMeal.month}-${newMeal.day}`;
   const mealToSubmit = { ...newMeal, date: formattedDate };
   delete mealToSubmit.year;
@@ -145,7 +149,59 @@ const MealPlanTable = () => {
     console.error("Error adding meal:", err);
     alert("Failed to add meal. Please try again.");
   }
+};*/}
+
+
+const handleAddMeal = async () => {
+  const { year, month, day, ...mealWithoutDate } = newMeal; // Destructure and omit year, month, and day
+  const formattedDate = `${year}-${month}-${day}`; // Construct formatted date
+  const mealToSubmit = { ...mealWithoutDate, date: formattedDate }; // Add formatted date to the new object
+
+  try {
+    await request({
+      url: "/mealplan",
+      method: "POST",
+      data: [mealToSubmit],
+      useAuth: true,
+    });
+
+    alert("Meal Plan added successfully!");
+    setIsModalOpen(false);
+    setNewMeal({ year: String(getCurrentYear), month: "01", day: "01", meal_type: "", food: "" });
+
+    // Update the mealData state immediately without refetching
+    setMealData((prevMealData) => {
+      if (!prevMealData) return null;
+
+      // Find the index of the row with the matching date
+      const rowIndex = prevMealData.findIndex((row) => row.date === formattedDate);
+
+      if (rowIndex !== -1) {
+        // Update the existing row
+        const updatedData = [...prevMealData];
+        updatedData[rowIndex] = {
+          ...updatedData[rowIndex],
+          [mealToSubmit.meal_type]: mealToSubmit.food,
+        };
+        return updatedData;
+      } else {
+        // Add a new row for the date if it doesn't exist
+        return [
+          ...prevMealData,
+          {
+            date: formattedDate,
+            lunch: mealToSubmit.meal_type === "lunch" ? mealToSubmit.food : "",
+            snack: mealToSubmit.meal_type === "snack" ? mealToSubmit.food : "",
+          },
+        ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Keep rows sorted by date
+      }
+    });
+  } catch (err: any) {
+    console.error("Error adding meal:", err);
+    alert("Failed to add meal. Please try again.");
+  }
 };
+
 
 const handleRepeatMealsForNextWeek = async () => {
   if (!mealData || mealData.length === 0) {

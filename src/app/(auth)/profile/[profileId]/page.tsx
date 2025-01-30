@@ -25,7 +25,6 @@ const SingleProfilePage = ({ params }: { params:Promise<{ profileId: number }> }
       setFormData({
         name: profile.name ?? '',
         email: profile.email ?? '',
-        dept_id: profile.dept_id ?? 0,
         remarks: profile.remarks ?? ''
       });
     }

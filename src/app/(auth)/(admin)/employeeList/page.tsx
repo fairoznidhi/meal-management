@@ -10,6 +10,17 @@ import { headers } from "next/headers";
 const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
+type Employee = {
+    employee_id:string;
+    name: string;
+    email: string;
+    password: string;
+    dept_id: string;
+    phone_number: string;
+    remarks: string;
+};
+
+
 // Helper function to get the first date and number of days in the current month
 const getCurrentMonthDetails = () => {
   const now = new Date();
@@ -69,7 +80,7 @@ const EmployeeComponent: React.FC = () => {
         method: "GET",
         useAuth: true,
       });
-      return employees;
+      return employees as Employee[];
     } catch (err: any) {
       console.error("Error fetching employees:", err);
       setError(err.response?.data?.message || "Failed to fetch employees.");
@@ -171,7 +182,7 @@ const EmployeeComponent: React.FC = () => {
           "Content-Type": "multipart/form-data",
         },
         useAuth: true,
-      });
+      })as Employee;
      // setResponseData((prevData) => [...prevData, response]);
      setResponseData((prevData) => [
       ...prevData,
