@@ -129,6 +129,7 @@ const EmployeeComponent: React.FC = () => {
     }
   };
 
+
   
 
   // Fetch and patch employees
@@ -256,6 +257,12 @@ const EmployeeComponent: React.FC = () => {
     {
       key: "penalties",
       label: "Penalties",
+    },
+
+    {
+      key: "total_meals", // New column for total meals
+      label: "Total Meals",
+      render: (value) => value || "0", // Default value if no data
     },
   ];
 
