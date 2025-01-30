@@ -80,7 +80,7 @@ const EmployeeComponent: React.FC = () => {
         method: "GET",
         useAuth: true,
       });
-      return employees as Employee[];
+      return employees as any[];
     } catch (err: any) {
       console.error("Error fetching employees:", err);
       setError(err.response?.data?.message || "Failed to fetch employees.");
@@ -90,7 +90,7 @@ const EmployeeComponent: React.FC = () => {
 
   // Send PATCH request for a single employee
   const sendPatchRequest = async (employee: any) => {
-    const { firstDate, daysInMonth } = getCurrentMonthDetails();
+    const {firstDate, daysInMonth} = getCurrentMonthDetails();
 
     try {
       const response = await request({
@@ -106,14 +106,17 @@ const EmployeeComponent: React.FC = () => {
       return {
         employee_id: employee.employee_id,
         name: employee.name,
-        email:employee.email,
-        dept_id:employee.dept_id,
-        phone_number:employee.phone_number,
+        email: employee.email,
+        dept_id: employee.dept_id,
+        phone_number: employee.phone_number,
         remarks: employee.remarks,
         penalties: response,
       };
     } catch (err: any) {
-      console.error(`Error during PATCH request for employee ${employee.id}:`, err);
+      console.error(
+        `Error during PATCH request for employee ${employee.id}:`,
+        err
+      );
       return {
         employee_id: employee.employee_id,
         name: employee.name,
@@ -152,7 +155,9 @@ const EmployeeComponent: React.FC = () => {
         },
         useAuth: true,
       });
-      setResponseData((prevData) => prevData.filter((row) => row.employee_id !== employeeId));
+      setResponseData(prevData =>
+        prevData.filter(row => row.employee_id !== employeeId)
+      );
       setShowDeleteModal(false);
     } catch (err: any) {
       console.error("Error deleting employee:", err);
@@ -169,10 +174,10 @@ const EmployeeComponent: React.FC = () => {
       formData.append("password", newEmployee.password);
       formData.append("dept_id", newEmployee.dept_id);
       formData.append("phone_number", newEmployee.phone_number);
-      //formData.append("remarks", newEmployee.remarks);
-      //if (newEmployee.photo) {
-        //formData.append("photo", newEmployee.photo,newEmployee.photo.name); // Append the photo
-      //}
+      formData.append("remarks", newEmployee.remarks);
+      if (newEmployee.photo) {
+        formData.append("photo", newEmployee.photo, newEmployee.photo.name); // Append the photo
+      }
 
       const response = await request({
         url: "/employee",
@@ -182,20 +187,9 @@ const EmployeeComponent: React.FC = () => {
           "Content-Type": "multipart/form-data",
         },
         useAuth: true,
-      })as Employee;
-     // setResponseData((prevData) => [...prevData, response]);
-     setResponseData((prevData) => [
-      ...prevData,
-      {
-        employee_id: response.employee_id, // Ensure this matches the response format
-        name: newEmployee.name,
-        email: newEmployee.email,
-        dept_id: newEmployee.dept_id,
-        phone_number: newEmployee.phone_number,
-        remarks: newEmployee.remarks || "", // Default to empty string if no remarks
-        penalties: 0, // Initialize penalties to 0 or as per your requirement
-      },
-    ]);
+      }) as Row;
+
+      setResponseData(prevData => [...prevData, response as Row]);
       setShowAddModal(false);
       resetForm();
     } catch (err: any) {
@@ -211,9 +205,10 @@ const EmployeeComponent: React.FC = () => {
   }, []);
 
   const filteredData = responseData.filter((row: Row) =>
-    row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    row.remarks.toLowerCase().includes(searchTerm.toLowerCase())
+    (row.name?.toLowerCase() ?? "").includes(searchTerm.toLowerCase()) ||
+    (row.remarks?.toLowerCase() ?? "").includes(searchTerm.toLowerCase())
   );
+  
 
   // Define columns for the table
   const columns: Column[] = [

@@ -61,12 +61,12 @@ const MealActivityComponent = () => {
   const fetchMealActivity = async () => {
     try {
       const formattedStartDate = startDate.toISOString().split("T")[0];
-      const response: MealActivityData[] = await request({
+      const response = await request({
         url: "/meal_activity/admin",
         method: "GET",
-        params: { start: formattedStartDate, days },
+        params: {start: formattedStartDate, days},
         useAuth: true,
-      })as MealActivityData[];
+      }) as MealActivityData[];
       setMealActivityData(response);
     } catch (err: any) {
       console.error("Error fetching meal activity:", err);

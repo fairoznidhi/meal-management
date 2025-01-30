@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  mealmanagement-frontend:
+    build: .
+    container_name: mealmanagement-frontend
+    env_file:
+      - .env
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+networks:
+  default:
+    external: false
+    name: mealmanagement-frontend

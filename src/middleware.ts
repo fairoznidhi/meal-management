@@ -18,23 +18,24 @@ export default withAuth(
                 "/profile",
               "/menuPlan"].includes(pathname);
         } else {
-          return ["/userDashboard", 
-                  "/userProfile",
-                  "/profile",
-                ].includes(pathname);
+          return ["/userDashboard", "/userProfile", "/profile"].includes(
+            pathname
+          );
         }
       },
     },
   }
 );
 
-export const config = { 
-  matcher: ["/adminDashboard", 
-            "/adminProfile", 
-            "/employeeList",
-            "/mealPlan",
-            "/userDashboard", 
-            "/userProfile",
-            "/profile",
-          ] 
+export const config = {
+  matcher: [
+    "/adminDashboard",
+    "/adminProfile",
+    "/employeeList",
+    "/mealPlan",
+    "/userDashboard",
+    "/userProfile",
+    "/profile",
+    "/",
+  ],
 };

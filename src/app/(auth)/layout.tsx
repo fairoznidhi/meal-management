@@ -1,11 +1,18 @@
-"use client"
-import {useEffect, useState } from "react";
+"use client";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { getSession, signOut, SessionProvider } from "next-auth/react";
 import { Session } from "next-auth";
 import Sidebar from "@/components/sidebar";
 import vslogo from "public/vslogo.png";
-import { HomeModernIcon, UsersIcon, ClipboardDocumentListIcon, UserIcon } from "@heroicons/react/24/outline";
+import {
+  HomeModernIcon,
+  UsersIcon,
+  ClipboardDocumentListIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
+import Link from "next/link";
+import { useEmployeePhoto } from "@/services/queries";
 
 export default function AuthLayout({
   children,
@@ -43,9 +50,44 @@ export default function AuthLayout({
         setIsCollapsed((prev) => !prev);
       };
   return (
-        <SessionProvider session={session}>
-            <div className="flex h-screen">
-                {/* Sidebar
+    <SessionProvider session={session}>
+      <div className="mr-8 mt-1">
+      <div className="navbar bg-base-100">
+        <div className="flex-1">
+        </div>
+        <div className="flex-none gap-2">
+          <div className="dropdown dropdown-end">
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn btn-ghost btn-circle avatar"
+            >
+              <div className="w-10 rounded-full">
+                {/*<img
+                  alt="Tailwind CSS Navbar component"
+                  src={}
+                />*/}
+              </div>
+            </div>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+            >
+              <li>
+                <Link href='/profile' className="justify-between">
+                  Profile
+                </Link>
+              </li>
+              <li>
+                <a onClick={() => signOut({ callbackUrl: "/login" })}>Logout</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div className="flex h-screen">
+        {/* Sidebar
               <div className={`transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"} bg-gray-800 text-white fixed top-0 left-0 h-full`}>
                   <button
                   onClick={toggleSidebar}
@@ -91,21 +133,17 @@ export default function AuthLayout({
 
 
 
-                {/* Main Content */}
-                <div className={`flex-1 transition-all duration-300 ${isCollapsed ? "ml-16" : "ml-64"
-                    }`}
-                >
-                    <div className="">
-                    <div>
-                        {children}
-                        </div> 
-                    
-                    </div>
-                </div>
-            </div>
-        </SessionProvider>
+        {/* Main Content */}
+        <div
+          className={`flex-1 transition-all duration-300 ${
+            isCollapsed ? "ml-16" : "ml-64"
+          }`}
+        >
+          <div className="">
+            <div>{children}</div>
+          </div>
+        </div>
+      </div>
+    </SessionProvider>
   );
 }
-
-
-

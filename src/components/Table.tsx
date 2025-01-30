@@ -8,7 +8,7 @@ export type Column = {
     value: any,
     row: Row,
     rowIndex: number,
-    onEdit: (key: string, value: any) => void
+    // onEdit: (key: string, value: any) => void
   ) => React.ReactNode; // Custom render function
 };
 

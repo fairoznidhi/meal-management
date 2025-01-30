@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { FC, HTMLAttributes, HtmlHTMLAttributes, InputHTMLAttributes, useState } from "react";
 
-const Input = ({
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  togglePasswordVisibility?: boolean;
+}
+const Input:FC<InputProps> = ({
   label="",
   id="",
   type = "text",
@@ -20,7 +24,7 @@ const Input = ({
         <label htmlFor={id} className="block mb-2 font-medium text-gray-700">
           {label}
         </label>
-      )}
+      )} 
       <div className="relative">
         <input
           id={id}

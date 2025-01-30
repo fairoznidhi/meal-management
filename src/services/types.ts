@@ -7,5 +7,6 @@ export type UserProfileDataType = {
   remarks?:string;
   default_status?:boolean;
   is_admin?:boolean;
+  photo?: string | File | Blob; 
 }
 

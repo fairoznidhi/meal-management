@@ -26,7 +26,7 @@ export const getTokenSingleEmployee=async()=>{
 }
 
 export const getSingleEmployeeMealActivity=async(date:string,days:string)=>{
-    const res=await apiClient<EmployeeMealDetails[]>({
+    const res=await apiClient({
         url: "/meal_activity",
         method: "GET",
         params:{
@@ -35,11 +35,11 @@ export const getSingleEmployeeMealActivity=async(date:string,days:string)=>{
         },
         useAuth: true,
     })
-    return res;
+    return res as EmployeeMealDetails[];
 }
 
 export const getRangeMealPlan=async(date:string,days:string)=>{
-    const res=await apiClient<RangeMenuDetails[]>({
+    const res=await apiClient({
         url: "/mealplan",
         method: "GET",
         params:{
@@ -47,7 +47,7 @@ export const getRangeMealPlan=async(date:string,days:string)=>{
             days: `${days}`
         }
     })
-    return res;
+    return res as RangeMenuDetails[];
 }
 
 export const getEmployeePhoto=async()=>{
@@ -58,7 +58,7 @@ export const getEmployeePhoto=async()=>{
         responseType: "blob",
     })
     
-    return res;
+    return res as Blob;
 }
 
 export const patchToggleDefaultMealStatus=async(date:string)=>{
@@ -83,7 +83,7 @@ export const patchEmployeeProfile=async(formData:FormData)=>{
     return res;
 }
 
-export const patchGroupMealUpdate=async(mealData:Array)=>{
+export const patchGroupMealUpdate=async(mealData:any[])=>{
     const res=await apiClient({
         url: "meal_activity/group-update",
         method: "PATCH",
