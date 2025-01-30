@@ -26,7 +26,7 @@ export function useToggleDefaultMealStatus(date:string) {
   }
   export function usePatchGroupMealUpdate() {
     return useMutation({
-      mutationFn: (data:Array) => patchGroupMealUpdate(data),
+      mutationFn: (data:any[]) => patchGroupMealUpdate(data),
       onSuccess: () => {
         console.log("Meal Updated Succesfully");
       },

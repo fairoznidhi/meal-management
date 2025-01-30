@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 import { usePatchEmployeeProfile } from "@/services/mutations";
 import FormField from "@/components/FormField";
+import { Session } from "next-auth";
 
 const ChangePassword = () => {
   const [session, setSession] = useState<Session | null>(null);
-    const [alertMessage, setAlertMessage] = useState<string | null>(null);
-    const [progress, setProgress] = useState(100);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [progress, setProgress] = useState(100);
   useEffect(() => {
     const checkSession = async () => {
       const session = await getSession();
@@ -46,7 +47,7 @@ const ChangePassword = () => {
     mutate(data, {
       onSettled: () => {
         clearPasswords();
-        document.getElementById("changepass").close();
+        (document.getElementById("changepass") as HTMLDialogElement).close();
         setAlertMessage("Password updated successfully!");
         setProgress(100);
         const interval = setInterval(() => {
@@ -83,7 +84,11 @@ const ChangePassword = () => {
     <div className="">
       <button
         className="px-4 py-2 border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white"
-        onClick={() => document.getElementById("changepass").showModal()}
+        onClick={() =>
+          (
+            document.getElementById("changepass") as HTMLDialogElement
+          ).showModal()
+        }
       >
         Change Password
       </button>
@@ -97,6 +102,7 @@ const ChangePassword = () => {
               Enter a new password below to change your password
             </p>
             <FormField
+              id="password"
               label={`New Password`}
               value={formData.newPassword}
               isEditable={true}
@@ -105,6 +111,7 @@ const ChangePassword = () => {
             />
             <div className="mb-6"></div>
             <FormField
+              id="confirm_password"
               label={`Confirm New Password`}
               value={formData.confirmNewPassword}
               isEditable={true}

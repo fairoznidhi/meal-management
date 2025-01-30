@@ -1,10 +1,11 @@
 "use client"
+import { DialogHTMLAttributes } from "react"
 import Input from "../input"
 const Form=()=>{
     return(
 <div>
 {/* Open the modal using document.getElementById('ID').showModal() method */}
-<button className="btn bg-[#2fa5ed] hover:bg-[#0187DA]" onClick={()=>document.getElementById('my_modal_2').showModal()}>Add New Employee</button>
+<button className="btn bg-[#2fa5ed] hover:bg-[#0187DA]" onClick={()=>(document.getElementById('my_modal_2') as HTMLDialogElement)?.showModal()}>Add New Employee</button>
 <dialog id="my_modal_2" className="modal">
   <div className="modal-box h-auto w-full mx-20 my-20">
     <p className="text-2xl mb-10">Create New User Account</p>

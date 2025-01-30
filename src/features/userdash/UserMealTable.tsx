@@ -1,25 +1,22 @@
 "use client";
 
-import React, { createContext, useEffect, useState } from "react";
 import Table, { Column, Row } from "@/components/Table";
-import { startOfWeek, endOfWeek, addDays, format, setWeek } from "date-fns";
 import UserSettings from "@/features/userdash/UserSettings";
 import UserStats from "@/features/userdash/UserStats";
-import { BsPlus } from "react-icons/bs";
-import { BsMinus } from "react-icons/bs";
+import { MenuDetails, RangeMenuDetails } from "@/model/rangeMealPlan";
+import {
+  EmployeeEachDayMealDetails
+} from "@/model/userMealActivity";
+import { usePatchGroupMealUpdate } from "@/services/mutations";
 import {
   useRangeMealPlan,
   useSingleEmployeeMealActivity,
 } from "@/services/queries";
-import {
-  EmployeeEachDayMealDetails,
-  EmployeeMealDetails,
-} from "@/model/userMealActivity";
-import { MenuDetails } from "@/model/rangeMealPlan";
+import { addDays, format, startOfWeek } from "date-fns";
+import { Session } from "next-auth";
 import { getSession } from "next-auth/react";
-import { usePatchGroupMealUpdate } from "@/services/mutations";
-import { FaCaretSquareLeft } from "react-icons/fa";
-import { FaCaretSquareRight } from "react-icons/fa";
+import React, { createContext, useEffect, useState } from "react";
+import { FaCaretSquareLeft, FaCaretSquareRight } from "react-icons/fa";
 
 
 type MealStatusContextType = {
@@ -241,7 +238,7 @@ const MealPlanTable = () => {
       console.log("mealactivitydata: ", mealActivityData[0]);
       console.log("mealPlan: ", mealPlan);
 
-      mealActivityData[0]?.employee_details.forEach(
+      mealActivityData[0]?.employee_details?.forEach(
         (employee: EmployeeEachDayMealDetails) => {
           const currentDayMenu = mealPlan
             ? mealPlan.find(
@@ -296,7 +293,7 @@ const MealPlanTable = () => {
     mealActivityRefetch();
   }, [update]);
   const handleEditRow = (updatedRow: Row, rowIndex: number) => {
-    const updatedData = [...data];
+    const updatedData = [...(data ?? [])];
     updatedData[rowIndex] = updatedRow;
     setData(updatedData);
   };
@@ -308,7 +305,7 @@ const MealPlanTable = () => {
     setEditTable(false);
 
     // Transform the data into the desired format
-    const formattedData = data.flatMap((row) => {
+    const formattedData = data?.flatMap((row) => {
       const employeeId = session?.user?.employee_id || 10; // Replace with actual employee ID from session or props
 
       // Create objects for lunch and snacks
@@ -329,7 +326,7 @@ const MealPlanTable = () => {
       };
 
       return [lunchEntry, snacksEntry];
-    });
+    }) ?? [];
     console.log("Formatted Data:", formattedData);
     mutate(formattedData, {
       onSuccess: () => {
@@ -352,7 +349,7 @@ const MealPlanTable = () => {
     key: string,
     newValue?: any
   ) => {
-    const updatedData = [...data];
+    const updatedData = [...(data ?? [])];
     if (newValue !== undefined) {
       updatedData[rowIndex][key] = newValue;
     } else {
