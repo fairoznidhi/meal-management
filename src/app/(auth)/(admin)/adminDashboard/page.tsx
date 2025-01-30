@@ -53,6 +53,7 @@ const MealActivityComponent = () => {
       const currentDate = new Date(start);
       currentDate.setDate(start.getDate() + i);
       dates.push(currentDate.toISOString().split("T")[0]);
+      
     }
     return dates;
   };
@@ -72,6 +73,27 @@ const MealActivityComponent = () => {
       setError(err.response?.data?.message || "Failed to fetch meal activity.");
     }
   };
+
+  const calculateTotalGuestsPerDay = () => {
+    const totalGuests: Record<string, number> = {};
+  
+    mealActivityData.forEach((employee) => {
+      employee.employee_details.forEach((detail) => {
+        const meal = detail.meal[mealType - 1]; // Select the correct meal type (1 = Lunch, 2 = Snack)
+        const guestCount = meal?.meal_status[0]?.guest_count || 0; // Get guest count, default to 0
+  
+        if (!totalGuests[detail.date]) {
+          totalGuests[detail.date] = 0;
+        }
+        totalGuests[detail.date] += guestCount; // Accumulate guest count
+      });
+    });
+  
+    return totalGuests;
+  };
+  
+  const totalGuestsPerDay = calculateTotalGuestsPerDay();
+  
 
 
   useEffect(() => {
@@ -155,8 +177,8 @@ const MealActivityComponent = () => {
 
   return (
     <div className="p-4">
-      {/*<div className="fixed justify-between"><div><TotalBox></TotalBox></div></div>*/}
-      <div className="flex justify-between items-center mb-4 gap-x-2 mt-20">
+      <div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>
+      <div className="flex justify-between items-center mb-4 gap-x-2 mt-40">
       <div className="mb-4">
         <label className="mr-2">Select Meal Type: </label>
         <select
@@ -194,14 +216,15 @@ const MealActivityComponent = () => {
       {filteredData.length === 0 ? (
         <p>Loading or no data available...</p>
       ) : (
-        <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[800px] max-lg:max-h-[800px]">
+        <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[650px] max-lg:max-h-[800px]">
         <table className="table-auto w-full border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              <th className="border border-gray-400 p-2 text-center">Employee Name</th>
+          <thead className="">
+            <tr className="border border-black">
+              <th className="p-2 text-center">Employee Name</th>
               {dates.map((date, index) => (
-                <th key={index} className="border border-gray-400 p-2">
-                  {date}
+                <th key={index} className="p-2 border border-black">
+                  <div>{date}</div>
+                  <div className="text-xs text-gray-600">Guests: {totalGuestsPerDay[date] || 0}</div>
                 </th>
               ))}
             </tr>
