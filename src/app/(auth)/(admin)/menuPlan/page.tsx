@@ -19,16 +19,14 @@ const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, "0")
 
 
 const MealPlanTable = () => {
+  const [selectedMeal, setSelectedMeal] = useState<{ date: string; meal_type: string; food: string } | null>(null);
+ const [isEditing, setIsEditing] = useState(false);
   const [mealData, setMealData] = useState<Row[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [startDate, setStartDate] = useState<string>(new Date().toISOString().split("T")[0]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  {/*const [newMeal, setNewMeal] = useState({
-    date: "",
-    meal_type: "",
-    food: "",
-  });*/}
+  
 
   const [newMeal, setNewMeal] = useState({
     year: String(getCurrentYear),
@@ -309,7 +307,7 @@ const handleRepeatMealsForNextWeek = async () => {
         }
       >
         <form>
-          {/* Date Selection */}
+          
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Year</label>
@@ -354,7 +352,7 @@ const handleRepeatMealsForNextWeek = async () => {
             </div>
           </div>
 
-          {/* Meal Type Selection */}
+          
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Meal Type</label>
             <select
@@ -370,7 +368,7 @@ const handleRepeatMealsForNextWeek = async () => {
             </select>
           </div>
 
-          {/* Food Input */}
+        
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Food</label>
             <input
@@ -389,8 +387,6 @@ const handleRepeatMealsForNextWeek = async () => {
 };
 
 export default MealPlanTable;
-
-
 
 
 
