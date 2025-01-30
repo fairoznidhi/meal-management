@@ -13,6 +13,7 @@ const UserSettings = () => {
   const currentHour = date.getHours();
   const selectedDate = currentHour >= 10 ? addDays(date, 1) : date;
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
+  console.log(formattedDate)
   useEffect(() => {
     if (profileList) {
       const profile = profileList[0];
