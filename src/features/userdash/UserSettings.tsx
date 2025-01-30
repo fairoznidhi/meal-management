@@ -2,17 +2,18 @@
 import { MealStatusContext } from "@/features/userdash/UserMealTable";
 import { useToggleDefaultMealStatus } from "@/services/mutations";
 import { useTokenSingleEmployee } from "@/services/queries";
-import { format } from "date-fns";
+import { addDays, format } from "date-fns";
 import { useContext, useEffect, useState } from "react";
-import { IoMdSettings } from "react-icons/io";
-import { RxCross2 } from "react-icons/rx";
 
 const UserSettings = () => {
   const { mealStatusToggle, setMealStatusToggle, update, setUpdate } =
     useContext(MealStatusContext);
   const { data: profileList } = useTokenSingleEmployee();
   const date = new Date();
-  const today = format(date, "yyyy-MM-dd");
+  const currentHour = date.getHours();
+  const selectedDate = currentHour >= 10 ? addDays(date, 1) : date;
+  const formattedDate = format(selectedDate, "yyyy-MM-dd");
+  console.log(formattedDate)
   useEffect(() => {
     if (profileList) {
       const profile = profileList[0];
@@ -23,7 +24,7 @@ const UserSettings = () => {
   const handleSettings = () => {
     setSettingsOpen(!settingsOpen);
   };
-  const toggleMealStatusMutation = useToggleDefaultMealStatus(today);
+  const toggleMealStatusMutation = useToggleDefaultMealStatus(formattedDate);
   const handleMealStatus = () => {
     toggleMealStatusMutation.mutate(undefined, {
       onSuccess: () => {
