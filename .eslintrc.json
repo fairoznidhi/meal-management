@@ -1,0 +1,11 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "plugins": ["unused-imports"],
+  "rules": {
+    "unused-imports/no-unused-imports": "error",
+    "no-console": ["error", {"allow": ["warn", "error"]}],
+    "no-debugger": "error",
+    "react/self-closing-comp": "error",
+    "react/jsx-key": "error"
+  }
+}

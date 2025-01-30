@@ -426,7 +426,7 @@ const EmployeeComponent: React.FC = () => {
         method: "GET",
         useAuth: true,
       });
-      return employees;
+      return employees as any;
     } catch (err: any) {
       console.error("Error fetching employees:", err);
       setError(err.response?.data?.message || "Failed to fetch employees.");
@@ -436,7 +436,7 @@ const EmployeeComponent: React.FC = () => {
 
   // Send PATCH request for a single employee
   const sendPatchRequest = async (employee: any) => {
-    const { firstDate, daysInMonth } = getCurrentMonthDetails();
+    const {firstDate, daysInMonth} = getCurrentMonthDetails();
 
     try {
       const response = await request({
@@ -452,14 +452,17 @@ const EmployeeComponent: React.FC = () => {
       return {
         employee_id: employee.employee_id,
         name: employee.name,
-        email:employee.email,
-        dept_id:employee.dept_id,
-        phone_number:employee.phone_number,
+        email: employee.email,
+        dept_id: employee.dept_id,
+        phone_number: employee.phone_number,
         remarks: employee.remarks,
         penalties: response,
       };
     } catch (err: any) {
-      console.error(`Error during PATCH request for employee ${employee.id}:`, err);
+      console.error(
+        `Error during PATCH request for employee ${employee.id}:`,
+        err
+      );
       return {
         employee_id: employee.employee_id,
         name: employee.name,
@@ -498,7 +501,9 @@ const EmployeeComponent: React.FC = () => {
         },
         useAuth: true,
       });
-      setResponseData((prevData) => prevData.filter((row) => row.employee_id !== employeeId));
+      setResponseData(prevData =>
+        prevData.filter(row => row.employee_id !== employeeId)
+      );
       setShowDeleteModal(false);
     } catch (err: any) {
       console.error("Error deleting employee:", err);
@@ -517,7 +522,7 @@ const EmployeeComponent: React.FC = () => {
       formData.append("phone", newEmployee.phone_number);
       formData.append("remarks", newEmployee.remarks);
       if (newEmployee.photo) {
-        formData.append("photo", newEmployee.photo,newEmployee.photo.name); // Append the photo
+        formData.append("photo", newEmployee.photo, newEmployee.photo.name); // Append the photo
       }
 
       const response = await request({
@@ -530,7 +535,7 @@ const EmployeeComponent: React.FC = () => {
         useAuth: true,
       });
 
-      setResponseData((prevData) => [...prevData, response]);
+      setResponseData(prevData => [...prevData, response as Row]);
       setShowAddModal(false);
       resetForm();
     } catch (err: any) {
