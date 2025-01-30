@@ -19,7 +19,10 @@ type Employee = {
     phone_number: string;
     remarks: string;
 };
-
+type Total_meal={
+  name: string,
+  total_count:number
+}
 
 // Helper function to get the first date and number of days in the current month
 const getCurrentMonthDetails = () => {
@@ -107,7 +110,7 @@ const EmployeeComponent: React.FC = () => {
         employee_id: employee.employee_id,
         name: employee.name,
         email: employee.email,
-        dept_id: employee.dept_id,
+        dept_name: employee.dept_name,
         phone_number: employee.phone_number,
         remarks: employee.remarks,
         penalties: response,
@@ -125,6 +128,9 @@ const EmployeeComponent: React.FC = () => {
       };
     }
   };
+
+
+  
 
   // Fetch and patch employees
   const fetchAndPatchEmployees = async () => {
@@ -187,9 +193,23 @@ const EmployeeComponent: React.FC = () => {
           "Content-Type": "multipart/form-data",
         },
         useAuth: true,
-      }) as Row;
+      }) as Employee;
 
-      setResponseData(prevData => [...prevData, response as Row]);
+      //setResponseData(prevData => [...prevData, response as Employee]);
+      // Update the state with the new employee row
+    setResponseData(prevData => [
+      ...prevData,
+      {
+        // Ensure API response contains this
+        name: newEmployee.name,
+        email: newEmployee.email,
+        dept_id: newEmployee.dept_id,
+        phone_number: newEmployee.phone_number,
+        remarks: newEmployee.remarks,
+        penalties: "N/A", // Default value, update as needed
+      }
+    ]);
+
       setShowAddModal(false);
       resetForm();
     } catch (err: any) {
@@ -230,10 +250,19 @@ const EmployeeComponent: React.FC = () => {
     {
       key: "remarks",
       label: "Remarks",
+      render: (value) => {
+        return value ? value : "N/A";
+      },
     },
     {
       key: "penalties",
       label: "Penalties",
+    },
+
+    {
+      key: "total_meals", // New column for total meals
+      label: "Total Meals",
+      render: (value) => value || "0", // Default value if no data
     },
   ];
 
@@ -250,7 +279,7 @@ const EmployeeComponent: React.FC = () => {
       </div>
 
       <div className="mt-4">
-        {responseData.length > 0 && <Table columns={columns} data={filteredData} />}
+        {responseData.length > 0 && <Table columns={columns} data={filteredData.length > 0 ? filteredData : responseData} />}
         {error && (
           <div>
             <h3 className="text-red-500">Error:</h3>
@@ -259,32 +288,6 @@ const EmployeeComponent: React.FC = () => {
         )}
       </div>
 
-      {/* Delete Modal 
-      {showDeleteModal && selectedEmployee && (
-        <Modal
-          isOpen={showDeleteModal}
-          onClose={() => setShowDeleteModal(false)}
-          title={`Delete ${selectedEmployee.name}`}
-          footer={
-            <>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => deleteEmployee(selectedEmployee.employee_id)}
-                className="px-4 py-2 bg-red-500 text-white rounded"
-              >
-                Delete
-              </button>
-            </>
-          }
-        >
-          <p>Are you sure you want to delete this employee?</p>
-        </Modal>
-      )}*/}
 
 
       {/* Delete Modal */}
@@ -297,7 +300,7 @@ const EmployeeComponent: React.FC = () => {
       <>
         <button
           onClick={() => setShowDeleteModal(false)}
-          className="px-4 py-2 bg-gray-300 rounded"
+          className="px-4 py-2 bg-gray-300 rounded me-5"
         >
           Cancel
         </button>
@@ -321,7 +324,7 @@ const EmployeeComponent: React.FC = () => {
         <strong>Phone Number:</strong> {selectedEmployee.phone_number || "N/A"}
       </div>
       <div>
-        <strong>Department ID:</strong> {selectedEmployee.dept_id || "N/A"}
+        <strong>Department ID:</strong> {selectedEmployee.dept_name||"N/A"}
       </div>
       <div>
         <strong>Remarks:</strong> {selectedEmployee.remarks || "N/A"}
@@ -383,18 +386,34 @@ const EmployeeComponent: React.FC = () => {
             <input
               type="password"
               value={newEmployee.password}
-              onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
+              onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })
+              } 
               className="border px-4 py-2 w-full rounded"
             />
+           
           </div>
           <div>
-            <label className="block mb-2">Dept ID:</label>
-            <input
+            <label className="block mb-2">Dept. :</label>
+            {/*<input
               type="text"
               value={newEmployee.dept_id}
               onChange={(e) => setNewEmployee({ ...newEmployee, dept_id: e.target.value })}
               className="border px-4 py-2 w-full rounded"
-            ></input>
+            ></input>*/}
+
+<select
+  value={newEmployee.dept_id}
+  onChange={(e) => setNewEmployee({ ...newEmployee, dept_id: e.target.value })}
+  className="border px-4 py-2 w-full rounded"
+>
+  <option value="">Select Department</option>
+ 
+    <option value="1">
+      Admin
+    </option>
+    <option value="2">Call Center</option>
+    <option value="3">Development</option>
+</select>
           </div>
           
           <div>

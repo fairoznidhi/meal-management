@@ -58,6 +58,21 @@ const MealActivityComponent = () => {
     return dates;
   };
 
+
+  const createMealPlan = async () => {
+    try {
+      await request({
+        url: "meal_activity",
+        method: "POST",
+        useAuth: true,
+      });
+    } catch (err: any) {
+      console.error("Error creating meal plan:", err);
+    }
+  };
+
+
+
   const fetchMealActivity = async () => {
     try {
       const formattedStartDate = startDate.toISOString().split("T")[0];
@@ -96,9 +111,24 @@ const MealActivityComponent = () => {
   
 
 
-  useEffect(() => {
+  {/*useEffect(() => {
     fetchMealActivity();
+  }, [startDate, days]);*/}
+
+
+  useEffect(() => {
+    const initializeMealPlan = async () => {
+      try {
+        await createMealPlan(); // First, create the meal plan
+        await fetchMealActivity(); // Then, fetch the meal activity
+      } catch (error) {
+        console.error("Error initializing meal plan:", error);
+      }
+    };
+  
+    initializeMealPlan();
   }, [startDate, days]);
+  
 
   const dates = generateDates(startDate, days);
 
