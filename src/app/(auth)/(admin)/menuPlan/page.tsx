@@ -1,226 +1,5 @@
 "use client"
 
-{/*import React, { useEffect, useState } from "react";
-import Table, { Column, Row } from "@/components/Table"; // Adjust the import path as needed
-import { getMealPlanQuery } from "@/services/getMealPlan/queries"; // Import the query
-import axiosInstance from "@/services/AddEmployee/api"
-import dayjs from "dayjs"; // For date manipulation
-import Modal from "@/components/modal";
-import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
-
-
-const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
-const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
-
-const MealPlanTable = () => {
-  const [mealData, setMealData] = useState<Row[] | null>(null); // Allow `null` for empty data
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState<string>("2025-01-01"); // Initial starting date
-  const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newMeal, setNewMeal] = useState({
-      date: "",
-      meal_type:"",
-      food:"",
-    });
-  // Fetch data based on the current start date
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const data = await getMealPlanQuery(startDate, "7"); // Pass parameters
-        console.log("Fetched Data:", data);
-
-        // Transform data into table format if available
-        if (data && data.length > 0) {
-          const formattedData = data.map((meal) => {
-            const lunch = meal.menu.find((item) => item.meal_type === "lunch")?.food || "";
-            const snack = meal.menu.find((item) => item.meal_type === "snack")?.food || "";
-            return { date: meal.date, lunch, snack };
-          });
-          setMealData(formattedData);
-        } else {
-          setMealData([]); // Set an empty array if no data is returned
-        }
-      } catch (err: any) {
-        setError(err.message || "Error fetching data");
-        setMealData(null); // Set to null on error
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [startDate]); // Refetch data whenever the start date changes
-
-
-
-  // Define the columns for the table
-  const columns: Column[] = [
-    { key: "date", label: "Date" },
-    { key: "lunch", label: "Lunch" },
-    { key: "snack", label: "Snack"},
-  ];
-
-  // Handle row edits
-  const handleEditRow = (updatedRow: Row, rowIndex: number) => {
-    if (!mealData) return; // Skip if no data
-    const updatedData = [...mealData];
-    updatedData[rowIndex] = updatedRow;
-    setMealData(updatedData);
-    console.log("Updated Row:", updatedRow);
-  };
-
-  // Handle input changes in the modal
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewMeal({ ...newMeal, [e.target.name]: e.target.value });
-  };
-
-  
-  // Handle modal submission
-  const handleAddMeal = async () => {
-    try {
-      const response = await axiosInstance.post("/mealplan", newMeal);
-      console.log("Meal_Plan Added:", response.data);
-      alert("Meal Plan added successfully!");
-      setIsModalOpen(false);
-      setNewMeal({ date: "", meal_type: "", food: ""}); // Reset form
-    } catch (error) {
-      console.error("Error adding meal:", error);
-      alert("Failed to add meal. Please try again.");
-    }
-  };
-
-  // Navigation functions
-  const handlePreviousWeek = () => {
-    const newStartDate = dayjs(startDate).subtract(7, "day").format("YYYY-MM-DD");
-    setStartDate(newStartDate);
-  };
-
-  const handleNextWeek = () => {
-    const newStartDate = dayjs(startDate).add(7, "day").format("YYYY-MM-DD");
-    setStartDate(newStartDate);
-  };
-
-  return (
-    <div>
-    <div className="mt-40 mx-10">
-      
-
-      
-      <div className="flex justify-between mb-4">
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={handlePreviousWeek}
-        >
-          Previous Week
-        </button>
-        <p className="text-lg font-semibold">{`Week starting: ${startDate}`}</p>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={handleNextWeek}
-        >
-          Next Week
-        </button>
-      </div>
-
-      
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : mealData && mealData.length > 0 ? (
-        <Table
-          columns={columns}
-          data={mealData}
-          onEditRow={handleEditRow}
-        
-        />
-      ) : (
-        <p>No data available for this week. Use the navigation bar to explore other weeks.</p>
-      )}
-    </div>
-    
-    <div className="flex justify-end mt-4 me-10">
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            Add Meal
-          </button>
-        </div>
-
-
-    
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Add New Meal"
-        footer={
-          <div>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="bg-gray-300 px-4 py-2 rounded mr-2"
-            >
-              Cancel
-            </button>
-           <button
-              onClick={handleAddMeal}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Submit
-            </button>
-          </div>
-        }
-      >
-        <form>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Date
-            </label>
-            <input
-              type="text"
-              name="date"
-              value={newMeal.date}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Meal_Type(Lunch/Snack)
-            </label>
-            <input
-              type="text"
-              name="meal_type"
-              value={newMeal.meal_type}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Food
-            </label>
-            <input
-              type="text"
-              name="food"
-              value={newMeal.food}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-          
-        </form>
-      </Modal>
-    </div>
-  );
-};
-
-export default MealPlanTable;
-*/}
-
-
 import React, { useEffect, useState } from "react";
 import Table, { Column, Row } from "@/components/Table"; // Adjust the import path as needed
 import dayjs from "dayjs"; // For date manipulation
@@ -317,114 +96,7 @@ const MealPlanTable = () => {
     fetchData();
   }, [startDate]);
   
-  // Handle modal submission
-  {/*const handleAddMeal = async () => {
-    
-    try {
-      // Post the new meal as an array to the API
-      const response = await request({
-        url: "/mealplan",
-        method: "POST",
-        data: [newMeal], // Wrap newMeal in an array
-        useAuth: true,
-      });
-      console.log(response);
-      console.log("Meal Plan Added:", response);
-      alert("Meal Plan added successfully!");
-      setIsModalOpen(false);
-      setNewMeal({ date: "", meal_type: "", food: "" });
   
-      // Update the local state without refetching
-      setMealData((prevMealData) => {
-        if (!prevMealData) return null;
-  
-        // Find the index of the row with the matching date
-        const rowIndex = prevMealData.findIndex((row) => row.date === newMeal.date);
-  
-        if (rowIndex !== -1) {
-          // Update the existing row
-          const updatedData = [...prevMealData];
-          updatedData[rowIndex] = {
-            ...updatedData[rowIndex],
-            [newMeal.meal_type]: newMeal.food,
-          };
-          return updatedData;
-        } else {
-          // Add a new row for the date
-          return [
-            ...prevMealData,
-            {
-              date: newMeal.date,
-              lunch: newMeal.meal_type === "lunch" ? newMeal.food : "",
-              snack: newMeal.meal_type === "snack" ? newMeal.food : "",
-            },
-          ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Keep rows sorted by date
-        }
-      });
-    } catch (err: any) {
-      console.error("Error adding meal:", err);
-      alert("Failed to add meal. Please try again.");
-    }
-  };
-
-  const handleAddMeal = async () => {
-    const formattedDate = `${newMeal.year}-${newMeal.month}-${newMeal.day}`;
-    const mealToSubmit = { ...newMeal, date: formattedDate };
-    delete mealToSubmit.year;
-    delete mealToSubmit.month;
-    delete mealToSubmit.day;
-
-    try {
-      await request({
-        url: "/mealplan",
-        method: "POST",
-        data: [mealToSubmit],
-        useAuth: true,
-      });
-
-      alert("Meal Plan added successfully!");
-      setIsModalOpen(false);
-      setNewMeal({ year: String(getCurrentYear), month: "01", day: "01", meal_type: "", food: "" });
-
-      {/*setMealData((prevMealData) => {
-        if (!prevMealData) return null;
-        return [...prevMealData, { ...mealToSubmit }].sort(
-          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-        );
-      });
-
-      setMealData((prevMealData) => {
-        if (!prevMealData) return null;
-  
-        // Find the index of the row with the matching date
-        const rowIndex = prevMealData.findIndex((row) => row.date === newMeal.date);
-  
-        if (rowIndex !== -1) {
-          // Update the existing row
-          const updatedData = [...prevMealData];
-          updatedData[rowIndex] = {
-            ...updatedData[rowIndex],
-            [newMeal.meal_type]: newMeal.food,
-          };
-          return updatedData;
-        } else {
-          // Add a new row for the date
-          return [
-            ...prevMealData,
-            {
-              date: newMeal.day,
-              lunch: newMeal.meal_type === "lunch" ? newMeal.food : "",
-              snack: newMeal.meal_type === "snack" ? newMeal.food : "",
-            },
-          ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Keep rows sorted by date
-        }
-      });
-    } catch (err: any) {
-      console.error("Error adding meal:", err);
-      alert("Failed to add meal. Please try again.");
-    }
-  };*/}
-
   const handleAddMeal = async () => {
   const formattedDate = `${newMeal.year}-${newMeal.month}-${newMeal.day}`;
   const mealToSubmit = { ...newMeal, date: formattedDate };
@@ -474,6 +146,69 @@ const MealPlanTable = () => {
   } catch (err: any) {
     console.error("Error adding meal:", err);
     alert("Failed to add meal. Please try again.");
+  }
+};
+
+const handleRepeatMealsForNextWeek = async () => {
+  if (!mealData || mealData.length === 0) {
+    alert("No meals available to resend.");
+    return;
+  }
+
+  // Sort mealData by date to ensure it's in the correct order
+  const sortedMealData = [...mealData].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  // Get the last 7 days of meal data
+  const last7DaysMeals = sortedMealData.slice(-7);
+
+  // Generate new meal data for the next 7 days
+  const mealsForNextWeek = last7DaysMeals.flatMap((meal) => {
+    const newDate = new Date(meal.date);
+    newDate.setDate(newDate.getDate() + 7); // Shift date forward by 7 days
+    const formattedDate = newDate.toISOString().split("T")[0]; // Convert to YYYY-MM-DD
+
+    // Convert each meal row into separate objects for each meal type
+    const newMeals = [];
+
+    if (meal.lunch) {
+      newMeals.push({
+        date: formattedDate,
+        meal_type: "lunch",
+        food: meal.lunch,
+      });
+    }
+
+    if (meal.snack) {
+      newMeals.push({
+        date: formattedDate,
+        meal_type: "snack",
+        food: meal.snack,
+      });
+    }
+
+    return newMeals;
+  });
+
+  if (mealsForNextWeek.length === 0) {
+    alert("No valid meals found to resend.");
+    return;
+  }
+
+  try {
+    await request({
+      url: "/mealplan",
+      method: "POST",
+      data: mealsForNextWeek, // Send as an array of objects
+      useAuth: true,
+    });
+
+    alert("Meal Plan repeated for the next 7 days successfully!");
+
+    // Optionally update local state
+    //setMealData((prevMealData) => [...prevMealData, ...mealsForNextWeek]);
+  } catch (err: any) {
+    console.error("Error repeating meals for next week:", err);
+    alert("Failed to repeat meal plan. Please try again.");
   }
 };
 
@@ -545,77 +280,15 @@ const MealPlanTable = () => {
       </div>
 
       
-      <div className="flex justify-end mt-4 me-10">
+      <div className="flex justify-end mt-4 me-10 gap-x-5">
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-blue-500 text-white px-4 py-2 rounded"
         >
           Add Meal
         </button>
+        <button onClick={handleRepeatMealsForNextWeek} className="bg-blue-500 text-white px-4 py-2 rounded">Copy Meals</button>
       </div>
-
-      
-      {/*<Modal
-        isOpen={isModalOpen}
-        onClose={() => {setIsModalOpen(false);
-          setNewMeal({date:"",meal_type:"",food:""});
-        }}
-        title="Add New Meal"
-        footer={
-          <div>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="bg-gray-300 px-4 py-2 rounded mr-2"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleAddMeal}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Add Meal
-            </button>
-          </div>
-        }
-      >
-        <form>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Date</label>
-            <input
-              type="text"
-              name="date"
-              value={newMeal.date}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Meal Type (Lunch/Snack)
-            </label>
-            <input
-              type="text"
-              name="meal_type"
-              value={newMeal.meal_type}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Food</label>
-            <input
-              type="text"
-              name="food"
-              value={newMeal.food}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-        </form>
-      </Modal>*/}
-
-
 
 <Modal
         isOpen={isModalOpen}
