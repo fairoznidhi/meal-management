@@ -218,11 +218,11 @@ const MealActivityComponent = () => {
       ) : (
         <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[650px] max-lg:max-h-[800px]">
         <table className="table-auto w-full border-collapse border border-gray-300">
-          <thead className="sticky top-0 bg-white z-10 shadow-md">
-            <tr className="border">
+          <thead className="">
+            <tr className="border border-black">
               <th className="p-2 text-center">Employee Name</th>
               {dates.map((date, index) => (
-                <th key={index} className="p-2">
+                <th key={index} className="p-2 border border-black">
                   <div>{date}</div>
                   <div className="text-xs text-gray-600">Guests: {totalGuestsPerDay[date] || 0}</div>
                 </th>
