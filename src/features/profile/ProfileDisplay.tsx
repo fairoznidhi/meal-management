@@ -1,22 +1,15 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { ProfilePictureContext } from "@/app/(auth)/layout";
 import { usePatchEmployeeProfile } from "@/services/mutations";
 import { getSession } from "next-auth/react";
+import React, { useContext, useEffect, useState } from "react";
 
-type ProfileDisplayProps = {
-  profilePicture: string;
-  title: string;
-};
-
-const ProfileDisplay: React.FC<ProfileDisplayProps> = ({
-  profilePicture,
-  title,
-}) => {
+const ProfileDisplay = () => {
   const { mutate } = usePatchEmployeeProfile();
-  const [profilePic, setProfilePic] = useState(profilePicture);
   const [session, setSession] = useState<any>(null);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState(100);
+  const {userProfilePicture,setUserProfilePicture}=useContext(ProfilePictureContext);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -27,7 +20,6 @@ const ProfileDisplay: React.FC<ProfileDisplayProps> = ({
     };
     fetchSession();
   }, []);
-
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -41,7 +33,7 @@ const ProfileDisplay: React.FC<ProfileDisplayProps> = ({
     mutate(formData, {
       onSuccess: () => {
         const imageUrl = URL.createObjectURL(file);
-        setProfilePic(imageUrl);
+        setUserProfilePicture(imageUrl);
 
         setAlertMessage("Profile picture updated successfully!");
         setProgress(100);
@@ -83,8 +75,8 @@ const ProfileDisplay: React.FC<ProfileDisplayProps> = ({
       )}
       <div className="relative w-32 h-32 rounded-md overflow-hidden">
         <img
-          src={profilePic}
-          alt={title}
+          src={userProfilePicture}
+          alt={"title"}
           className="object-cover w-full h-full"
         />
         <label

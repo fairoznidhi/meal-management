@@ -1,18 +1,27 @@
 "use client";
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { getSession, signOut, SessionProvider } from "next-auth/react";
-import { Session } from "next-auth";
 import Sidebar from "@/components/sidebar";
-import vslogo from "public/vslogo.png";
-import {
-  HomeModernIcon,
-  UsersIcon,
-  ClipboardDocumentListIcon,
-  UserIcon,
-} from "@heroicons/react/24/outline";
-import Link from "next/link";
 import { useEmployeePhoto } from "@/services/queries";
+import {
+  ClipboardDocumentListIcon,
+  HomeModernIcon,
+  UserIcon,
+  UsersIcon,
+} from "@heroicons/react/24/outline";
+import { Session } from "next-auth";
+import { getSession, SessionProvider, signOut } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import vslogo from "public/vslogo.png";
+import { createContext, useEffect, useState } from "react";
+type profilePictureType={
+  userProfilePicture: string;
+  setUserProfilePicture:React.Dispatch<React.SetStateAction<string>>;
+}
+const defaultProfilePicture: profilePictureType={
+  userProfilePicture: "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp",
+  setUserProfilePicture: () => {},
+}
+export const ProfilePictureContext=createContext<profilePictureType>(defaultProfilePicture);
 
 export default function AuthLayout({
   children,
@@ -45,14 +54,17 @@ export default function AuthLayout({
     };
     checkSession();
   }, []);
-  const { data: employeePhotoBlob } = useEmployeePhoto();
-  const [profilePicture, setProfilePicture] = useState(
+  const toggleSidebar = () => {
+    setIsCollapsed((prev) => !prev);
+  };
+  const { data: employeePhotoBlob, refetch:refetchEmployeePhotoBlob } = useEmployeePhoto();
+  const [userProfilePicture, setUserProfilePicture] = useState(
       "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
     );
     useEffect(() => {
         if (employeePhotoBlob) {
           const url = URL.createObjectURL(employeePhotoBlob);
-          setProfilePicture(url);
+          setUserProfilePicture(url);
           return () => {
             if (url) {
               URL.revokeObjectURL(url);
@@ -60,11 +72,12 @@ export default function AuthLayout({
           };
         }
       }, [employeePhotoBlob]);
-  const toggleSidebar = () => {
-    setIsCollapsed((prev) => !prev);
-  };
+      useEffect(()=>{
+        refetchEmployeePhotoBlob();
+      },[setUserProfilePicture])
   return (
     <SessionProvider session={session}>
+      <ProfilePictureContext.Provider value={{userProfilePicture,setUserProfilePicture}}>
       <div className="mr-8 mt-1">
       <div className="navbar bg-base-100">
         <div className="flex-1">
@@ -79,7 +92,7 @@ export default function AuthLayout({
               <div className="w-10 rounded-full">
                 <img
                   alt="Tailwind CSS Navbar component"
-                  src={profilePicture}
+                  src={userProfilePicture}
                 />
               </div>
             </div>
@@ -152,6 +165,7 @@ export default function AuthLayout({
           </div>
         </div>
       </div>
+      </ProfilePictureContext.Provider>
     </SessionProvider>
   );
 }

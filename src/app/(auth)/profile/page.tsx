@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useEmployeePhoto, useTokenSingleEmployee } from "@/services/queries";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
@@ -9,9 +9,9 @@ import { usePatchEmployeeProfile } from "@/services/mutations";
 import ChangePassword from "@/features/changePassword/ChangePassword";
 import { Session } from "next-auth";
 
+
 const ProfilePage = () => {
   const { data: profileList } = useTokenSingleEmployee();
-  const { data: employeePhotoBlob } = useEmployeePhoto();
   const { mutate } = usePatchEmployeeProfile();
   const [formData, setFormData] = useState<UserProfileDataType | null>(null);
   const [actualData, setActualData] = useState<UserProfileDataType | null>(
@@ -19,9 +19,6 @@ const ProfilePage = () => {
   );
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState(100);
-  const [profilePicture, setProfilePicture] = useState(
-    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-  );
   const [session, setSession] = useState<Session | null>(null);
   useEffect(() => {
     const checkSession = async () => {
@@ -34,17 +31,7 @@ const ProfilePage = () => {
     checkSession();
   }, []);
   const [isEditProfile, setIsEditProfile] = useState(false);
-  useEffect(() => {
-    if (employeePhotoBlob) {
-      const url = URL.createObjectURL(employeePhotoBlob);
-      setProfilePicture(url);
-      return () => {
-        if (url) {
-          URL.revokeObjectURL(url);
-        }
-      };
-    }
-  }, [employeePhotoBlob]);
+  
   useEffect(() => {
     if (profileList) {
       const profile = profileList[0];
@@ -115,7 +102,7 @@ const ProfilePage = () => {
   //     const reader = new FileReader();
   //     reader.onload = () => {
   //       if (reader.result) {
-  //         setProfilePicture(reader.result as string); // Update profile picture immediately
+  //         setUserProfilePicture(reader.result as string); // Update profile picture immediately
   //       }
   //     };
   //     reader.readAsDataURL(file);
@@ -127,11 +114,9 @@ const ProfilePage = () => {
       <div className="flex flex-row justify-between items-center mt-8 mb-8">
         {/*Profile Picture and Name Display*/}
         <div className="flex items-center ">
+          
           {formData && (
-            <ProfileDisplay
-              profilePicture={profilePicture}
-              title={formData?.name || "No User"}
-            />
+            <ProfileDisplay/>
           )}
           {formData && (
             <h1 className="px-6 text-xl font-semibold">{formData.name}</h1>

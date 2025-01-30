@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { patchEmployeeProfile, patchForgetPassword, patchGroupMealUpdate, patchToggleDefaultMealStatus } from "./api";
 
 export function useToggleDefaultMealStatus(date:string) {
@@ -14,9 +14,11 @@ export function useToggleDefaultMealStatus(date:string) {
     });
   }
   export function usePatchEmployeeProfile() {
+    const queryClient=useQueryClient();
     return useMutation({
       mutationFn: (formData: FormData) => patchEmployeeProfile(formData),
-      onSuccess: () => {
+      onSuccess: async() => {
+        // await queryClient.invalidateQueries({queryKey:["image"]});
         console.log("Profile updated successfully");
       },
       onError: (error) => {

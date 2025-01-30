@@ -5,7 +5,7 @@ import Image from "next/image";
 import loginhero from "../../../public/loginhero.png";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import ForgetPassword from "@/features/forgetPassword/ForgetPassword";
 export type Inputs = {
   email: string;
@@ -14,6 +14,12 @@ export type Inputs = {
 const LoginPage = () => {
   const { register, handleSubmit } = useForm<Inputs>();
   const router = useRouter();
+  const {data:session,status}=useSession();
+  if (status === "authenticated" && session?.user?.is_admin) {
+    router.push("/adminDashboard");
+  } else if (status === "authenticated" &&!session?.user?.is_admin) {
+    router.push("/userDashboard");
+  }
   const onSubmit = async (data: Inputs) => {
     try {
       const result = await signIn("credentials", {
