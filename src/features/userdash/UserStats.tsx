@@ -1,8 +1,8 @@
 "use client"
 import { MealStatusContext } from "@/features/userdash/UserMealTable";
 import { useSingleEmployeeMealActivity } from "@/services/queries";
-import { useContext, useEffect, useState } from "react";
-import { startOfWeek, endOfWeek, addDays, format } from "date-fns";
+import { format } from "date-fns";
+import { useContext, useEffect } from "react";
 
 const UserStats = () => {
     const {lunchStatus,setLunchStatus,snacksStatus,setSnacksStatus,mealStatusToggle,update}=useContext(MealStatusContext);

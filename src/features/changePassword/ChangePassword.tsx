@@ -142,7 +142,7 @@ const ChangePassword = () => {
       </dialog>
       {/* Alert Notification */}
       {alertMessage && (
-        <div className="fixed top-5 right-5 bg-gray-500 text-white px-4 pt-2 rounded-md shadow-md min-w-64">
+        <div className="fixed top-20 right-5 bg-gray-500 text-white px-4 pt-2 rounded-md shadow-md min-w-64">
           <p>{alertMessage}</p>
           {/* Progress Bar */}
           <div className="w-full bg-gray-700 h-1 mt-4">

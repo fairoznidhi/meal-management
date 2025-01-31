@@ -1,6 +1,6 @@
 "use client";
 import Sidebar from "@/components/sidebar";
-import { useEmployeePhoto } from "@/services/queries";
+import { useEmployeePhoto, useTokenSingleEmployee } from "@/services/queries";
 import {
   ClipboardDocumentListIcon,
   HomeModernIcon,
@@ -12,15 +12,19 @@ import { getSession, SessionProvider, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import vslogo from "public/vslogo.png";
+import profileImage from "public/profile-image.jpg";
 import { createContext, useEffect, useState } from "react";
 type profilePictureType = {
   userProfilePicture: string;
   setUserProfilePicture: React.Dispatch<React.SetStateAction<string>>;
+  userName: string;
+  setUserName: React.Dispatch<React.SetStateAction<string>>;
 };
 const defaultProfilePicture: profilePictureType = {
-  userProfilePicture:
-    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp",
+  userProfilePicture: profileImage.src,
   setUserProfilePicture: () => {},
+  userName: "",
+  setUserName: () => {},
 };
 export const ProfilePictureContext = createContext<profilePictureType>(
   defaultProfilePicture
@@ -50,6 +54,13 @@ export default function AuthLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
+  const { data: profileList } = useTokenSingleEmployee();
+  useEffect(() => {
+      if (profileList) {
+        const profile = profileList[0];
+        setUserName(profile.name ?? "")
+      }
+    }, [profileList]);
   useEffect(() => {
     const checkSession = async () => {
       const session = await getSession();
@@ -69,7 +80,7 @@ export default function AuthLayout({
   const { data: employeePhotoBlob, refetch: refetchEmployeePhotoBlob } =
     useEmployeePhoto();
   const [userProfilePicture, setUserProfilePicture] = useState(
-    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+    profileImage.src
   );
   useEffect(() => {
     if (employeePhotoBlob) {
@@ -85,47 +96,17 @@ export default function AuthLayout({
   useEffect(() => {
     refetchEmployeePhotoBlob();
   }, [setUserProfilePicture]);
+  const [userName, setUserName] = useState("");
   return (
     <SessionProvider session={session}>
       <ProfilePictureContext.Provider
-        value={{ userProfilePicture, setUserProfilePicture }}
+        value={{
+          userProfilePicture,
+          setUserProfilePicture,
+          userName,
+          setUserName,
+        }}
       >
-        <div className="mr-8 mt-1">
-          <div className="navbar bg-base-100">
-            <div className="flex-1"></div>
-            <div className="flex-none gap-2">
-              <div className="dropdown dropdown-end">
-                <div
-                  tabIndex={0}
-                  role="button"
-                  className="btn btn-ghost btn-circle avatar"
-                >
-                  <div className="w-10 rounded-full">
-                    <img
-                      alt="Tailwind CSS Navbar component"
-                      src={userProfilePicture}
-                    />
-                  </div>
-                </div>
-                <ul
-                  tabIndex={0}
-                  className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
-                >
-                  <li>
-                    <Link href="/profile" className="justify-between">
-                      Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <a onClick={() => signOut({ callbackUrl: "/login" })}>
-                      Logout
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
         <div className="flex h-screen">
           {/* Sidebar
               <div className={`transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"} bg-gray-800 text-white fixed top-0 left-0 h-full`}>
@@ -143,11 +124,11 @@ export default function AuthLayout({
                   </div>
                   </div>
               </div>*/}
-
+          {/* sidebar */}
           <div
             className={`transition-all duration-300 ${
               isCollapsed ? "w-16" : "w-64"
-            } bg-[#005A8F] text-white fixed top-0 left-0 h-full`}
+            } bg-[#005A8F] text-white fixed h-full z-50`}
           >
             <button
               onClick={toggleSidebar}
@@ -171,6 +152,47 @@ export default function AuthLayout({
             />
           </div>
 
+          {/* navbar */}
+          <div className=" fixed z-40 w-full h-[60px]">
+            <div className="navbar bg-base-100 pt-2 px-8">
+              <div className="flex-1"></div>
+              <div className="flex-none gap-2">
+                <div className="dropdown dropdown-end">
+                  <div className="flex items-center " tabIndex={0}
+                      role="button">
+                    <div className="pr-4 text-base font-semibold text-gray-700">{userName}</div>
+                    <div
+  
+                      className="btn btn-ghost btn-circle avatar"
+                    >
+                      <div className="w-10 rounded-full">
+                        <img
+                          alt="Tailwind CSS Navbar component"
+                          src={userProfilePicture}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <ul
+                    tabIndex={0}
+                    className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+                  >
+                    <li>
+                      <Link href="/profile" className="justify-between">
+                        Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <a onClick={() => signOut({ callbackUrl: "/login" })}>
+                        Logout
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Main Content */}
           <div
             className={`flex-1 transition-all duration-300 ${
@@ -178,7 +200,7 @@ export default function AuthLayout({
             }`}
           >
             <div className="">
-              <div>{children}</div>
+              <div className="mt-[60px]">{children}</div>
             </div>
           </div>
         </div>

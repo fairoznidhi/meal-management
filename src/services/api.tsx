@@ -101,3 +101,13 @@ export const patchForgetPassword=async(forgetPassData:object)=>{
     })
     return res;
 }
+
+export const patchResetPassword = async (data: object, token: string) => {
+    return (
+        await axiosInstance.patch('employee/password-change', data, {
+            headers: {
+                Authorization: `${token}`,
+            },
+        })
+    ).data;
+};
