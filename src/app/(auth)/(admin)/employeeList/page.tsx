@@ -691,7 +691,7 @@ const EmployeeComponent: React.FC = () => {
     const createMealPlan = async () => {
       try {
         await request({
-          url: "meal_activity",
+          url: "/meal_activity",
           method: "POST",
           useAuth: true,
         });
