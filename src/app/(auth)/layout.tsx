@@ -161,9 +161,14 @@ export default function AuthLayout({
                 alt="vlogo"
                 className="w-10 h-10 border rounded-full bg-white ms-3 me-5 "
               ></Image>
-              <p className="text-white font-semibold mt-1 text-2xl font-serif">
+              {/*<p className="text-white font-semibold mt-1 text-2xl font-serif">
                 VivaMeal
-              </p>
+              </p>*/}
+               {!isCollapsed && (
+    <p className="text-white font-semibold text-2xl font-serif ms-2 mt-1">
+      VivaMeal
+    </p>
+  )}
             </div>
             <Sidebar
               items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser}

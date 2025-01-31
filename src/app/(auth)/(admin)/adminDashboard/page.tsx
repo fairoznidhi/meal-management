@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { baseRequest } from "@/services/HttpClientAPI";
 import MealStatusModal from "@/features/dashboard/MealStatusModal";
 import Search from "@/components/Search";
-import TotalBox from "@/features/dashboard/TotalBox";
 
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
@@ -200,18 +199,13 @@ const [snackGuestsToday, setSnackGuestsToday] = useState<number>(0);
       try {
         //await createMealPlan(); // First, create the meal plan
         await fetchMealActivity(); // Then, fetch the meal activity
-        await fetchTotallunch();
-        await fetchTotalSnacks();
-        const { lunchGuests, snackGuests } = calculateTotalGuestsForToday();
-  setLunchGuestsToday(lunchGuests);
-  setSnackGuestsToday(snackGuests);
       } catch (error) {
         console.error("Error initializing meal plan:", error);
       }
     };
   
     initializeMealPlan();
-  }, [startDate, days]);
+  }, [startDate, days,fetchMealActivity]);
   
 
   const dates = generateDates(startDate, days);
@@ -399,19 +393,19 @@ const snacksGuestsT = snackGuests[todayDate] || 0;
 
       <div className="flex gap-x-5 mb-4">
   <div className="p-4 bg-blue-200 rounded-md shadow-md">
-    <h3 className="text-lg font-semibold">Today's Total Lunch</h3>
-    <p className="text-xl">{lunchTotal !== null ? lunchTotal + lunchGuestsT : "Loading..."}</p>
+    <h3 className="text-lg font-semibold">Todays Total Lunch</h3>
+    <p className="text-xl">{lunchTotal !== null ? lunchTotal : "Loading..."}</p>
   </div>
   
   <div className="p-4 bg-green-200 rounded-md shadow-md">
-    <h3 className="text-lg font-semibold">Today's Total Snacks</h3>
-    <p className="text-xl">{snacksTotal !== null ? snacksTotal + snacksGuestsT : "Loading..."}</p>
+    <h3 className="text-lg font-semibold">Todays Total Snacks</h3>
+    <p className="text-xl">{snacksTotal !== null ? snacksTotal : "Loading..."}</p>
   </div>
 </div>
 
 
 
-      <div className="flex justify-between items-center mb-4 gap-x-2 mt-40">
+      <div className="flex justify-between items-center mb-4 gap-x-2 mt-20">
       <div className="mb-4">
         <label className="mr-2">Select Meal Type: </label>
         <select
