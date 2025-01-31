@@ -2,8 +2,8 @@
 
 import Search from "@/components/Search";
 import MealStatusModal from "@/features/dashboard/MealStatusModal";
-import Search from "@/components/Search";
-
+import React, { useEffect, useState } from "react";
+import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
 interface MealStatus {
