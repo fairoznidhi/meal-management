@@ -194,11 +194,25 @@ const [snackGuestsToday, setSnackGuestsToday] = useState<number>(0);
   }, [startDate, days]);*/}
 
 
-  useEffect(() => {
-    const initializeMealPlan = async () => {
+  {/*useEffect(() => {
+    {/*const initializeMealPlan = async () => {
       try {
         //await createMealPlan(); // First, create the meal plan
         await fetchMealActivity(); // Then, fetch the meal activity
+        await fetchTotallunch(); // Fetch lunch total
+      await fetchTotalSnacks(); // Fetch snack total
+      } catch (error) {
+        console.error("Error initializing meal plan:", error);
+      }
+    };
+    const initializeMealPlan = async () => {
+      try {
+        const [mealData, lunchTotal, snackTotal] = await Promise.all([
+          fetchMealActivity(),
+          fetchTotallunch(),
+          fetchTotalSnacks()
+        ]);
+        // handle data...
       } catch (error) {
         console.error("Error initializing meal plan:", error);
       }
@@ -206,7 +220,35 @@ const [snackGuestsToday, setSnackGuestsToday] = useState<number>(0);
   
     initializeMealPlan();
   }, [startDate, days,fetchMealActivity]);
+  */}
+
+
+
+  useEffect(() => {
+    const initializeMealPlan = async () => {
+      try {
+        // Fetch data asynchronously in parallel
+        await Promise.all([
+          fetchMealActivity(),
+          fetchTotallunch(),
+          fetchTotalSnacks()
+        ]);
+      } catch (error) {
+        console.error("Error initializing meal plan:", error);
+      }
+    };
   
+    initializeMealPlan();
+  }, [startDate, days]); 
+
+
+
+ 
+  
+
+
+
+
 
   const dates = generateDates(startDate, days);
 
