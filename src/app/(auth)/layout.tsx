@@ -35,12 +35,13 @@ export default function AuthLayout({
     { name: "Dashboard", route: "/adminDashboard", icon: HomeModernIcon },
     { name: "Employee List", route: "/employeeList", icon: UsersIcon },
     {
-      name: "Meal Plan",
+      name: "Meal Entry",
       route: "/adminmealPlan",
-      icon: ClipboardDocumentListIcon,
+      icon: UserIcon ,
     },
-    { name: "Menu Plan", route: "/menuPlan", icon: ClipboardDocumentListIcon },
-    { name: "My Profie", route: "/profile", icon: UserIcon },
+    { name: "Menu", route: "/menuPlan", icon: ClipboardDocumentListIcon },
+    //{ name: "My Profie", route: "/profile", icon: UserIcon },
+    { name: "Meal History", route:"/MealHistory", icon: ClipboardDocumentListIcon }
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: HomeModernIcon },
