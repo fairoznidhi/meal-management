@@ -92,7 +92,10 @@ const MealPlanTable = () => {
     { key: "date", label: "Date" ,
       render:(value)=>{
         return <span>{format(new Date(value), "dd-MMM")}</span>;
-      }
+      },
+      renderRow: (row) => {
+        return row.isHoliday ? 'bg-red-50' : '';
+      },
     },
     { key: "lunch", label: "Lunch" },
     {
@@ -264,7 +267,7 @@ const MealPlanTable = () => {
                 (menu: RangeMenuDetails) => menu.date === employee.date
               )
             : null;
-
+            const isHoliday = employee.holiday;
           weekData.push({
             date: employee.date || "No date",
             lunch: currentDayMenu
@@ -281,6 +284,7 @@ const MealPlanTable = () => {
               : "Menu Missing",
             snacksStatus: employee.meal?.[1]?.meal_status?.[0]?.status ? 1 : 0,
             snacksGuest: employee.meal?.[1]?.meal_status?.[0]?.guest_count,
+            isHoliday,
           });
         }
       );
