@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { baseRequest } from "@/services/HttpClientAPI";
+import Search from "@/components/Search";
 import MealStatusModal from "@/features/dashboard/MealStatusModal";
 import Search from "@/components/Search";
 

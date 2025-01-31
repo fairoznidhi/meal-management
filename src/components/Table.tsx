@@ -10,6 +10,7 @@ export type Column = {
     rowIndex: number,
     // onEdit: (key: string, value: any) => void
   ) => React.ReactNode; // Custom render function
+  renderRow?: (row: Row, rowIndex: number) => string | undefined;
 };
 
 export type Row = {
@@ -52,8 +53,10 @@ const Table: React.FC<TableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {data.map((row, rowIndex) => (
-            <tr key={rowIndex}>
+          {data.map((row, rowIndex) => {
+            const rowStyle = columns.find(col => col.renderRow)?.renderRow!(row, rowIndex);
+            return (
+              <tr key={rowIndex} className={rowStyle}>
               {columns.map((col) => (
                 <td
                   key={col.key}
@@ -76,7 +79,8 @@ const Table: React.FC<TableProps> = ({
                 </td>
               ))}
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
     </div>

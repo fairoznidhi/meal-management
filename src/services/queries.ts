@@ -23,7 +23,9 @@ export function useSingleEmployeeMealActivity(date:string,days:string){
 export function useRangeMealPlan(date:string,days:string){
   return useQuery({
     queryKey: ['rangeMealPlan',`${date}${days}`], 
-    queryFn: () => getRangeMealPlan(date,days)
+    queryFn: () => getRangeMealPlan(date,days),
+    refetchInterval: 60000,
+    refetchIntervalInBackground: true, 
   });
 }
 export function useEmployeePhoto(){
