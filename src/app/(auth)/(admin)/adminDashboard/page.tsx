@@ -41,6 +41,8 @@ const MealActivityComponent = () => {
   const [mealType, setMealType] = useState<number>(1); // 1 for lunch, 2 for snack
   const [searchTerm,setSearchTerm]= useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
+  const [lunchGuestsToday, setLunchGuestsToday] = useState<number>(0);
+const [snackGuestsToday, setSnackGuestsToday] = useState<number>(0);
   const [selectedCell, setSelectedCell] = useState<{
     employeeId: number;
     employeeName: string;
@@ -134,7 +136,7 @@ const MealActivityComponent = () => {
     }
   };
 
-  const calculateTotalGuestsPerDay = () => {
+  {/*const calculateTotalGuestsPerDay = () => {
     const totalGuests: Record<string, number> = {};
   
     mealActivityData.forEach((employee) => {
@@ -150,10 +152,42 @@ const MealActivityComponent = () => {
     });
   
     return totalGuests;
+  };*/}
+
+
+
+  const calculateTotalGuestsPerDay = () => {
+    const lunchGuests: Record<string, number> = {};
+    const snackGuests: Record<string, number> = {};
+  
+    mealActivityData.forEach((employee) => {
+      employee.employee_details.forEach((detail) => {
+        const lunchMeal = detail.meal.find((m) => m.meal_type === 1);
+        const snackMeal = detail.meal.find((m) => m.meal_type === 2);
+  
+        // Accumulate lunch guest count
+        if (lunchMeal) {
+          const guestCount = lunchMeal.meal_status[0]?.guest_count || 0;
+          lunchGuests[detail.date] = (lunchGuests[detail.date] || 0) + guestCount;
+        }
+  
+        // Accumulate snack guest count
+        if (snackMeal) {
+          const guestCount = snackMeal.meal_status[0]?.guest_count || 0;
+          snackGuests[detail.date] = (snackGuests[detail.date] || 0) + guestCount;
+        }
+      });
+    });
+  
+    return { lunchGuests, snackGuests };
   };
   
-  const totalGuestsPerDay = calculateTotalGuestsPerDay();
+
+
+
   
+  const totalGuestsPerDay = calculateTotalGuestsPerDay();
+  console.log(totalGuestsPerDay);
 
 
   {/*useEffect(() => {
@@ -168,6 +202,9 @@ const MealActivityComponent = () => {
         await fetchMealActivity(); // Then, fetch the meal activity
         await fetchTotallunch();
         await fetchTotalSnacks();
+        const { lunchGuests, snackGuests } = calculateTotalGuestsForToday();
+  setLunchGuestsToday(lunchGuests);
+  setSnackGuestsToday(snackGuests);
       } catch (error) {
         console.error("Error initializing meal plan:", error);
       }
@@ -196,6 +233,37 @@ const MealActivityComponent = () => {
     setModalOpen(true);
   };
   
+  
+  const calculateTotalGuestsForToday = () => {
+    const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+    let lunchGuests = 0;
+    let snackGuests = 0;
+  
+    mealActivityData.forEach((employee) => {
+      employee.employee_details.forEach((detail) => {
+        if (detail.date === today) {  // Check if this entry is for today
+          detail.meal.forEach((meal) => {
+            const mealGuestCount = meal.meal_status.reduce((sum, status) => sum + (status.guest_count || 0), 0);
+            
+            if (meal.meal_type === 1) {
+              lunchGuests += mealGuestCount; // Accumulate lunch guests
+            } else if (meal.meal_type === 2) {
+              snackGuests += mealGuestCount; // Accumulate snack guests
+            }
+          });
+        }
+      });
+    });
+  
+    return { lunchGuests, snackGuests };
+  };
+  
+
+  
+  
+
+
+
 
   const handleUpdateStatus = async (status: boolean, penalty: boolean) => {
     if (selectedCell) {
@@ -232,6 +300,7 @@ const MealActivityComponent = () => {
     }
   };
  
+  
   
   
   const handleMealTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -312,6 +381,17 @@ const handleNextWeek = () => {
    const filteredData= mealActivityData.filter((employee)=>
   employee.employee_name.toLowerCase().includes(searchTerm.toLowerCase()));
 
+   const totalGuests = calculateTotalGuestsForToday();
+   console.log(totalGuests);
+   //setTotalGuestsToday(totalGuests);
+
+
+   const { lunchGuests, snackGuests } = calculateTotalGuestsPerDay();
+const todayDate = new Date().toISOString().split("T")[0]; // Format today's date as YYYY-MM-DD
+const lunchGuestsT = lunchGuests[todayDate] || 0;
+const snacksGuestsT = snackGuests[todayDate] || 0;
+
+
 
   return (
     <div className="p-4">
@@ -320,12 +400,12 @@ const handleNextWeek = () => {
       <div className="flex gap-x-5 mb-4">
   <div className="p-4 bg-blue-200 rounded-md shadow-md">
     <h3 className="text-lg font-semibold">Today's Total Lunch</h3>
-    <p className="text-xl">{lunchTotal !== null ? lunchTotal : "Loading..."}</p>
+    <p className="text-xl">{lunchTotal !== null ? lunchTotal + lunchGuestsT : "Loading..."}</p>
   </div>
   
   <div className="p-4 bg-green-200 rounded-md shadow-md">
     <h3 className="text-lg font-semibold">Today's Total Snacks</h3>
-    <p className="text-xl">{snacksTotal !== null ? snacksTotal : "Loading..."}</p>
+    <p className="text-xl">{snacksTotal !== null ? snacksTotal + snacksGuestsT : "Loading..."}</p>
   </div>
 </div>
 
@@ -377,7 +457,7 @@ const handleNextWeek = () => {
               {dates.map((date, index) => (
                 <th key={index} className="p-2 border border-black">
                   <div>{date}</div>
-                  <div className="text-xs text-gray-600">Guests: {totalGuestsPerDay[date] || 0}</div>
+                  <div className="text-xs text-gray-600">Guests: {totalGuestsPerDay.lunchGuests[date] || 0}</div>
                 </th>
               ))}
             </tr>
