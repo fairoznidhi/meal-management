@@ -64,11 +64,11 @@ const TotalBox = () => {
         ) : (
           <div className="flex justify-between gap-x-5 mt-4">
             <div className="bg-blue-500 text-white rounded-lg p-2 shadow-inner text-sm w-40 h-20">
-              <p className="text-sm font-medium">Total Lunch</p>
+              <p className="text-sm font-medium">Today's Total Lunch</p>
               <p className="text-2xl font-bold">{totalMeals.meal1 ?? "N/A"}</p>
             </div>
             <div className="bg-green-500 text-white rounded-lg p-2 shadow-inner text-sm w-40 h-20">
-              <p className="text-sm font-medium">Total Snack</p>
+              <p className="text-sm font-medium">Today's Total Snack</p>
               <p className="text-2xl font-bold">{totalMeals.meal2 ?? "N/A"}</p>
             </div>
           </div>

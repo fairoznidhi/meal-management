@@ -33,6 +33,8 @@ interface MealActivityData {
 
 const MealActivityComponent = () => {
   const [mealActivityData, setMealActivityData] = useState<MealActivityData[]>([]);
+  const [lunchTotal, setLunchTotal] = useState<number | null>(null);
+  const [snacksTotal, setSnacksTotal] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [startDate, setStartDate] = useState(new Date()); // Use Date object for easy manipulation
   const [days, setDays] = useState<number>(7);
@@ -57,9 +59,45 @@ const MealActivityComponent = () => {
     }
     return dates;
   };
+ const fetchTotallunch=async()=>{
+  const today=new Date();
+  const formattedDate = today.toISOString().split("T")[0];
+  try{
+    const response= await request({
+      url:"/meal_activity/total-meal",
+      method:"PATCH",
+      data:{
+        date:formattedDate,
+        meal_type:1,
+      },
+      useAuth:true,
+    })as number;
+    setLunchTotal(response);
+  }catch(err:any){
+    console.log("Error Fetching Lunch");
+  }
+ }
 
+ const fetchTotalSnacks=async()=>{
+  const today=new Date();
+  const formattedDate = today.toISOString().split("T")[0];
+  try{
+    const response=await request({
+      url:"/meal_activity/total-meal",
+      method:"PATCH",
+      data:{
+        date:formattedDate,
+        meal_type:2,
+      },
+      useAuth:true,
+    })as number;
+    setSnacksTotal(response); 
+  }catch(err:any){
+    console.log("Error Fetching Lunch");
+  }
+ }
 
-  const createMealPlan = async () => {
+  {/*const createMealPlan = async () => {
     try {
       await request({
         url: "meal_activity",
@@ -69,7 +107,7 @@ const MealActivityComponent = () => {
     } catch (err: any) {
       console.error("Error creating meal plan:", err);
     }
-  };
+  };*/}
 
 
 
@@ -81,8 +119,15 @@ const MealActivityComponent = () => {
         method: "GET",
         params: {start: formattedStartDate, days},
         useAuth: true,
-      }) as MealActivityData[];
-      setMealActivityData(response);
+      }) as MealActivityData[]|null;
+      if (response) {
+        // If response is not null, update state
+        setMealActivityData(response);
+      } else {
+        // Handle case where response is null
+        setMealActivityData([]); // Set an empty array or appropriate fallback value
+        console.warn("Meal activity data is empty.");
+      }
     } catch (err: any) {
       console.error("Error fetching meal activity:", err);
       setError(err.response?.data?.message || "Failed to fetch meal activity.");
@@ -119,8 +164,10 @@ const MealActivityComponent = () => {
   useEffect(() => {
     const initializeMealPlan = async () => {
       try {
-        await createMealPlan(); // First, create the meal plan
+        //await createMealPlan(); // First, create the meal plan
         await fetchMealActivity(); // Then, fetch the meal activity
+        await fetchTotallunch();
+        await fetchTotalSnacks();
       } catch (error) {
         console.error("Error initializing meal plan:", error);
       }
@@ -175,6 +222,9 @@ const MealActivityComponent = () => {
         });
 
         fetchMealActivity();
+        // Immediately fetch updated totals
+      await fetchTotallunch();
+      await fetchTotalSnacks();
         setModalOpen(false);
       } catch (err) {
         console.error("Error updating meal status:", err);
@@ -188,7 +238,7 @@ const MealActivityComponent = () => {
     setMealType(Number(event.target.value));
   };
 
-  const handlePreviousWeek = () => {
+  {/*const handlePreviousWeek = () => {
     setStartDate((prev) => {
       const newDate = new Date(prev);
       newDate.setDate(prev.getDate() - 7); // Go back 7 days
@@ -202,14 +252,85 @@ const MealActivityComponent = () => {
       newDate.setDate(prev.getDate() + 7); // Go forward 7 days
       return newDate;
     });
-  };
+  };*/}
+
+
+
+
+  // Function to get the boundary (one month before or after today's date)
+const getMonthBoundary = (direction: "previous" | "next") => {
+  const today = new Date();
+  const newDate = new Date(today);
+  
+  if (direction === "previous") {
+    newDate.setMonth(today.getMonth() - 1); // Go one month back
+  } else if (direction === "next") {
+    newDate.setMonth(today.getMonth() + 1); // Go one month forward
+  }
+
+  // Set the time to midnight to avoid issues with time comparison
+  newDate.setHours(0, 0, 0, 0);
+
+  return newDate;
+};
+
+// Handle previous week navigation
+const handlePreviousWeek = () => {
+  setStartDate((prev) => {
+    const newDate = new Date(prev);
+    newDate.setDate(prev.getDate() - 7); // Go back 7 days
+
+    // Prevent going before one month before today
+    const oneMonthBeforeToday = getMonthBoundary("previous");
+    if (newDate < oneMonthBeforeToday) {
+      return oneMonthBeforeToday; // Set to the one month before today if it exceeds
+    }
+
+    return newDate;
+  });
+};
+
+// Handle next week navigation
+const handleNextWeek = () => {
+  setStartDate((prev) => {
+    const newDate = new Date(prev);
+    newDate.setDate(prev.getDate() + 7); // Go forward 7 days
+
+    // Prevent going beyond one month after today
+    const oneMonthAfterToday = getMonthBoundary("next");
+    if (newDate > oneMonthAfterToday) {
+      return oneMonthAfterToday; // Set to the one month after today if it exceeds
+    }
+
+    return newDate;
+  });
+};
+
+
+
+
    const filteredData= mealActivityData.filter((employee)=>
   employee.employee_name.toLowerCase().includes(searchTerm.toLowerCase()));
 
 
   return (
     <div className="p-4">
-      <div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>
+      {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
+
+      <div className="flex gap-x-5 mb-4">
+  <div className="p-4 bg-blue-200 rounded-md shadow-md">
+    <h3 className="text-lg font-semibold">Today's Total Lunch</h3>
+    <p className="text-xl">{lunchTotal !== null ? lunchTotal : "Loading..."}</p>
+  </div>
+  
+  <div className="p-4 bg-green-200 rounded-md shadow-md">
+    <h3 className="text-lg font-semibold">Today's Total Snacks</h3>
+    <p className="text-xl">{snacksTotal !== null ? snacksTotal : "Loading..."}</p>
+  </div>
+</div>
+
+
+
       <div className="flex justify-between items-center mb-4 gap-x-2 mt-40">
       <div className="mb-4">
         <label className="mr-2">Select Meal Type: </label>
