@@ -37,11 +37,11 @@ export default function AuthLayout({
     {
       name: "Meal Entry",
       route: "/adminmealPlan",
-      icon: ClipboardDocumentListIcon,
+      icon: UserIcon ,
     },
-    { name: "Menu Plan", route: "/menuPlan", icon: ClipboardDocumentListIcon },
+    { name: "Menu", route: "/menuPlan", icon: ClipboardDocumentListIcon },
     //{ name: "My Profie", route: "/profile", icon: UserIcon },
-    { name: "Meal History", route:"/MealHistory", icon: UserIcon}
+    { name: "Meal History", route:"/MealHistory", icon: ClipboardDocumentListIcon }
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: HomeModernIcon },

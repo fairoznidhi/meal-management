@@ -9,8 +9,8 @@ const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
 type TotalMeal = {
-  name: string;
-  total_count: number;
+  total_lunch: number;
+  total_snacks: number;
 };
 
 // Function to calculate first date and days in a given month
@@ -41,16 +41,29 @@ const MealHistory = () => {
       try {
         setLoading(true);
         const response = await request({
-          url: "/meal_activity/meal-summary",
+          url: "/meal_activity/total-meal-summary",
           method: "PATCH",
           data: {
             start_date: firstDate,
             days: daysInMonth,
           },
           useAuth: true,
-        });
+        })as TotalMeal;
 
-        setTotalMeal(response as TotalMeal[]);
+        // Check if the response is an object with total_lunch and total_snacks
+        if (response && typeof response === "object") {
+          // Wrap the single object in an array for table compatibility
+          const mappedMeals = [
+            {
+              total_lunch: response.total_lunch,
+              total_snacks: response.total_snacks,
+            },
+          ];
+          setTotalMeal(mappedMeals);
+        } else {
+          // Handle unexpected response
+          setError("Unexpected response format");
+        }
       } catch (err: any) {
         console.error("Error fetching meals:", err);
         setError(err.response?.data?.message || "Failed to fetch meal summary.");
@@ -62,21 +75,16 @@ const MealHistory = () => {
     fetchTotalMeal();
   }, [firstDate, daysInMonth]); // Refetch when month changes
 
-
-const columns: Column[] = [
+  const columns: Column[] = [
     {
-      key: "name",
-      label: "Employee Name",
-      
+      key: "total_lunch",
+      label: "Total Lunch",
     },
-    
     {
-      key: "total_count",
-      label: "Total Meals",
+      key: "total_snacks",
+      label: "Total Snacks",
     },
-
   ];
-
 
   return (
     <div className="p-4">
@@ -117,9 +125,7 @@ const columns: Column[] = [
       {error && <p className="text-red-500">{error}</p>}
 
       {!loading && !error && totalMeal.length > 0 ? (
-        <Table columns={columns} data={totalMeal}>
-          
-        </Table>
+        <Table columns={columns} data={totalMeal} />
       ) : (
         !loading && <p>No meal records found.</p>
       )}

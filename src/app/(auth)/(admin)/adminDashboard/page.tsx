@@ -181,7 +181,9 @@ const MealActivityComponent = () => {
       }
     }
   };
-
+ 
+  
+  
   const handleMealTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setMealType(Number(event.target.value));
   };
@@ -344,3 +346,7 @@ const MealActivityComponent = () => {
 };
 
 export default MealActivityComponent;
+
+
+
+
