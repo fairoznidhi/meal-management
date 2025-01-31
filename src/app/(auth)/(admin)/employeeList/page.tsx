@@ -488,7 +488,7 @@ type MealsResponse = {
   snacks: number;
 };
 
-const getCurrentMonthDetails = () => {
+{/*const getCurrentMonthDetails = () => {
     const now = new Date();
     const firstDate = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -499,7 +499,30 @@ const getCurrentMonthDetails = () => {
         firstDate: firstDate.toISOString().split("T")[0],
         daysInMonth,
     };
+};*/}
+
+
+const getCurrentMonthDetails = () => {
+  const now = new Date();
+  const firstDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  const lastDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0));
+  const daysInMonth = lastDate.getUTCDate();
+
+  const dates = [];
+  for (let i = 0; i < daysInMonth; i++) {
+    const utcDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), i + 1));
+    dates.push(utcDate.toISOString().split("T")[0]); // Returns YYYY-MM-DD format in UTC
+  }
+
+  return {
+    now,
+    firstDate: firstDate.toISOString().split("T")[0], // First day in UTC
+    //lastDate: lastDate.toISOString().split("T")[0],   // Last day in UTC
+    daysInMonth,
+    //dates, // Array of all dates in the month
+  };
 };
+
 
 const EmployeeComponent: React.FC = () => {
     const [responseData, setResponseData] = useState<Row[]>([]);
