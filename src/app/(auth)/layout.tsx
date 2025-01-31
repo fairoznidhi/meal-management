@@ -39,12 +39,13 @@ export default function AuthLayout({
     { name: "Dashboard", route: "/adminDashboard", icon: HomeModernIcon },
     { name: "Employee List", route: "/employeeList", icon: UsersIcon },
     {
-      name: "Meal Plan",
+      name: "Meal Entry",
       route: "/adminmealPlan",
-      icon: ClipboardDocumentListIcon,
+      icon: UserIcon ,
     },
-    { name: "Menu Plan", route: "/menuPlan", icon: ClipboardDocumentListIcon },
-    { name: "My Profie", route: "/profile", icon: UserIcon },
+    { name: "Menu", route: "/menuPlan", icon: ClipboardDocumentListIcon },
+    //{ name: "My Profie", route: "/profile", icon: UserIcon },
+    { name: "Meal History", route:"/MealHistory", icon: ClipboardDocumentListIcon }
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: HomeModernIcon },
@@ -141,9 +142,14 @@ export default function AuthLayout({
                 alt="vlogo"
                 className="w-10 h-10 border rounded-full bg-white ms-3 me-5 "
               ></Image>
-              <p className="text-white font-semibold mt-1 text-2xl font-serif">
+              {/*<p className="text-white font-semibold mt-1 text-2xl font-serif">
                 VivaMeal
-              </p>
+              </p>*/}
+               {!isCollapsed && (
+    <p className="text-white font-semibold text-2xl font-serif ms-2 mt-1">
+      VivaMeal
+    </p>
+  )}
             </div>
             <Sidebar
               items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser}
