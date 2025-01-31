@@ -11,6 +11,7 @@ export type Column = {
     // onEdit: (key: string, value: any) => void
   ) => React.ReactNode; // Custom render function
   renderRow?: (row: Row, rowIndex: number) => string | undefined;
+  renderCellStyle?: (value: any, row: Row, rowIndex: number) => string;
 };
 
 export type Row = {
@@ -57,27 +58,30 @@ const Table: React.FC<TableProps> = ({
             const rowStyle = columns.find(col => col.renderRow)?.renderRow!(row, rowIndex);
             return (
               <tr key={rowIndex} className={rowStyle}>
-              {columns.map((col) => (
-                <td
-                  key={col.key}
-                  className="border border-gray-300 px-4 py-2 text-center"
-                >
-                  {col.render ? (
-                    col.render(row[col.key], row, rowIndex)
-                  ) : col.editable ? (
-                    <input
-                      type="text"
-                      value={row[col.key]}
-                      onChange={(e) =>
-                        handleInputChange(col.key, e.target.value, rowIndex)
-                      }
-                      className="px-2 py-1 text-center w-full"
-                    />
-                  ) : (
-                    row[col.key]
-                  )}
-                </td>
-              ))}
+              {columns.map((col) => {
+                const cellStyle = col.renderCellStyle?.(row[col.key], row, rowIndex) || "";
+                return (
+                  <td
+                    key={col.key}
+                    className={`border border-gray-300 px-4 py-2 text-center ${cellStyle}`}
+                  >
+                    {col.render ? (
+                      col.render(row[col.key], row, rowIndex)
+                    ) : col.editable ? (
+                      <input
+                        type="text"
+                        value={row[col.key]}
+                        onChange={(e) =>
+                          handleInputChange(col.key, e.target.value, rowIndex)
+                        }
+                        className="px-2 py-1 text-center w-full"
+                      />
+                    ) : (
+                      row[col.key]
+                    )}
+                  </td>
+                )
+              })}
             </tr>
             );
           })}

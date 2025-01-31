@@ -15,9 +15,6 @@ const ResetPassword = () => {
     newPassword: "",
     confirmNewPassword: "",
   });
-  useEffect(()=>{
-    router.push('/');
-  },[session])
   const handlePasswordChange = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (formData.newPassword.length < 8) {

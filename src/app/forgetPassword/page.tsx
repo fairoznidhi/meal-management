@@ -12,11 +12,6 @@ export type ForgetPasswordInputs = {
 const BASE_URL = `${process.env.NEXT_PUBLIC_URL}`;
 const ForgetPasswordPage = () => {
   const { mutate } = usePatchForgetPassword();
-  const router=useRouter();
-  const {data:session}=useSession();
-  useEffect(()=>{
-      router.push('/');
-    },[session])
   const [mailSent,setMailSent]=useState(false);
   const { register, handleSubmit } = useForm<ForgetPasswordInputs>();
   const onSubmit = async (data: ForgetPasswordInputs) => {
