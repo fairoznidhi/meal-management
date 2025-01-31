@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { baseRequest } from "@/services/HttpClientAPI";
-import MealStatusModal from "@/features/dashboard/MealStatusModal";
 import Search from "@/components/Search";
+import MealStatusModal from "@/features/dashboard/MealStatusModal";
 import TotalBox from "@/features/dashboard/TotalBox";
+import { baseRequest } from "@/services/HttpClientAPI";
+import { useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
 
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
@@ -173,8 +174,6 @@ const MealActivityComponent = () => {
   };
    const filteredData= mealActivityData.filter((employee)=>
   employee.employee_name.toLowerCase().includes(searchTerm.toLowerCase()));
-
-
   return (
     <div className="p-4">
       <div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>

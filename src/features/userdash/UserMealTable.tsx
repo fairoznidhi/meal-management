@@ -12,7 +12,7 @@ import {
   useRangeMealPlan,
   useSingleEmployeeMealActivity,
 } from "@/services/queries";
-import { addDays, format, startOfWeek } from "date-fns";
+import { addDays, format } from "date-fns";
 import { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import React, { createContext, useEffect, useState } from "react";
@@ -50,17 +50,25 @@ const MealPlanTable = () => {
   const [mealStatusToggle, setMealStatusToggle] = useState(false);
   const [update, setUpdate] = useState(false);
   const [currentDate, setCurrentDate] = useState(
-    format(startOfWeek(new Date(), { weekStartsOn: 1 }), "yyyy-MM-dd")
+    format(new Date(), "yyyy-MM-dd")
+    // format(startOfWeek(new Date(), { weekStartsOn: 1 }), "yyyy-MM-dd")
   );
   const today = format(new Date(), "yyyy-MM-dd");
   const [editTable, setEditTable] = useState(false);
-  const isRowEditable = (rowDate: string) => {
+  const isRowEditable = (rowDate: string,mealType:string) => {
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinutes = now.getMinutes();
     const isBefore10AM =
       currentHour < 10 || (currentHour === 10 && currentMinutes === 0);
-    if (!isBefore10AM) {
+      const isBefore2PM =
+      currentHour < 14 || (currentHour === 14 && currentMinutes === 0);
+    if (!isBefore10AM && mealType==="lunch") {
+      return (
+        rowDate >= format(addDays(new Date(), 1), "yyyy-MM-dd") && editTable
+      );
+    }
+    if (!isBefore2PM && mealType==="snacks") {
       return (
         rowDate >= format(addDays(new Date(), 1), "yyyy-MM-dd") && editTable
       );
@@ -91,7 +99,7 @@ const MealPlanTable = () => {
       key: "lunchStatus",
       label: "Lunch Status",
       render: (value, row, rowIndex) => {
-        const isEditable = isRowEditable(row.date);
+        const isEditable = isRowEditable(row.date,"lunch");
         return (
           <div>
           <input
@@ -116,14 +124,14 @@ const MealPlanTable = () => {
       key: "lunchGuest",
       label: "Lunch Guest",
       render: (value, row, rowIndex) => {
-        const isEditable = isRowEditable(row.date);
+        const isEditable = isRowEditable(row.date,"lunch");
         return (
           <div className="flex items-center justify-center space-x-2">
             {isEditable && (
               <button
                 onClick={() => {
-                  const newValue = Math.max(0, parseInt(value, 10) - 1); // Decrease guest count, but not below 0
-                  toggleRowStatus(rowIndex, row, "lunchGuest", newValue); // Pass the new value
+                  const newValue = Math.max(0, parseInt(value, 10) - 1); 
+                  toggleRowStatus(rowIndex, row, "lunchGuest", newValue);
                 }}
                 className="px-2 text-gray-500 bg-gray-100 rounded hover:bg-gray-200"
               >
@@ -151,7 +159,7 @@ const MealPlanTable = () => {
       key: "snacksStatus",
       label: "Snacks Status",
       render: (value, row, rowIndex) => {
-        const isEditable = isRowEditable(row.date);
+        const isEditable = isRowEditable(row.date,"snacks");
         return (
           <input
             type="checkbox"
@@ -174,7 +182,7 @@ const MealPlanTable = () => {
       key: "snacksGuest",
       label: "Snacks Guest",
       render: (value, row, rowIndex) => {
-        const isEditable = isRowEditable(row.date);
+        const isEditable = isRowEditable(row.date,"snacks");
         return (
           <div className="flex items-center justify-center space-x-2">
             {isEditable && (
@@ -192,8 +200,8 @@ const MealPlanTable = () => {
             {isEditable && (
               <button
                 onClick={() => {
-                  const newValue = parseInt(value, 10) + 1; // Increase guest count
-                  toggleRowStatus(rowIndex, row, "snacksGuest", newValue); // Pass the new value
+                  const newValue = parseInt(value, 10) + 1;
+                  toggleRowStatus(rowIndex, row, "snacksGuest", newValue);
                 }}
                 className="px-2 text-gray-500 bg-gray-100 rounded hover:bg-gray-200"
               >
@@ -207,7 +215,14 @@ const MealPlanTable = () => {
   ];
   const { data: mealActivityData, refetch: mealActivityRefetch } =
     useSingleEmployeeMealActivity(currentDate, "7");
-  const { data: mealPlan } = useRangeMealPlan(currentDate, "7");
+  const { data: mealPlan,refetch:mealPlanRefetch } = useRangeMealPlan(currentDate, "7");
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      mealPlanRefetch();
+    }, 6000); 
+  
+    return () => clearTimeout(timeout);
+  }, [mealPlanRefetch]);
   const { data: nextWeekMealActivityData } = useSingleEmployeeMealActivity(
     format(addDays(currentDate, 7), "yyyy-MM-dd"),
     "7"
@@ -224,6 +239,10 @@ const MealPlanTable = () => {
     format(addDays(currentDate, -7), "yyyy-MM-dd"),
     "7"
   );
+  const {data:prevWeekMealPlan}=useRangeMealPlan(format(addDays(currentDate, -7), "yyyy-MM-dd"),
+  "7");
+  const {data:nextWeekMealPlan}=useRangeMealPlan(format(addDays(currentDate, 7), "yyyy-MM-dd"),
+  "7");
   const [prevWeekDataAvailable, setPrevWeekDataAvailable] = useState(false);
   useEffect(() => {
     if (prevWeekMealActivityData && prevWeekMealActivityData.length > 0) {
@@ -251,15 +270,15 @@ const MealPlanTable = () => {
             lunch: currentDayMenu
               ? currentDayMenu.menu?.find(
                   (m: MenuDetails) => m.meal_type === "lunch"
-                )?.food || "Meal Plan Missing"
-              : "Meal Plan Missing",
+                )?.food || "Menu Missing"
+              : "Menu Missing",
             lunchStatus: employee.meal?.[0]?.meal_status?.[0]?.status ? 1 : 0,
             lunchGuest: employee.meal?.[0]?.meal_status?.[0]?.guest_count,
             snacks: currentDayMenu
               ? currentDayMenu.menu?.find(
                   (m: MenuDetails) => m.meal_type === "snacks"
-                )?.food || "Meal Plan Missing"
-              : "Meal Plan Missing",
+                )?.food || "Menu Missing"
+              : "Menu Missing",
             snacksStatus: employee.meal?.[1]?.meal_status?.[0]?.status ? 1 : 0,
             snacksGuest: employee.meal?.[1]?.meal_status?.[0]?.guest_count,
           });
@@ -303,26 +322,21 @@ const MealPlanTable = () => {
   };
   const handleEditSave = () => {
     setEditTable(false);
-
-    // Transform the data into the desired format
     const formattedData = data?.flatMap((row) => {
-      const employeeId = session?.user?.employee_id || 10; // Replace with actual employee ID from session or props
-
-      // Create objects for lunch and snacks
+      const employeeId = session?.user?.employee_id || 10; 
       const lunchEntry = {
         date: row.date,
         employee_id: employeeId,
-        meal_type: 1, // 1 for lunch
-        status: row.lunchStatus === 1, // Convert to boolean
-        guest_count: row.lunchGuest || 0, // Default to 0 if undefined
+        meal_type: 1,
+        status: row.lunchStatus === 1, 
+        guest_count: row.lunchGuest || 0,
       };
-
       const snacksEntry = {
         date: row.date,
         employee_id: employeeId,
-        meal_type: 2, // 2 for snacks
-        status: row.snacksStatus === 1, // Convert to boolean
-        guest_count: row.snacksGuest || 0, // Default to 0 if undefined
+        meal_type: 2, 
+        status: row.snacksStatus === 1, 
+        guest_count: row.snacksGuest || 0,
       };
 
       return [lunchEntry, snacksEntry];
@@ -452,7 +466,7 @@ const MealPlanTable = () => {
         />
         {/* Alert Notification */}
       {alertMessage && (
-        <div className="fixed top-5 right-5 bg-gray-500 text-white px-4 pt-2 rounded-md shadow-md min-w-64">
+        <div className="fixed top-20 right-5 bg-gray-500 text-white px-4 pt-2 rounded-md shadow-md min-w-64">
           <p>{alertMessage}</p>
           {/* Progress Bar */}
           <div className="w-full bg-gray-700 h-1 mt-4">

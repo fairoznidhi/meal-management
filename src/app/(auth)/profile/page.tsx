@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useEmployeePhoto, useTokenSingleEmployee } from "@/services/queries";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
@@ -8,9 +8,10 @@ import { getSession } from "next-auth/react";
 import { usePatchEmployeeProfile } from "@/services/mutations";
 import ChangePassword from "@/features/changePassword/ChangePassword";
 import { Session } from "next-auth";
-
+import { ProfilePictureContext } from "../layout";
 
 const ProfilePage = () => {
+  const { setUserName } = useContext(ProfilePictureContext);
   const { data: profileList } = useTokenSingleEmployee();
   const { mutate } = usePatchEmployeeProfile();
   const [formData, setFormData] = useState<UserProfileDataType | null>(null);
@@ -31,7 +32,7 @@ const ProfilePage = () => {
     checkSession();
   }, []);
   const [isEditProfile, setIsEditProfile] = useState(false);
-  
+
   useEffect(() => {
     if (profileList) {
       const profile = profileList[0];
@@ -40,15 +41,16 @@ const ProfilePage = () => {
         email: profile.email ?? "",
         phone_number: profile.phone_number,
         dept_name: profile.dept_name ?? "",
-        remarks: profile.remarks ?? "",
+        remarks: profile.remarks ?? "n/a",
       });
       setActualData({
         name: profile.name ?? "",
         email: profile.email ?? "",
         phone_number: profile.phone_number,
         dept_name: profile.dept_name ?? "",
-        remarks: profile.remarks ?? "",
+        remarks: profile.remarks ?? "n/a",
       });
+      setUserName(profile.name ?? "");
     }
   }, [profileList]);
 
@@ -68,9 +70,28 @@ const ProfilePage = () => {
   };
   const handleEmployeeUpdate = () => {
     const data = new FormData();
-    data.append("name", formData?.name ?? '');
-    data.append("phone_number", formData?.phone_number??'');
-    data.append("remarks", formData?.remarks??'');
+    data.append("name", formData?.name ?? "");
+    const name = data.get("name");
+    if (typeof name === "string") {
+      if (name.length===0) {
+        alert(
+          "Name cannot be empty"
+        );
+        return;
+      }
+    }
+    setUserName(formData?.name ?? "");
+    data.append("phone_number", formData?.phone_number ?? "");
+    const phoneNumber = data.get("phone_number");
+    if (typeof phoneNumber === "string") {
+      if (phoneNumber.length !== 11 || !/^\d+$/.test(phoneNumber)) {
+        alert(
+          "Phone number must be exactly 11 digits and contain only numbers"
+        );
+        return;
+      }
+    }
+    data.append("remarks", formData?.remarks ?? "");
     if (session) {
       data.append("employee_id", session?.user?.employee_id);
     }
@@ -114,10 +135,7 @@ const ProfilePage = () => {
       <div className="flex flex-row justify-between items-center mt-8 mb-8">
         {/*Profile Picture and Name Display*/}
         <div className="flex items-center ">
-          
-          {formData && (
-            <ProfileDisplay/>
-          )}
+          {formData && <ProfileDisplay />}
           {formData && (
             <h1 className="px-6 text-xl font-semibold">{formData.name}</h1>
           )}
@@ -161,7 +179,7 @@ const ProfilePage = () => {
       {!isEditProfile && <ChangePassword />}
       {/* Alert Notification */}
       {alertMessage && (
-        <div className="fixed top-5 right-5 bg-gray-500 text-white px-4 pt-2 rounded-md shadow-md min-w-64">
+        <div className="fixed top-20 right-5 bg-gray-500 text-white px-4 pt-4 rounded-md shadow-md min-w-64">
           <p>{alertMessage}</p>
           {/* Progress Bar */}
           <div className="w-full bg-gray-700 h-1 mt-4">

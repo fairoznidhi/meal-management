@@ -1,13 +1,13 @@
 "use client";
 import { Button } from "@/components/button";
 import Input from "@/components/input/Input";
-import Image from "next/image";
-import loginhero from "../../../public/loginhero.png";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
 import ForgetPassword from "@/features/forgetPassword/ForgetPassword";
-import { useState } from "react";
+import { signIn, useSession } from "next-auth/react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import loginhero from "../../../public/loginhero.png";
 export type Inputs = {
   email: string;
   password: string;
@@ -16,11 +16,13 @@ const LoginPage = () => {
   const { register, handleSubmit } = useForm<Inputs>();
   const router = useRouter();
   const {data:session,status}=useSession();
-  if (status === "authenticated" && session?.user?.is_admin) {
-    router.push("/adminDashboard");
-  } else if (status === "authenticated" &&!session?.user?.is_admin) {
-    router.push("/userDashboard");
-  }
+  useEffect(()=>{
+    if (status === "authenticated" && session?.user?.is_admin) {
+      router.push("/adminDashboard");
+    } else if (status === "authenticated" &&!session?.user?.is_admin) {
+      router.push("/userDashboard");
+    }
+  },[session,status,router])
   const onSubmit = async (data: Inputs) => {
     setLoading(true);
     try {
@@ -31,6 +33,7 @@ const LoginPage = () => {
       });
       if (result?.error) {
         alert("Sorry, your email or password is incorrect. Please try again.");
+        setLoading(false);
       } else if (result?.ok) {
         const session = await fetch("/api/auth/session").then((res) =>
           res.json()
