@@ -41,11 +41,15 @@ export default function AuthLayout({
     {
       name: "Meal Entry",
       route: "/adminmealPlan",
-      icon: UserIcon ,
+      icon: UserIcon,
     },
     { name: "Menu", route: "/menuPlan", icon: ClipboardDocumentListIcon },
     //{ name: "My Profie", route: "/profile", icon: UserIcon },
-    { name: "Meal History", route:"/MealHistory", icon: ClipboardDocumentListIcon }
+    {
+      name: "Meal History",
+      route: "/MealHistory",
+      icon: ClipboardDocumentListIcon,
+    },
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: HomeModernIcon },
@@ -56,11 +60,11 @@ export default function AuthLayout({
   const [session, setSession] = useState<Session | null>(null);
   const { data: profileList } = useTokenSingleEmployee();
   useEffect(() => {
-      if (profileList) {
-        const profile = profileList[0];
-        setUserName(profile.name ?? "")
-      }
-    }, [profileList]);
+    if (profileList && profileList.length > 0) {
+      const profile = profileList[0];
+      setUserName(profile?.name ?? "");
+    }
+  }, [profileList]);
   useEffect(() => {
     const checkSession = async () => {
       const session = await getSession();
@@ -145,11 +149,11 @@ export default function AuthLayout({
               {/*<p className="text-white font-semibold mt-1 text-2xl font-serif">
                 VivaMeal
               </p>*/}
-               {!isCollapsed && (
-    <p className="text-white font-semibold text-2xl font-serif ms-2 mt-1">
-      VivaMeal
-    </p>
-  )}
+              {!isCollapsed && (
+                <p className="text-white font-semibold text-2xl font-serif ms-2 mt-1">
+                  VivaMeal
+                </p>
+              )}
             </div>
             <Sidebar
               items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser}
@@ -163,13 +167,15 @@ export default function AuthLayout({
               <div className="flex-1"></div>
               <div className="flex-none gap-2">
                 <div className="dropdown dropdown-end">
-                  <div className="flex items-center " tabIndex={0}
-                      role="button">
-                    <div className="pr-4 text-base font-semibold text-gray-700">{userName}</div>
-                    <div
-  
-                      className="btn btn-ghost btn-circle avatar"
-                    >
+                  <div
+                    className="flex items-center "
+                    tabIndex={0}
+                    role="button"
+                  >
+                    <div className="pr-4 text-base font-semibold text-gray-700">
+                      {userName}
+                    </div>
+                    <div className="btn btn-ghost btn-circle avatar">
                       <div className="w-10 rounded-full">
                         <img
                           alt="Tailwind CSS Navbar component"
@@ -188,7 +194,20 @@ export default function AuthLayout({
                       </Link>
                     </li>
                     <li>
-                      <a onClick={() => signOut({ callbackUrl: "/login" })}>
+                      <a
+                        onClick={() => {
+                          localStorage.clear();
+                          sessionStorage.clear();
+                          caches.keys().then((names) => {
+                            names.forEach((name) => caches.delete(name));
+                          });
+                          setUserProfilePicture(profileImage.src);
+                          setUserName("");
+                          setTimeout(() => {
+                            signOut({ callbackUrl: "/login" });
+                          }, 500);
+                        }}
+                      >
                         Logout
                       </a>
                     </li>
