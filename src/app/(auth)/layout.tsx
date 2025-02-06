@@ -6,6 +6,7 @@ import {
   HomeModernIcon,
   UserIcon,
   UsersIcon,
+  CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
 import { Session } from "next-auth";
 import { getSession, SessionProvider, signOut } from "next-auth/react";
@@ -39,13 +40,13 @@ export default function AuthLayout({
     { name: "Dashboard", route: "/adminDashboard", icon: HomeModernIcon },
     { name: "Employee List", route: "/employeeList", icon: UsersIcon },
     {
-      name: "Meal Entry",
+      name: "My Meal Entry",
       route: "/adminmealPlan",
       icon: UserIcon ,
     },
     { name: "Menu", route: "/menuPlan", icon: ClipboardDocumentListIcon },
     //{ name: "My Profie", route: "/profile", icon: UserIcon },
-    { name: "Meal History", route:"/MealHistory", icon: ClipboardDocumentListIcon }
+    { name: "Meal History", route:"/MealHistory", icon: CalendarDaysIcon}
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: HomeModernIcon },
@@ -58,7 +59,7 @@ export default function AuthLayout({
   useEffect(() => {
       if (profileList) {
         const profile = profileList[0];
-        setUserName(profile.name ?? "")
+        setUserName(profile?.name ?? "")
       }
     }, [profileList]);
   useEffect(() => {

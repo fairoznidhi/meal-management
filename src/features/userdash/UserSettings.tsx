@@ -19,7 +19,7 @@ const UserSettings = () => {
   useEffect(() => {
     if (profileList) {
       const profile = profileList[0];
-      setMealStatusToggle(profile.default_status ?? false);
+      setMealStatusToggle(profile?.default_status ?? false);
     }
   }, [profileList]);
   const [settingsOpen, setSettingsOpen] = useState(false);
