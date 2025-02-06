@@ -1,17 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
-import Table, { Column } from "@/components/Table"; // Ensure correct path
-import { headers } from "next/headers";
-
-const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
-const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
-
-type TotalMeal = {
-  total_lunch: number;
-  total_snacks: number;
-};
+import { usePatchTotalLunchSnacksCount, usePatchTotalMealGroup } from "@/services/mutations";
+import Table, { Column } from "@/components/Table";
+import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
 
 // Function to calculate first date and days in a given month
 const getMonthDetails = (year: number, month: number) => {
@@ -29,53 +21,86 @@ const MealHistory = () => {
   const now = new Date();
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth()); // Default to current month
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
-  const [totalMeal, setTotalMeal] = useState<TotalMeal[]>([]);
+  const [totalMeal, setTotalMeal] = useState<any[]>([]); // Use any[] for formatted data
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Get current month details based on selection
   const { firstDate, daysInMonth } = getMonthDetails(selectedYear, selectedMonth);
 
-  useEffect(() => {
-    const fetchTotalMeal = async () => {
-      try {
-        setLoading(true);
-        const response = await request({
-          url: "/meal_activity/total-meal-summary",
-          method: "PATCH",
-          data: {
-            start_date: firstDate,
-            days: daysInMonth,
-          },
-          useAuth: true,
-        })as TotalMeal;
+  const { mutate: lunchMealCount } = usePatchTotalMealGroup(firstDate, 1, daysInMonth);
+  const { mutate: snacksMealCount } = usePatchTotalMealGroup(firstDate, 2, daysInMonth);
+  const { mutate: totalCount } = usePatchTotalLunchSnacksCount(firstDate, daysInMonth);
 
-        // Check if the response is an object with total_lunch and total_snacks
-        if (response && typeof response === "object") {
-          // Wrap the single object in an array for table compatibility
-          const mappedMeals = [
-            {
-              total_lunch: response.total_lunch,
-              total_snacks: response.total_snacks,
-            },
-          ];
-          setTotalMeal(mappedMeals);
-        } else {
-          // Handle unexpected response
-          setError("Unexpected response format");
-        }
-      } catch (err: any) {
-        console.error("Error fetching meals:", err);
-        setError(err.response?.data?.message || "Failed to fetch meal summary.");
-      } finally {
-        setLoading(false);
-      }
+  const formatData = (
+    lunchData: totalMealGroup[],
+    snacksData: totalMealGroup[],
+    totalCountData: TotalMeal
+  ) => {
+    const formattedData = lunchData.map((lunch) => {
+      const matchingSnack = snacksData.find((snack) => snack.date === lunch.date);
+
+      return {
+        date: lunch.date,
+        total_lunch: lunch.count || 0,
+        total_snacks: matchingSnack?.count || 0,
+      };
+    });
+
+    const totalRow = {
+      date: "Total",
+      total_lunch: totalCountData.total_lunch,
+      total_snacks: totalCountData.total_snacks,
     };
 
-    fetchTotalMeal();
-  }, [firstDate, daysInMonth]); // Refetch when month changes
+    formattedData.push(totalRow);
+    return formattedData;
+  };
+
+  useEffect(() => {
+    setLoading(true);
+
+    Promise.all([
+      new Promise<totalMealGroup[]>((resolve, reject) => {
+        lunchMealCount(undefined, {
+          onSuccess: (data) => resolve(data),
+          onError: (error) => reject(error),
+        });
+      }),
+      new Promise<totalMealGroup[]>((resolve, reject) => {
+        snacksMealCount(undefined, {
+          onSuccess: (data) => resolve(data),
+          onError: (error) => reject(error),
+        });
+      }),
+      new Promise<TotalMeal>((resolve, reject) => {
+        totalCount(undefined, {
+          onSuccess: (data) => resolve(data),
+          onError: (error) => reject(error),
+        });
+      }),
+    ])
+      .then(([lunchData, snacksData, totalCountData]) => {
+        if (!lunchData.length && !snacksData.length && !totalCountData) {
+          setError("No meal data available for the selected month.");
+        } else {
+          const formatted = formatData(lunchData, snacksData, totalCountData);
+          setTotalMeal(formatted);
+          setError(null);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setError("No Data Available");
+        setLoading(false);
+      });
+  }, [firstDate, daysInMonth]);
 
   const columns: Column[] = [
+    {
+      key: "date",
+      label: "Date",
+    },
     {
       key: "total_lunch",
       label: "Total Lunch",
@@ -127,7 +152,7 @@ const MealHistory = () => {
       {!loading && !error && totalMeal.length > 0 ? (
         <Table columns={columns} data={totalMeal} />
       ) : (
-        !loading && <p>No meal records found.</p>
+        !loading && !error && <p>No meal records found for the selected month.</p>
       )}
     </div>
   );
