@@ -29,7 +29,10 @@ interface MealActivityData {
   employee_name: string;
   employee_details: EmployeeDetail[];
 }
-
+type totalmeal={
+  date:string,
+  count:number,
+}
 const MealActivityComponent = () => {
   const [mealActivityData, setMealActivityData] = useState<MealActivityData[]>(
     []
@@ -66,15 +69,16 @@ const MealActivityComponent = () => {
     const formattedDate = today.toISOString().split("T")[0];
     try {
       const response = (await request({
-        url: "/meal_activity/total-meal",
+        url: "/meal_activity/total-meal-group",
         method: "PATCH",
         data: {
           date: formattedDate,
           meal_type: 1,
+          days:1
         },
         useAuth: true,
-      })) as number;
-      setLunchTotal(response);
+      })) as totalmeal[];
+      setLunchTotal(response[0].count);
     } catch (err: any) {
       console.log("Error Fetching Lunch");
     }
@@ -85,15 +89,16 @@ const MealActivityComponent = () => {
     const formattedDate = today.toISOString().split("T")[0];
     try {
       const response = (await request({
-        url: "/meal_activity/total-meal",
+        url: "/meal_activity/total-meal-group",
         method: "PATCH",
         data: {
           date: formattedDate,
           meal_type: 2,
+          days:1
         },
         useAuth: true,
-      })) as number;
-      setSnacksTotal(response);
+      })) as totalmeal[];
+      setSnacksTotal(response[0].count);
     } catch (err: any) {
       console.log("Error Fetching Lunch");
     }
@@ -394,6 +399,11 @@ const MealActivityComponent = () => {
     });
   };
 
+  const handleBothUpdates = () => {
+    fetchTotallunch();
+    fetchTotalSnacks();
+  };
+
   const filteredData = mealActivityData.filter((employee) =>
     employee.employee_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -412,21 +422,21 @@ const MealActivityComponent = () => {
       {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
       <div className="flex gap-4 mb-8">
         <div className="p-4 bg-blue-200 rounded-md shadow-md text-center">
-          <h3 className="text-lg font-semibold">Todays Total Lunch</h3>
+          <h3 className="text-lg font-semibold">Today&apos;s Total Lunch</h3>
           <p className="text-xl">
             {lunchTotal !== null ? lunchTotal : "Loading..."}
           </p>
         </div>
 
         <div className="p-4 bg-green-200 rounded-md shadow-md text-center">
-          <h3 className="text-lg font-semibold">Todays Total Snacks</h3>
+          <h3 className="text-lg font-semibold">Today&apos;s Total Snacks</h3>
           <p className="text-xl">
             {snacksTotal !== null ? snacksTotal : "Loading..."}
           </p>
         </div>
 
         <div className="p-4 bg-violet-200 rounded-md shadow-md text-center w-64">
-          <InstantGuest />
+          <InstantGuest onUpdateSuccess={handleBothUpdates}/>
         </div>
       </div>
 

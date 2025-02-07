@@ -40,14 +40,15 @@ const ProfilePage = () => {
         email: profile?.email ?? "",
         phone_number: profile?.phone_number,
         dept_name: profile?.dept_name ?? "",
-        remarks: profile?.remarks ?? "n/a",
+        remarks: profile?.remarks?.trim() ? profile.remarks : "No preference",
       });
+      console.log("Profile formdata",formData)
       setActualData({
         name: profile?.name ?? "",
         email: profile?.email ?? "",
         phone_number: profile?.phone_number,
         dept_name: profile?.dept_name ?? "",
-        remarks: profile?.remarks ?? "n/a",
+        remarks: profile?.remarks?.trim() ? profile.remarks : "No preference",
       });
       setUserName(profile?.name ?? "");
     }

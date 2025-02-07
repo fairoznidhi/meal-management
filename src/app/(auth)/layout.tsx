@@ -152,6 +152,7 @@ export default function AuthLayout({
     <p className="text-white font-semibold text-2xl font-serif mt-1">
       VivaMeal
     </p>
+    
   )}
             </div>
             <Sidebar
