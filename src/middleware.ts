@@ -36,6 +36,7 @@ export const config = {
     "/userDashboard",
     "/userProfile",
     "/profile",
+    "/mealPlan",
     "/",
   ],
 };
