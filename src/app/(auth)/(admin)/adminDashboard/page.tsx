@@ -362,7 +362,6 @@ const MealActivityComponent = () => {
 
     return newDate;
   };
-
   // Handle previous week navigation
   const handlePreviousWeek = () => {
     setStartDate((prev) => {
@@ -408,13 +407,9 @@ const MealActivityComponent = () => {
   const lunchGuestsT = lunchGuests[todayDate] || 0;
   const snacksGuestsT = snackGuests[todayDate] || 0;
 
- 
-  
-
   return (
     <div className="p-4">
       {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
-
       <div className="flex gap-4 mb-8">
         <div className="p-4 bg-blue-200 rounded-md shadow-md text-center">
           <h3 className="text-lg font-semibold">Todays Total Lunch</h3>
@@ -431,7 +426,7 @@ const MealActivityComponent = () => {
         </div>
 
         <div className="p-4 bg-violet-200 rounded-md shadow-md text-center w-64">
-          <InstantGuest/>
+          <InstantGuest />
         </div>
       </div>
 

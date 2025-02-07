@@ -450,9 +450,13 @@ import Table, { Column, Row } from "@/components/Table"; // Adjust the import pa
 import Search from "@/components/Search";
 import Modal from "@/components/modal";
 import { headers } from "next/headers";
+import DepartmentModal from "@/features/employeeList/deptModal"
+import notificationToast from "@/components/notificationToast";
 
 const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
+
+
 
 type Employee = {
     employee_id: string;
@@ -487,6 +491,12 @@ type MealsResponse = {
   lunch: number;
   snacks: number;
 };
+
+type Dept={
+  dept_id:number,
+  dept_name:string,
+  weekends:string[],
+}
 
 {/*const getCurrentMonthDetails = () => {
     const now = new Date();
@@ -525,11 +535,18 @@ const getCurrentMonthDetails = () => {
 
 
 const EmployeeComponent: React.FC = () => {
+    const now = new Date();
     const [responseData, setResponseData] = useState<Row[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
     const [showAddModal, setShowAddModal] = useState<boolean>(false);
+    const [showDeptModal, setShowDeptModal] = useState<boolean>(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Row | null>(null);
+    const [departments, setDepartments] = useState<Dept[]>([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [updatedEmployee, setUpdatedEmployee] = useState<Row | null>(null);
+    const [selectedMonth, setSelectedMonth] = useState(now.getUTCMonth()); // Default: Current month
+  const [selectedYear, setSelectedYear] = useState(now.getUTCFullYear()); // Default: Current year
     const [newEmployee, setNewEmployee] = useState<{
         name: string;
         email: string;
@@ -549,7 +566,34 @@ const EmployeeComponent: React.FC = () => {
     });
     const [searchTerm, setSearchTerm] = useState("");
     
-    const { now, firstDate, daysInMonth } = getCurrentMonthDetails();
+    //const { now, firstDate, daysInMonth } = getCurrentMonthDetails();
+
+
+    
+      
+      const getMonthDetails = (year: number, month: number) => {
+        const firstDate = new Date(Date.UTC(year, month, 1));
+        const lastDate = new Date(Date.UTC(year, month + 1, 0));
+        const daysInMonth = lastDate.getUTCDate();
+    
+        return {
+          firstDate: firstDate.toISOString().split("T")[0], // YYYY-MM-DD format
+          lastDate: lastDate.toISOString().split("T")[0], // YYYY-MM-DD format
+          daysInMonth,
+        };
+      };
+    
+      const { firstDate, lastDate, daysInMonth } = getMonthDetails(selectedYear, selectedMonth);
+    
+
+
+
+
+
+
+
+
+
 
     const resetForm = () => {
         setNewEmployee({
@@ -563,6 +607,26 @@ const EmployeeComponent: React.FC = () => {
         });
     };
 
+    
+      
+    const fetchDept=async()=>{
+        try{
+          const dept=await request({
+            url:"/dept",
+            method:"GET",
+            useAuth:true,
+          });
+          return dept as Dept[];
+        }catch (err: any) {
+          console.error("Error fetching depts:", err);
+          return [];
+      }
+      };
+    
+
+
+
+
     const fetchEmployees = async () => {
         try {
             const employees = await request({
@@ -573,7 +637,8 @@ const EmployeeComponent: React.FC = () => {
             return employees as any[];
         } catch (err: any) {
             console.error("Error fetching employees:", err);
-            setError(err.response?.data?.message || "Failed to fetch employees.");
+            //setError(err.response?.data?.message || "Failed to fetch employees.");
+            notificationToast("Error Fetching Employee List","error");
             return [];
         }
     };
@@ -647,7 +712,7 @@ const EmployeeComponent: React.FC = () => {
     const fetchAndPatchEmployees = async () => {
         setError(null);
         setResponseData([]);
-
+        //notificationToast("Fetching Employee List","info");
         const employees = await fetchEmployees();
         if (employees.length === 0) {
             setError("No employees found.");
@@ -682,10 +747,12 @@ const EmployeeComponent: React.FC = () => {
             setResponseData(prevData =>
                 prevData.filter(row => row.employee_id !== employeeId)
             );
+            notificationToast("Employee Deleted Successfully","success");
             setShowDeleteModal(false);
         } catch (err: any) {
             console.error("Error deleting employee:", err);
-            setError(err.response?.data?.alert || "Failed to delete employee.");
+            notificationToast("Failed to Delete Employee","error");
+            //setError(err.response?.data?.alert || "Failed to delete employee.");
         }
     };
     const createMealPlan = async () => {
@@ -711,7 +778,7 @@ const EmployeeComponent: React.FC = () => {
             if (newEmployee.photo) {
                 formData.append("photo", newEmployee.photo, newEmployee.photo.name);
             }
-
+            notificationToast("Processing","info");
             const response = await request({
                 url: "/employee",
                 method: "POST",
@@ -738,16 +805,97 @@ const EmployeeComponent: React.FC = () => {
             await createMealPlan();
             setShowAddModal(false);
             resetForm();
+            notificationToast("Employee Added Successfully","success");
         } catch (err: any) {
             console.error("Error adding employee:", err);
-            alert("Failed to add Employee");
-            setError(err.response?.data?.message);
+            //alert("Failed to add Employee");
+            //setError(err.response?.data?.message);
+            notificationToast("Failed to Add Employee","error");
         }
     };
 
-    useEffect(() => {
+
+    const updateEmployee = async () => {
+      try {
+        const formData = new FormData();
+        formData.append("employee_id", selectedEmployee?.employee_id);
+        formData.append("name", updatedEmployee?.name);
+        formData.append("email", updatedEmployee?.email);
+        formData.append("dept_id", updatedEmployee?.dept_id);
+        formData.append("phone_number", updatedEmployee?.phone_number);
+        formData.append("remarks", updatedEmployee?.remarks);
+    
+        await request({
+          url: `/employee`,
+          method: "PATCH",
+          data: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          useAuth: true,
+        });
+    
+        setResponseData((prevData) =>
+          prevData.map((emp) =>
+            emp.employee_id === selectedEmployee?.employee_id
+              ? { ...emp, ...updatedEmployee }
+              : emp
+          )
+        );
+        setShowDeleteModal(false);
+        setIsEditing(false);
+        //alert("Employee Updated Successfully");
+        notificationToast("Employee Updated Successfully","success");
+        await fetchAndPatchEmployees();
+      } catch (err: any) {
+        console.error("Error updating employee:", err);
+        //alert("Failed to update employee,please select a department");
+        notificationToast("Failed to Update Employee, please select a department","warning");
+      }
+    };
+
+    
+
+    {/*useEffect(() => {
         fetchAndPatchEmployees();
-    }, []);
+    }, []);*/}
+
+
+    useEffect(() => {
+      const fetchData = async () => {
+    
+          await fetchAndPatchEmployees();  // Call your existing function
+          const deptList = await fetchDept();  // Call fetchDept
+          setDepartments(deptList);  // Store fetched departments in state
+      };
+  
+      fetchData();  // Invoke the async function inside useEffect
+  }, [selectedYear, selectedMonth]);
+  
+    
+
+  const handleAddEmployeeClick = async () => {
+    try {
+        // Call the additional API
+        const deptList=await fetchDept(); 
+        setDepartments(deptList);        
+        // After the API call is successful, show the modal
+        setShowAddModal(true);
+    } catch (error) {
+        console.error("Error calling additional API:", error);
+        // Handle error appropriately, maybe show an alert
+    }
+};
+
+
+
+
+
+
+
+
+
+
 
     const filteredData = responseData.filter((row: Row) =>
         (row.name?.toLowerCase() ?? "").includes(searchTerm.toLowerCase()) ||
@@ -792,13 +940,44 @@ const EmployeeComponent: React.FC = () => {
     return (
         <div className="p-4">
             <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-between mb-4">
+             
+            <div className="mb-1 flex gap-4 mt-2">
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+          className="border rounded px-2 py-1"
+        >
+          {Array.from({ length: 12 }, (_, i) => (
+            <option key={i} value={i}>
+              {new Date(0, i).toLocaleString("default", { month: "long" })}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+          className="border rounded px-2 py-1"
+        >
+          {Array.from({ length: 5 }, (_, i) => {
+            const year = now.getFullYear() - 2 + i; // Show 2 years before and 2 years after
+            return (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+
                 <button
-                    onClick={() => setShowAddModal(true)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                    onClick={() => handleAddEmployeeClick()}
+                    className="bg-blue-500 text-white px-4 py-2 rounded me-3"
                 >
                     Add Employee
                 </button>
+                
             </div>
 
             <div className="mt-4">
@@ -813,7 +992,7 @@ const EmployeeComponent: React.FC = () => {
                 )}
             </div>
 
-            {/* Delete Modal */}
+            {/* Delete Modal 
             {showDeleteModal && selectedEmployee && (
                 <Modal
                     isOpen={showDeleteModal}
@@ -854,7 +1033,172 @@ const EmployeeComponent: React.FC = () => {
                         </div>
                     </div>
                 </Modal>
-            )}
+            )}*/}
+
+
+
+      {/* Delete & Update Modal */}
+{showDeleteModal && selectedEmployee && (
+    <Modal
+        isOpen={showDeleteModal}
+        onClose={() => {
+            setShowDeleteModal(false);
+            setIsEditing(false); // Reset edit mode
+        }}
+        title={isEditing ? `Edit Employee: ${selectedEmployee.name}` : `${selectedEmployee.name}`}
+        footer={
+            <>
+                {!isEditing ? (
+                    <>
+                        {/* Cancel Button */}
+                        <button
+                            onClick={() => setShowDeleteModal(false)}
+                            className="px-4 py-2 bg-gray-300 rounded me-3"
+                        >
+                            Cancel
+                        </button>
+
+                        {/* Update Button */}
+                        <button
+                            onClick={() => {
+                                setIsEditing(true);
+                                setUpdatedEmployee(selectedEmployee);
+                            }}
+                            className="px-4 py-2 bg-yellow-500 text-white rounded me-3"
+                        >
+                            Update
+                        </button>
+
+                        {/* Delete Button */}
+                        <button
+                            onClick={() => deleteEmployee(selectedEmployee.employee_id)}
+                            className="px-4 py-2 bg-red-500 text-white rounded"
+                        >
+                            Delete
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        {/* Cancel Edit Button */}
+                        <button
+                            onClick={() => {
+                                setIsEditing(false);
+                                setUpdatedEmployee(null);
+                            }}
+                            className="px-4 py-2 bg-gray-300 text-black rounded me-3"
+                        >
+                            Cancel
+                        </button>
+
+                        {/* Save Changes Button */}
+                        <button
+                            onClick={async () => {
+                              setIsEditing(true);
+                              setUpdatedEmployee({
+                                name: selectedEmployee.name,
+                                email: selectedEmployee.email,
+                                dept_id: selectedEmployee.dept_id,
+                                phone_number: selectedEmployee.phone_number,
+                                remarks: selectedEmployee.remarks,
+                              });
+                              await updateEmployee();
+                            }}
+                            className="px-4 py-2 bg-green-500 text-white rounded"
+                        >
+                            Save Changes
+                        </button>
+                    </>
+                )}
+            </>
+        }
+    >
+        <div className="space-y-4">
+            <div>
+                <strong>Name:</strong>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        value={updatedEmployee?.name || ""}
+                        onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, name: e.target.value } as Row)}
+                        className="border px-4 py-2 w-full rounded"
+                    />
+                ) : (
+                    selectedEmployee.name
+                )}
+            </div>
+
+            <div>
+                <strong>Email:</strong>
+                {isEditing ? (
+                    <input
+                        type="email"
+                        value={updatedEmployee?.email || ""}
+                        onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, email: e.target.value } as Row)}
+                        className="border px-4 py-2 w-full rounded"
+                    />
+                ) : (
+                    selectedEmployee.email || "N/A"
+                )}
+            </div>
+
+            <div>
+                <strong>Phone Number:</strong>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        value={updatedEmployee?.phone_number || ""}
+                        onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, phone_number: e.target.value } as Row)}
+                        className="border px-4 py-2 w-full rounded"
+                    />
+                ) : (
+                    selectedEmployee.phone_number || "N/A"
+                )}
+            </div>
+
+            
+            <div>
+    <strong>Department:</strong>
+    {isEditing ? (
+        <select
+            value={updatedEmployee?.dept_id || ""}
+            onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, dept_id: e.target.value } as Row)}
+            className="border px-4 py-2 w-full rounded"
+        >
+            <option value="" disabled>Select a department</option> {/* Empty option for the default state */}
+            {departments.map((dept) => (
+                <option key={dept.dept_id} value={dept.dept_id}>
+                    {dept.dept_name}
+                </option>
+            ))}
+        </select>
+    ) : (
+        selectedEmployee.dept_name || "N/A"
+    )}
+</div>
+
+
+
+
+
+            <div>
+                <strong>Remarks:</strong>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        value={updatedEmployee?.remarks || ""}
+                        onChange={(e) => setUpdatedEmployee({ ...updatedEmployee, remarks: e.target.value } as Row)}
+                        className="border px-4 py-2 w-full rounded"
+                    />
+                ) : (
+                    selectedEmployee.remarks || "N/A"
+                )}
+            </div>
+        </div>
+    </Modal>
+)}
+
+
+
 
             
       {/* Add Employee Modal */}
@@ -881,6 +1225,9 @@ const EmployeeComponent: React.FC = () => {
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               Add
+            </button>
+            <button onClick={()=>{setShowDeptModal(true);setShowAddModal(false);}} className="ms-2 px-4 py-2 bg-blue-400 rounded hover:bg-blue-600">
+              Create New Dept.
             </button>
           </>
         }
@@ -924,7 +1271,7 @@ const EmployeeComponent: React.FC = () => {
               className="border px-4 py-2 w-full rounded"
             ></input>*/}
 
-<select
+{/*<select
   value={newEmployee.dept_id}
   onChange={(e) => setNewEmployee({ ...newEmployee, dept_id: e.target.value })}
   className="border px-4 py-2 w-full rounded"
@@ -936,7 +1283,27 @@ const EmployeeComponent: React.FC = () => {
     </option>
     <option value="2">Call Center</option>
     <option value="3">Development</option>
-</select>
+</select>*/}
+
+<select
+      value={newEmployee.dept_id}
+      onChange={(e) =>
+        setNewEmployee({ ...newEmployee, dept_id: e.target.value })
+      }
+      className="border px-4 py-2 w-full rounded"
+    >
+      <option value="">Select Department</option>
+      {departments.map((dept) => (
+        <option key={dept.dept_id} value={dept.dept_id}>
+          {dept.dept_name}
+        </option>
+      ))}
+    </select>
+
+
+
+
+
           </div>
           
           <div>
@@ -962,17 +1329,25 @@ const EmployeeComponent: React.FC = () => {
         </div>
       </Modal>
 
+      
+     {/*Dept add Modal */}
+     <DepartmentModal
+        showDeptModal={showDeptModal}
+        setShowDeptModal={setShowDeptModal}
+        resetForm={resetForm}
+      />
 
 
 
 
 
 
-
+     
+    </div>
 
            
              
-    </div>
+   
     );
 };
 
