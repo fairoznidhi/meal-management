@@ -42,7 +42,7 @@ const defaultValue: MealStatusContextType = {
 export const MealStatusContext =
   createContext<MealStatusContextType>(defaultValue);
 
-const MealPlanTable = () => {
+const UserMealTable = () => {
   const [lunchStatus, setLunchStatus] = useState(false);
   const [snacksStatus, setSnacksStatus] = useState(false);
   const [mealStatusToggle, setMealStatusToggle] = useState(false);
@@ -385,7 +385,7 @@ const MealPlanTable = () => {
     setData(updatedData);
   };
   return (
-    <div className="m-4">
+    <div className="">
       <MealStatusContext.Provider
         value={{
           mealStatusToggle,
@@ -406,7 +406,7 @@ const MealPlanTable = () => {
         </div>
 
         {/* Week Navigation */}
-        <div className={`flex items-center min-h-12 mb-4 relative`}>
+        <div className={`flex items-center mb-4 relative`}>
           <h1 className="pl-2 text-3xl font-extrabold">Meal Entry</h1>
           <div className="flex items-center absolute left-1/2 transform -translate-x-1/2 ">
             <button
@@ -483,4 +483,4 @@ const MealPlanTable = () => {
   );
 };
 
-export default MealPlanTable;
+export default UserMealTable;

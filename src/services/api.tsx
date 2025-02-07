@@ -5,6 +5,7 @@ import { baseRequest } from "./HttpClientAPI";
 import { EmployeeMealDetails } from "@/model/userMealActivity";
 import { RangeMenuDetails } from "@/model/rangeMealPlan";
 import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
+import { extraMeal } from "@/model/extraMeal";
 
 const BASE_URL=`${process.env.NEXT_PUBLIC_PROXY_URL}`;
 const axiosInstance=axios.create({baseURL:BASE_URL});
@@ -132,4 +133,26 @@ export const patchTotalLunchSnacksCount = async (data: object) => {
         useAuth:true
     })
     return res as TotalMeal;
+};
+
+export const getExtraMeal=async(date:string)=>{
+    const res=await apiClient({
+        url: "/extra_meal",
+        method: "GET",
+        params:{
+            date:`${date}`,
+        },
+        useAuth:true
+    })
+    return res as extraMeal;
+}
+
+export const patchExtraMeal = async (data: object) => {
+    const res=await apiClient({
+        url: "/extra_meal",
+        data:data,
+        method: "PATCH",
+        useAuth:true
+    })
+    return res ;
 };

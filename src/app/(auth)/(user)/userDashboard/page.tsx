@@ -2,7 +2,7 @@
 import UserMealTable from "@/features/userdash/UserMealTable";
 const UserDashboard=()=>{
     return(
-        <div className="mt-32 mx-8">
+        <div className="p-4">
            <UserMealTable></UserMealTable>
         </div>
     )

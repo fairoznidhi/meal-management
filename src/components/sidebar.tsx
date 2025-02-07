@@ -23,7 +23,9 @@ const Sidebar = ({
         const isActive = pathname === item.route; // Check if the current path matches the route
         const Icon=item.icon;
         return (
-          <li key={index}>
+          <li key={index} onClick={(e) => {
+            e.stopPropagation();
+          }}>
             <Link href={item.route} className={`block p-2 rounded-md ${
                   isActive
                     ? "bg-[#007CB1] text-white font-bold" // Active styles

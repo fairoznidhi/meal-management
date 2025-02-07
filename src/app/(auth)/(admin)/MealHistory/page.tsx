@@ -113,9 +113,8 @@ const MealHistory = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-lg font-semibold mb-4">Meal History</h2>
-
-      {/* Month & Year Filter */}
+      <div className="flex justify-between items-center">
+      <h2 className="text-3xl font-extrabold mb-4">Meal History</h2>
       <div className="mb-4 flex gap-4">
         <select
           value={selectedMonth}
@@ -128,7 +127,6 @@ const MealHistory = () => {
             </option>
           ))}
         </select>
-
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(parseInt(e.target.value))}
@@ -144,6 +142,11 @@ const MealHistory = () => {
           })}
         </select>
       </div>
+      </div>
+      
+
+      {/* Month & Year Filter */}
+      
 
       {/* Table Display */}
       {loading && <p>Loading...</p>}
