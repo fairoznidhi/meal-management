@@ -137,6 +137,8 @@ export default function AuthLayout({
               
             >
               {isCollapsed ? ">>" : "<<"}
+              
+
             </button>
             <div className="flex">
               <Image
@@ -151,12 +153,14 @@ export default function AuthLayout({
     <p className="text-white font-semibold text-2xl font-serif mt-1">
       VivaMeal
     </p>
+    
   )}
             </div>
             <Sidebar
               items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser}
               isCollapsed={isCollapsed}
             />
+            
           </div>
 
           {/* navbar */}
