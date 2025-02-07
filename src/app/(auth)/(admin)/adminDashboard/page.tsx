@@ -410,6 +410,20 @@ const handleNextWeek = () => {
   });
 };
 
+const calculateEndDate = (startDate: Date, days: number = 7) => {
+  const endDate = new Date(startDate);
+  endDate.setDate(startDate.getDate() + days);
+
+  // Format the day as short form (Mon, Tue, etc.)
+  const dayShort = endDate.toLocaleDateString("en-US", { weekday: "short" });
+
+  return { endDate, dayShort };
+};
+
+
+const { endDate, dayShort } = calculateEndDate(startDate, 7);
+
+
 
 
 
@@ -434,12 +448,12 @@ const snacksGuestsT = snackGuests[todayDate] || 0;
 
       <div className="flex gap-x-5 mb-4">
   <div className="p-4 bg-blue-200 rounded-md shadow-md">
-    <h3 className="text-lg font-semibold">Todays Total Lunch</h3>
+    <h3 className="text-lg font-semibold">Today&apos;s Total Lunch</h3>
     <p className="text-xl">{lunchTotal !== null ? lunchTotal : "Loading..."}</p>
   </div>
   
   <div className="p-4 bg-green-200 rounded-md shadow-md">
-    <h3 className="text-lg font-semibold">Todays Total Snacks</h3>
+    <h3 className="text-lg font-semibold">Today&apos;s Total Snacks</h3>
     <p className="text-xl">{snacksTotal !== null ? snacksTotal : "Loading..."}</p>
   </div>
 </div>
@@ -466,7 +480,8 @@ const snacksGuestsT = snackGuests[todayDate] || 0;
                      <span className="text-lg">&#171;</span>
                    </button>
                    <h2 className="p-2 text-base font-bold me-2">
-                   {`Start Date: ${startDate.toISOString().split("T")[0]}`}
+                   {/*{`Start Date: ${startDate.toISOString().split("T")[0]}`}*/}
+                   {`Date: ${startDate.toISOString().split("T")[0]} - ${endDate.toISOString().split("T")[0]}`}
                    </h2>
                    <button
                      onClick={handleNextWeek}
