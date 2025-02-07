@@ -126,25 +126,24 @@ export default function AuthLayout({
                   </div>
               </div>*/}
           {/* sidebar */}
-          <div
+        <div
             className={`transition-all duration-300 ${
               isCollapsed ? "w-16" : "w-64"
-            } bg-[#005A8F] text-white fixed h-full z-50`}
+            } bg-[#005A8F] text-white fixed h-full z-50 pt-8`}
+            onClick={toggleSidebar}
           >
-            <button
+            {/* <button
               onClick={toggleSidebar}
               className="p-2 bg-[#005A8F] hover:bg-[#] w-full  text-[#005A8F] text-center mb-7"
               
             >
               {isCollapsed ? ">>" : "<<"}
-              
-
-            </button>
+            </button> */}
             <div className="flex">
               <Image
                 src={vslogo}
                 alt="vlogo"
-                className="w-10 h-10 border rounded-full bg-white ms-3 me-5 "
+                className="w-10 h-10 border rounded-full bg-white ms-3 me-1 "
               ></Image>
               {/*<p className="text-white font-semibold mt-1 text-2xl font-serif">
                 VivaMeal
@@ -160,12 +159,11 @@ export default function AuthLayout({
               items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser}
               isCollapsed={isCollapsed}
             />
-            
-          </div>
+          </div>  
 
           {/* navbar */}
           <div className=" fixed z-40 w-full h-[60px]">
-            <div className="navbar bg-base-100 pt-2 px-8">
+            <div className="navbar bg-white shadow pt-2 px-8">
               <div className="flex-1"></div>
               <div className="flex-none gap-2">
                 <div className="dropdown dropdown-end">

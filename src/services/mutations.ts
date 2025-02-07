@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { patchEmployeeProfile, patchForgetPassword, patchGroupMealUpdate, patchResetPassword, patchToggleDefaultMealStatus, patchTotalLunchSnacksCount, patchTotalMealGroup } from "./api";
+import { patchEmployeeProfile, patchExtraMeal, patchForgetPassword, patchGroupMealUpdate, patchResetPassword, patchToggleDefaultMealStatus, patchTotalLunchSnacksCount, patchTotalMealGroup } from "./api";
 
 export function useToggleDefaultMealStatus(date:string) {
     return useMutation({
@@ -85,6 +85,18 @@ export function useToggleDefaultMealStatus(date:string) {
       },
       onError: (error) => {
         console.error("Error updating total meal:", error);
+      },
+    });
+  }
+
+  export function usePatchExtraMeal(date:string){
+    return useMutation({
+      mutationFn: (count:number) => patchExtraMeal({date,count}),
+      onSuccess: () => {
+        console.log("Extra meal updated successfully");
+      },
+      onError: (error) => {
+        console.error("Error updating extra meal:", error);
       },
     });
   }
