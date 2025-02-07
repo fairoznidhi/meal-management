@@ -143,7 +143,7 @@ export default function AuthLayout({
               <Image
                 src={vslogo}
                 alt="vlogo"
-                className="w-10 h-10 border rounded-full bg-white ms-3  "
+                className="w-10 h-10 border rounded-full bg-white ms-3 me-1 "
               ></Image>
               {/*<p className="text-white font-semibold mt-1 text-2xl font-serif">
                 VivaMeal
