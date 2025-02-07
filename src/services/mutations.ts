@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { patchEmployeeProfile, patchForgetPassword, patchGroupMealUpdate, patchResetPassword, patchToggleDefaultMealStatus } from "./api";
+import { patchEmployeeProfile, patchForgetPassword, patchGroupMealUpdate, patchResetPassword, patchToggleDefaultMealStatus, patchTotalLunchSnacksCount, patchTotalMealGroup } from "./api";
 
 export function useToggleDefaultMealStatus(date:string) {
     return useMutation({
@@ -60,4 +60,34 @@ export function useToggleDefaultMealStatus(date:string) {
       },
     });
   }
+
+  export function usePatchTotalMealGroup(date:string,meal_type:number,days:number) {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: () => patchTotalMealGroup({date,meal_type,days}),
+      onSuccess: async() => {
+        console.log("MealGroupUpdated Successfully");
+        queryClient.invalidateQueries({ queryKey: ["totalMealGroup", date, meal_type] });
+      },
+      onError: (error) => {
+        console.error("Error updating mealgroup:", error);
+      },
+    });
+  }
+
+  export function usePatchTotalLunchSnacksCount(start_date:string,days:number) {
+    const queryClient = useQueryClient();
+    return useMutation({
+      mutationFn: () => patchTotalLunchSnacksCount({start_date,days}),
+      onSuccess: async() => {
+        console.log("Total Meal Count fetched Successfully");
+        queryClient.invalidateQueries({ queryKey: ["totalMealCount", start_date] });
+      },
+      onError: (error) => {
+        console.error("Error updating total meal:", error);
+      },
+    });
+  }
+
+  
 

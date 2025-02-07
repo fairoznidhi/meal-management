@@ -133,7 +133,8 @@ export default function AuthLayout({
           >
             <button
               onClick={toggleSidebar}
-              className="p-2 bg-[#007CB1] hover:bg-[#] w-full  text-black text-center mb-7"
+              className="p-2 bg-[#005A8F] hover:bg-[#] w-full  text-[#005A8F] text-center mb-7"
+              
             >
               {isCollapsed ? ">>" : "<<"}
             </button>
@@ -147,7 +148,7 @@ export default function AuthLayout({
                 VivaMeal
               </p>*/}
                {!isCollapsed && (
-    <p className="text-white font-semibold text-2xl font-serif ms-2 mt-1">
+    <p className="text-white font-semibold text-2xl font-serif mt-1">
       VivaMeal
     </p>
   )}

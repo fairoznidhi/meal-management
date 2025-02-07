@@ -4,37 +4,44 @@ import { getSession } from "next-auth/react";
 import { usePatchEmployeeProfile } from "@/services/mutations";
 import FormField from "@/components/FormField";
 import { Session } from "next-auth";
+import notificationToast from "@/components/notificationToast";
 
 const ChangePassword = () => {
   const [session, setSession] = useState<Session | null>(null);
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const [progress, setProgress] = useState(100);
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    newPassword: "",
+    confirmNewPassword: "",
+  });
+  const [savePass,setSavePass]=useState(false)
   useEffect(() => {
     const checkSession = async () => {
       const session = await getSession();
       if (session) {
         setSession(session);
-        console.log("session from profile", session);
       }
     };
     checkSession();
   }, []);
-  const [formData, setFormData] = useState({
-    newPassword: "",
-    confirmNewPassword: "",
-  });
+  
   const handlePasswordChange = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (!formData.newPassword || !formData.confirmNewPassword) {
+      setError("Password fields cannot be empty.");
+      clearPasswords();
+      return;
+    }
     if (formData.newPassword.length < 8) {
-      alert("Password must be at least 8 characters long");
+      setError("Password must be at least 8 characters long.");
       clearPasswords();
       return;
     }
     if (formData.newPassword !== formData.confirmNewPassword) {
-      alert("Passwords do not match");
+      setError("Passwords do not match.");
       clearPasswords();
       return;
     }
+    setSavePass(true);
     passwordUpdate();
   };
   const { mutate } = usePatchEmployeeProfile();
@@ -48,24 +55,18 @@ const ChangePassword = () => {
       onSettled: () => {
         clearPasswords();
         (document.getElementById("changepass") as HTMLDialogElement).close();
-        setAlertMessage("Password updated successfully!");
-        setProgress(100);
-        const interval = setInterval(() => {
-          setProgress((prev) => Math.max(prev - 5, 0));
-        }, 150);
-        setTimeout(() => {
-          setAlertMessage(null);
-          clearInterval(interval);
-        }, 3000);
+        notificationToast("Password updated successfully!", "success");
       },
       onError: (error) => {
         console.error("Error updating password:", error);
+        notificationToast("Failed to update password!", "error");
       },
     });
     const formDataObject = Object.fromEntries(data.entries());
     console.log("FormData as object:", formDataObject);
   };
   const handleCancel = () => {
+    setError(null);
     clearPasswords();
   };
   const clearPasswords = () => {
@@ -120,6 +121,7 @@ const ChangePassword = () => {
                 handleFieldChange("confirmNewPassword", value)
               }
             />
+            {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           </div>
           <div className="modal-action">
             <form method="dialog">
@@ -133,26 +135,14 @@ const ChangePassword = () => {
                 type="submit"
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 "
                 onClick={handlePasswordChange}
+                disabled={savePass}
               >
-                Save
+                {savePass? 'Saving...':'Save'}
               </button>
             </form>
           </div>
         </div>
       </dialog>
-      {/* Alert Notification */}
-      {alertMessage && (
-        <div className="fixed top-20 right-5 bg-gray-500 text-white px-4 pt-2 rounded-md shadow-md min-w-64">
-          <p>{alertMessage}</p>
-          {/* Progress Bar */}
-          <div className="w-full bg-gray-700 h-1 mt-4">
-            <div
-              className="bg-white h-1 transition-all duration-150"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

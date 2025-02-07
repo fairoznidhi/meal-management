@@ -3,6 +3,7 @@
 import QueryProvider from "@/components/QueryProvider";
 import { SessionProvider } from "next-auth/react";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ToastContainer} from "react-toastify";
 
 import "./globals.css";
 import { Suspense } from "react";
@@ -32,9 +33,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Suspense fallback={<div className="w-full h-screen flex justify-center items-center">Loading...</div>}>
+        <ToastContainer/>
+        <Suspense
+          fallback={
+            <div className="w-full h-screen flex justify-center items-center">
+              Loading...
+            </div>
+          }
+        >
           <SessionProvider>
-            <QueryProvider>{children}</QueryProvider>
+            <QueryProvider>
+              {children}
+            </QueryProvider>
           </SessionProvider>
         </Suspense>
       </body>

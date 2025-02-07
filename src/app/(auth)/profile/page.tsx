@@ -9,6 +9,7 @@ import { usePatchEmployeeProfile } from "@/services/mutations";
 import ChangePassword from "@/features/changePassword/ChangePassword";
 import { Session } from "next-auth";
 import { ProfilePictureContext } from "../layout";
+import notificationToast from "@/components/notificationToast";
 
 const ProfilePage = () => {
   const { setUserName } = useContext(ProfilePictureContext);
@@ -18,8 +19,6 @@ const ProfilePage = () => {
   const [actualData, setActualData] = useState<UserProfileDataType | null>(
     null
   );
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const [progress, setProgress] = useState(100);
   const [session, setSession] = useState<Session | null>(null);
   useEffect(() => {
     const checkSession = async () => {
@@ -37,20 +36,20 @@ const ProfilePage = () => {
     if (profileList) {
       const profile = profileList[0];
       setFormData({
-        name: profile.name ?? "",
-        email: profile.email ?? "",
-        phone_number: profile.phone_number,
-        dept_name: profile.dept_name ?? "",
-        remarks: profile.remarks ?? "n/a",
+        name: profile?.name ?? "",
+        email: profile?.email ?? "",
+        phone_number: profile?.phone_number,
+        dept_name: profile?.dept_name ?? "",
+        remarks: profile?.remarks ?? "n/a",
       });
       setActualData({
-        name: profile.name ?? "",
-        email: profile.email ?? "",
-        phone_number: profile.phone_number,
-        dept_name: profile.dept_name ?? "",
-        remarks: profile.remarks ?? "n/a",
+        name: profile?.name ?? "",
+        email: profile?.email ?? "",
+        phone_number: profile?.phone_number,
+        dept_name: profile?.dept_name ?? "",
+        remarks: profile?.remarks ?? "n/a",
       });
-      setUserName(profile.name ?? "");
+      setUserName(profile?.name ?? "");
     }
   }, [profileList]);
 
@@ -98,15 +97,7 @@ const ProfilePage = () => {
     mutate(data, {
       onSettled: () => {
         setIsEditProfile(false);
-        setAlertMessage("Profile updated successfully!");
-        setProgress(100);
-        const interval = setInterval(() => {
-          setProgress((prev) => Math.max(prev - 5, 0));
-        }, 150);
-        setTimeout(() => {
-          setAlertMessage(null);
-          clearInterval(interval);
-        }, 3000);
+        notificationToast("Profile updated successfully!","success")
       },
       onError: (error) => {
         console.error("Error updating password:", error);
@@ -177,19 +168,7 @@ const ProfilePage = () => {
       )}
       <div className="mb-12"></div>
       {!isEditProfile && <ChangePassword />}
-      {/* Alert Notification */}
-      {alertMessage && (
-        <div className="fixed top-20 right-5 bg-gray-500 text-white px-4 pt-4 rounded-md shadow-md min-w-64">
-          <p>{alertMessage}</p>
-          {/* Progress Bar */}
-          <div className="w-full bg-gray-700 h-1 mt-4">
-            <div
-              className="bg-white h-1 transition-all duration-150"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };

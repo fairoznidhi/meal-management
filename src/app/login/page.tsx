@@ -8,21 +8,24 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import loginhero from "../../../public/loginhero.png";
+import { toast } from "react-toastify";
+import notificationToast from "@/components/notificationToast";
 export type Inputs = {
   email: string;
   password: string;
 };
 const LoginPage = () => {
+  const [wrongEmailOrPass, setWrongEmailOrPass] = useState(false);
   const { register, handleSubmit } = useForm<Inputs>();
   const router = useRouter();
-  const {data:session,status}=useSession();
-  useEffect(()=>{
+  const { data: session, status } = useSession();
+  useEffect(() => {
     if (status === "authenticated" && session?.user?.is_admin) {
       router.push("/adminDashboard");
-    } else if (status === "authenticated" &&!session?.user?.is_admin) {
+    } else if (status === "authenticated" && !session?.user?.is_admin) {
       router.push("/userDashboard");
     }
-  },[session,status,router])
+  }, [session, status, router]);
   const onSubmit = async (data: Inputs) => {
     setLoading(true);
     try {
@@ -32,12 +35,13 @@ const LoginPage = () => {
         password: data.password,
       });
       if (result?.error) {
-        alert("Sorry, your email or password is incorrect. Please try again.");
+        setWrongEmailOrPass(true);
         setLoading(false);
       } else if (result?.ok) {
         const session = await fetch("/api/auth/session").then((res) =>
           res.json()
         );
+        notificationToast("Welcome to your profile!","success");
         if (session?.user?.is_admin) {
           router.push("/adminDashboard");
         } else {
@@ -54,7 +58,7 @@ const LoginPage = () => {
       }
     }
   };
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
   return (
     <div>
       <div className="grid grid-cols-2 min-h-screen ">
@@ -70,7 +74,7 @@ const LoginPage = () => {
             />
           </div>
         </div>
-        <div className="flex justify-center w-full pt-60">
+        <div className="flex justify-center w-full items-center">
           <div className="w-4/6">
             <h1 className="text-3xl font-semibold mb-2">Welcome Back!</h1>
             <p className="text-xs text-neutral-400 mb-4">
@@ -88,8 +92,18 @@ const LoginPage = () => {
                 placeholder="Password"
                 {...register("password")}
               ></Input>
+              {wrongEmailOrPass && (
+                <div className="text-red-500 text-xs mb-4">
+                  Invalid email or password. Please try again.
+                </div>
+              )}
               <ForgetPassword></ForgetPassword>
-              <Button label={loading ? "Logging in..." : "Log In"} size="md" className="w-full" disable={loading}></Button>
+              <Button
+                label={loading ? "Logging in..." : "Log In"}
+                size="md"
+                className="w-full"
+                disable={loading}
+              ></Button>
             </form>
           </div>
         </div>

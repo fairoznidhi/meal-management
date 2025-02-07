@@ -656,7 +656,7 @@ export default MealPlanTable;
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
-
+import notificationToast from "@/components/notificationToast";
 const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
@@ -689,14 +689,14 @@ const MealPlanTable = () => {
       try {
         setLoading(true);
         setError(null);
-
+      
         const start = dayjs(startDate);
         const end = start.add(6, "day");
         const dateSequence: string[] = [];
         for (let d = start; d.isBefore(end) || d.isSame(end); d = d.add(1, "day")) {
           dateSequence.push(d.format("YYYY-MM-DD"));
         }
-
+     
         const data = await request({
           url: `/mealplan`,
           method: "GET",
@@ -738,7 +738,8 @@ const MealPlanTable = () => {
       } catch (error) {
         console.error("Error fetching meal plan:", error);
         setMealData([]);
-        setError("Failed to load meal data.");
+        //setError("Failed to load meal data.");
+        notificationToast("Failed to Load Menu","error");
       } finally {
         setLoading(false);
       }
@@ -938,11 +939,12 @@ const MealPlanTable = () => {
           );
         });
       }
-  
+      notificationToast("Successfully Saved Menu","success");
       setEditMode(null); // Exit edit mode
     } catch (err) {
       console.error("Error saving meal plan:", err);
-      setError("Failed to save meal data.");
+      //setError("Failed to save meal data.");
+      notificationToast("Failed to Save Menu","error");
     }
   };
   
@@ -952,7 +954,7 @@ const MealPlanTable = () => {
     setEditedData(mealData);
     setEditMode(null);
   };
-
+  
   return (
     <div className="p-4">
       <div className="flex justify-between mb-4">
@@ -991,7 +993,7 @@ const MealPlanTable = () => {
               ) : (
                 mealData.map((row) => (
                   <tr key={row.date} className="border text-center">
-                    <td className="border p-2">{row.date}</td>
+                    <td className="border p-2"> {dayjs(row.date).format("ddd, YYYY-MM-DD")}</td>
                     {["lunch", "snacks"].map((mealType) => (
                       <td key={mealType} className="border p-2">
                         {editMode && ((editMode === "add" && initialEmptyMeals.has(`${row.date}-${mealType}`)) ||

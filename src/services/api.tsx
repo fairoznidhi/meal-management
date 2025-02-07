@@ -4,6 +4,7 @@ import { getSession } from "next-auth/react";
 import { baseRequest } from "./HttpClientAPI";
 import { EmployeeMealDetails } from "@/model/userMealActivity";
 import { RangeMenuDetails } from "@/model/rangeMealPlan";
+import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
 
 const BASE_URL=`${process.env.NEXT_PUBLIC_PROXY_URL}`;
 const axiosInstance=axios.create({baseURL:BASE_URL});
@@ -18,11 +19,12 @@ export const getSingleEmployee=async(id:number)=>{
 export const getTokenSingleEmployee=async()=>{
     const session=await getSession();
     const token=session?.user?.accessToken;
-    return (await axiosInstance.get<UserProfileDataType[]>('employee/profile', {
+    const response= await axiosInstance.get<UserProfileDataType>('employee/profile', {
         headers: {
             Authorization: token,
         }
-    })).data;
+    })
+    return [response.data]
 }
 
 export const getSingleEmployeeMealActivity=async(date:string,days:string)=>{
@@ -110,4 +112,24 @@ export const patchResetPassword = async (data: object, token: string) => {
             },
         })
     ).data;
+};
+
+export const patchTotalMealGroup = async (data: object) => {
+    const res=await apiClient({
+        url: "/meal_activity/total-meal-group",
+        data:data,
+        method: "PATCH",
+        useAuth:true
+    })
+    return res as totalMealGroup[];
+};
+
+export const patchTotalLunchSnacksCount = async (data: object) => {
+    const res=await apiClient({
+        url: "/meal_activity/total-meal-summary",
+        data:data,
+        method: "PATCH",
+        useAuth:true
+    })
+    return res as TotalMeal;
 };
