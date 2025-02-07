@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { FaTimes, FaCheck, FaEdit } from "react-icons/fa";
 import { format } from "date-fns";
 import { usePatchExtraMeal } from "@/services/mutations";
+import notificationToast from "@/components/notificationToast";
 
 const InstantGuest = () => {
   const todayDate = format(new Date(), "yyyy-MM-dd");
@@ -31,7 +32,14 @@ const InstantGuest = () => {
   };
 
   const handleInstantGuestUpdate = () => {
-    mutate(count);
+    mutate(count,{
+      onSuccess:()=>{
+        notificationToast("Guest updated","success")
+      },
+      onError:()=>{
+        notificationToast("Failed to update guest","error")
+      }
+    });
     setInstantGuestEditable(false);
   };
 
