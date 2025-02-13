@@ -12,7 +12,7 @@ import { Session } from "next-auth";
 import { getSession, SessionProvider, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import vslogo from "public/vslogo.png";
+import vslogo from "public/Vivasoft_logo_mark.svg";
 import profileImage from "public/profile-image.jpg";
 import { createContext, useEffect, useState } from "react";
 type profilePictureType = {
@@ -42,26 +42,26 @@ export default function AuthLayout({
     {
       name: "My Meal Entry",
       route: "/adminmealPlan",
-      icon: UserIcon ,
+      icon: UserIcon,
     },
     { name: "Menu", route: "/menuPlan", icon: ClipboardDocumentListIcon },
     //{ name: "My Profie", route: "/profile", icon: UserIcon },
-    { name: "Meal History", route:"/MealHistory", icon: CalendarDaysIcon}
+    { name: "Meal History", route: "/MealHistory", icon: CalendarDaysIcon },
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: HomeModernIcon },
     { name: "Profile", route: "/profile", icon: UserIcon },
   ];
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const { data: profileList } = useTokenSingleEmployee();
   useEffect(() => {
-      if (profileList) {
-        const profile = profileList[0];
-        setUserName(profile?.name ?? "")
-      }
-    }, [profileList]);
+    if (profileList) {
+      const profile = profileList[0];
+      setUserName(profile?.name ?? "");
+    }
+  }, [profileList]);
   useEffect(() => {
     const checkSession = async () => {
       const session = await getSession();
@@ -126,10 +126,11 @@ export default function AuthLayout({
                   </div>
               </div>*/}
           {/* sidebar */}
-        <div
+          <div
             className={`transition-all duration-300 ${
-              isCollapsed ? "w-16" : "w-64"
-            } bg-[#005A8F] text-white fixed h-full z-50 pt-8`}
+              isCollapsed ? "w-20" : "w-64"
+              // bg-[#005A8F]
+            } bg-aliceBlue fixed h-full z-50 pt-8`}
             onClick={toggleSidebar}
           >
             {/* <button
@@ -139,41 +140,42 @@ export default function AuthLayout({
             >
               {isCollapsed ? ">>" : "<<"}
             </button> */}
-            <div className="flex">
+            <div className="flex items-center px-4 mb-2">
               <Image
                 src={vslogo}
                 alt="vlogo"
-                className="w-10 h-10 border rounded-full bg-white ms-3 me-1 "
+                className="w-10 h-10 ms-1 me-1"
               ></Image>
               {/*<p className="text-white font-semibold mt-1 text-2xl font-serif">
                 VivaMeal
               </p>*/}
-               {!isCollapsed && (
-    <p className="text-white font-semibold text-2xl font-serif mt-1">
-      VivaMeal
-    </p>
-    
-  )}
+              {!isCollapsed && (
+                <p className="text-midnightBlue font-space font-extrabold text-2xl mt-1 pl-2">
+                  VivaMeal
+                </p>
+              )}
             </div>
             <Sidebar
               items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser}
               isCollapsed={isCollapsed}
             />
-          </div>  
+          </div>
 
           {/* navbar */}
           <div className=" fixed z-40 w-full h-[60px]">
-            <div className="navbar bg-white shadow pt-2 px-8">
+            <div className="navbar bg-white border-dashed border-b-[1px] pt-2 px-8">
               <div className="flex-1"></div>
               <div className="flex-none gap-2">
                 <div className="dropdown dropdown-end">
-                  <div className="flex items-center " tabIndex={0}
-                      role="button">
-                    <div className="pr-4 text-base font-semibold text-gray-700">{userName}</div>
-                    <div
-  
-                      className="btn btn-ghost btn-circle avatar"
-                    >
+                  <div
+                    className="flex items-center "
+                    tabIndex={0}
+                    role="button"
+                  >
+                    <div className="pr-4 text-base font-semibold text-gray-700">
+                      {userName}
+                    </div>
+                    <div className="btn btn-ghost btn-circle avatar">
                       <div className="w-10 rounded-full">
                         <img
                           alt="Tailwind CSS Navbar component"
@@ -192,7 +194,7 @@ export default function AuthLayout({
                       </Link>
                     </li>
                     <li>
-                      <a onClick={() => signOut({ callbackUrl: "/login" })}>
+                      <a onClick={() => signOut({ callbackUrl: "/login"})}>
                         Logout
                       </a>
                     </li>
@@ -205,7 +207,7 @@ export default function AuthLayout({
           {/* Main Content */}
           <div
             className={`flex-1 transition-all duration-300 ${
-              isCollapsed ? "ml-16" : "ml-64"
+              isCollapsed ? "ml-20" : "ml-64"
             }`}
           >
             <div className="">

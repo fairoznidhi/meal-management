@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 import InstantGuest from "@/features/dashboard/InstantGuest";
+import { FaCaretSquareLeft, FaCaretSquareRight } from "react-icons/fa";
 
 interface MealStatus {
   status: boolean;
@@ -29,10 +30,10 @@ interface MealActivityData {
   employee_name: string;
   employee_details: EmployeeDetail[];
 }
-type totalmeal={
-  date:string,
-  count:number,
-}
+type totalmeal = {
+  date: string;
+  count: number;
+};
 const MealActivityComponent = () => {
   const [mealActivityData, setMealActivityData] = useState<MealActivityData[]>(
     []
@@ -74,7 +75,7 @@ const MealActivityComponent = () => {
         data: {
           date: formattedDate,
           meal_type: 1,
-          days:1
+          days: 1,
         },
         useAuth: true,
       })) as totalmeal[];
@@ -94,7 +95,7 @@ const MealActivityComponent = () => {
         data: {
           date: formattedDate,
           meal_type: 2,
-          days:1
+          days: 1,
         },
         useAuth: true,
       })) as totalmeal[];
@@ -420,74 +421,82 @@ const MealActivityComponent = () => {
   return (
     <div className="p-4">
       {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
-      <div className="flex gap-4 mb-8">
-        <div className="p-4 bg-blue-200 rounded-md shadow-md text-center">
+      <div className="flex gap-4 mb-2">
+        <div className="p-4 bg-blue-200 rounded-md text-center">
           <h3 className="text-lg font-semibold">Today&apos;s Total Lunch</h3>
-          <p className="text-xl">
-            {lunchTotal !== null ? lunchTotal : "Loading..."}
+          <p className="text-2xl font-bold">
+            {lunchTotal !== null ? (
+              lunchTotal
+            ) : (
+              <span className="loading loading-spinner loading-xs"></span>
+            )}
           </p>
         </div>
 
-        <div className="p-4 bg-green-200 rounded-md shadow-md text-center">
+        <div className="p-4 bg-green-200 rounded-md text-center">
           <h3 className="text-lg font-semibold">Today&apos;s Total Snacks</h3>
-          <p className="text-xl">
-            {snacksTotal !== null ? snacksTotal : "Loading..."}
+          <p className="text-2xl font-bold">
+            {snacksTotal !== null ? (
+              snacksTotal
+            ) : (
+              <span className="loading loading-spinner loading-xs"></span>
+            )}
           </p>
         </div>
 
-        <div className="p-4 bg-violet-200 rounded-md shadow-md text-center w-64">
-          <InstantGuest onUpdateSuccess={handleBothUpdates}/>
+        <div className="p-4 bg-violet-200 rounded-md text-center w-64">
+          <InstantGuest onUpdateSuccess={handleBothUpdates} />
         </div>
       </div>
 
-      <div className="flex justify-between items-center mb-4 gap-x-2">
-        <div className="mb-4">
-          <label className="mr-2">Select Meal Type: </label>
+      <div className="bg-stone-50 p-2 mt-2 rounded-lg">
+      <div className="flex items-center mb-2 my-2 relative">
+        <div className="flex items-center">
+          <label className="mx-2">Select Meal Type: </label>
           <select
             value={mealType}
             onChange={handleMealTypeChange}
-            className="p-2 border rounded bg-[#779ECB]"
+            className="px-2 py-1 border rounded bg-[#f4f4f4]"
           >
             <option value={1}>Lunch</option>
             <option value={2}>Snack</option>
           </select>
         </div>
-        <div className="flex gap-x-2">
+
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
           <button
             onClick={handlePreviousWeek}
-            className="p-2 text-base bg-[#779ECB] rounded-md hover:bg-[#D7DFE9] ms-6"
+            className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
           >
-            <span className="text-lg">&#171;</span>
+            <FaCaretSquareLeft />
           </button>
-          <h2 className="p-2 text-base font-bold me-2">
-            {`Start Date: ${startDate.toISOString().split("T")[0]}`}
-          </h2>
+          <h2 className="p-2 text-base font-bold">{`Start Date: ${
+            startDate.toISOString().split("T")[0]
+          }`}</h2>
           <button
             onClick={handleNextWeek}
-            className="p-2 text-base bg-[#779ECB] rounded-md hover:bg-[#D7DFE9]"
+            className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
           >
-            <span className="text-lg">&raquo;</span>
+            <FaCaretSquareRight />
           </button>
         </div>
-        <div>
-          <Search
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-          ></Search>
+
+        <div className="ml-auto">
+          <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         </div>
       </div>
 
       {error && <p className="text-red-500">Error: {error}</p>}
       {filteredData.length === 0 ? (
-        <p>Loading or no data available...</p>
+        <span className="loading loading-dots loading-lg"></span>
       ) : (
-        <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[650px] max-lg:max-h-[800px]">
-          <table className="table-auto w-full border-collapse border border-gray-300">
-            <thead className="">
-              <tr className="border border-black">
-                <th className="p-2 text-center">Employee Name</th>
+        <div className="overflow-y-auto sm:max-h-[300px] md:max-h-[400px] lg:max-h-[550px] max-lg:max-h-[700px] rounded-t-lg overflow-hidden">
+          <table className="table-auto w-full rounded-t-lg">
+            <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
+              <tr>
+                <th className="p-2 py-5 text-left pl-8 w-[10px] whitespace-nowrap">Employee Name</th>
                 {dates.map((date, index) => (
-                  <th key={index} className="p-2 border border-black">
+                  <th key={index} className="p-2">
                     <div>{date}</div>
                     <div className="text-xs text-gray-600">
                       Guests: {totalGuestsPerDay.lunchGuests[date] || 0}
@@ -514,8 +523,8 @@ const MealActivityComponent = () => {
                 });
 
                 return (
-                  <tr key={employee.employee_id}>
-                    <td className="border border-gray-500 p-2 text-center">
+                  <tr key={employee.employee_id} className="hover:bg-gray-100">
+                    <td className="border border-gray-200 p-2 pl-8 overflow-x-auto text-left w-[10px] whitespace-nowrap">
                       {employee.employee_name}
                     </td>
                     {dates.map((date, index) => {
@@ -525,7 +534,7 @@ const MealActivityComponent = () => {
                         penalty: false,
                       };
 
-                      let cellStyle = "border border-gray-500 p-2 text-center";
+                      let cellStyle = "border border-gray-200 p-2 text-center";
                       let statusText = "-";
                       let textColor = "text-black";
 
@@ -568,6 +577,7 @@ const MealActivityComponent = () => {
           </table>
         </div>
       )}
+      </div>
 
       <MealStatusModal
         isOpen={modalOpen}

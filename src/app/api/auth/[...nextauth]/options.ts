@@ -13,19 +13,23 @@ export const authOptions:NextAuthOptions = {
         },
         async authorize(credentials) {
           const { email, password } = credentials || {};
-          
-          const accessToken = await fetch(`${process.env.NEXT_PUBLIC_PROXY_URL}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-          }).then((res) => res.json());
-          //jwt decode
-          const decoded = jwtDecode<CustomUserJwtPayload>(accessToken);
-          console.log({...decoded,accessToken})
-          if (accessToken) {
-            return {...decoded,accessToken};
+          try{
+            const accessToken = await fetch(`${process.env.NEXT_PUBLIC_PROXY_URL}/login`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            }).then((res) => res.json());
+            //jwt decode
+            const decoded = jwtDecode<CustomUserJwtPayload>(accessToken);
+            console.log({...decoded,accessToken})
+            if (accessToken) {
+              return {...decoded,accessToken};
+            }
+            return accessToken;
+          }catch{
+            return;
           }
-          return accessToken;
+
         },
       }),
     ],
