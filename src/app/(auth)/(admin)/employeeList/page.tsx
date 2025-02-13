@@ -540,6 +540,7 @@ const EmployeeComponent: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
     const [showAddModal, setShowAddModal] = useState<boolean>(false);
+    const [selectedDept, setSelectedDept] = useState("");
     const [showDeptModal, setShowDeptModal] = useState<boolean>(false);
     const [selectedEmployee, setSelectedEmployee] = useState<Row | null>(null);
     const [departments, setDepartments] = useState<Dept[]>([]);
@@ -937,6 +938,19 @@ const EmployeeComponent: React.FC = () => {
         },
     ];
 
+
+    const handleSelectChange = (e:any) => {
+      const selectedValue = e.target.value;
+      if (selectedValue === "add_new") {
+        setShowDeptModal(true);
+        setShowAddModal(false);
+        setSelectedDept(""); // Reset selection
+      } else {
+        setSelectedDept(selectedValue);
+      }
+    };
+  
+
     return (
         <div className="p-4">
             <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
@@ -1226,9 +1240,9 @@ const EmployeeComponent: React.FC = () => {
             >
               Add
             </button>
-            <button onClick={()=>{setShowDeptModal(true);setShowAddModal(false);}} className="ms-2 px-4 py-2 bg-blue-400 rounded hover:bg-blue-600">
+            {/*<button onClick={()=>{setShowDeptModal(true);setShowAddModal(false);}} className="ms-2 px-4 py-2 bg-blue-400 rounded hover:bg-blue-600">
               Create New Dept.
-            </button>
+            </button>*/}
           </>
         }
       >
@@ -1287,9 +1301,18 @@ const EmployeeComponent: React.FC = () => {
 
 <select
       value={newEmployee.dept_id}
-      onChange={(e) =>
-        setNewEmployee({ ...newEmployee, dept_id: e.target.value })
+      //onChange={(e) =>
+        //setNewEmployee({ ...newEmployee, dept_id: e.target.value })
+     // }
+     onChange={(e) => {
+      if (e.target.value === "add new") {
+        setShowDeptModal(true);
+        setShowAddModal(false);
+        setNewEmployee({ ...newEmployee, dept_id: "" }); // Reset selection
+      } else {
+        setNewEmployee({ ...newEmployee, dept_id: e.target.value });
       }
+    }}
       className="border px-4 py-2 w-full rounded"
     >
       <option value="">Select Department</option>
@@ -1298,6 +1321,7 @@ const EmployeeComponent: React.FC = () => {
           {dept.dept_name}
         </option>
       ))}
+      <option value="add new">+</option>
     </select>
 
 
