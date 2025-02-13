@@ -14,11 +14,15 @@ export default {
   theme: {
     extend: {
       colors: {
+       
         background: "var(--background)",
         foreground: "var(--foreground)",
         lightBlue: "var(--lightBlue)", 
         darkBlue: "var(--darkBlue)",
+        
       },
+
+      
     },
   },
   plugins: [daisyui],
