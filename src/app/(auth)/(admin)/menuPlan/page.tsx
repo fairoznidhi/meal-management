@@ -269,7 +269,7 @@ const MealPlanTable = () => {
               <button onClick={() => setIsEditing(true)} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2">
                 Update Menu
               </button>
-              <button onClick={() => setIsModalOpen(true)} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 mr-2">Copy Meals</button></div>
+              <button onClick={() => setIsModalOpen(true)} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 mr-2">Copy Menu</button></div>
             ) : (
               <>
                 <button onClick={handleSave} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 mr-2">

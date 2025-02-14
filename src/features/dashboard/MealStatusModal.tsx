@@ -8,6 +8,7 @@ interface MealStatusModalProps {
   initialStatus: boolean;
   initialPenalty: boolean;
   selectedDate: string; // Add selected date as a prop
+  mealType: number;
 }
 
 const MealStatusModal: React.FC<MealStatusModalProps> = ({
@@ -17,10 +18,12 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
   initialStatus,
   initialPenalty,
   selectedDate,
+  mealType,
 }) => {
   const [mealStatus, setMealStatus] = useState<boolean>(initialStatus);
   const [penalty, setPenalty] = useState<boolean>(initialPenalty);
   const [isPenaltyAllowed, setIsPenaltyAllowed] = useState<boolean>(true);
+  
 
   // Sync state with initial values when modal opens
   useEffect(() => {
@@ -60,10 +63,14 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
 
   if (!isOpen) return null;
 
+
+    // Convert mealType number to corresponding meal name
+    const mealTypeName = mealType === 1 ? "Lunch" : mealType === 2 ? "Snacks" : "Meal";
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
       <div className="bg-white p-6 rounded-md w-1/3">
-        <h2 className="text-xl font-bold mb-4">Update Meal Status</h2>
+        <h2 className="text-xl font-bold mb-4">Update {mealTypeName} Status</h2>
 
         {/* Meal Status Section */}
         <div className="mb-4">
@@ -76,7 +83,7 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
                 checked={mealStatus === true} // "Meal On" is checked if mealStatus is true
                 onChange={() => setMealStatus(true)} // Set mealStatus to true for "Meal On"
               />
-              Meal On
+              {mealTypeName} On
             </label>
             <label className="ml-4">
               <input
@@ -85,7 +92,7 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
                 checked={mealStatus === false} // "Meal Off" is checked if mealStatus is false
                 onChange={() => setMealStatus(false)} // Set mealStatus to false for "Meal Off"
               />
-              Meal Off
+              {mealTypeName} Off
             </label>
           </div>
         </div>
@@ -93,14 +100,14 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
         {/* Penalty Section */}
         <div className="mb-4">
           <label className="block text-sm font-semibold mb-2">Penalty</label>
-          <label>
+          <label className="flex gap-x-2">
             <input
               type="checkbox"
               checked={penalty} // Checkbox is checked if penalty is true
               onChange={() => setPenalty(!penalty)} // Toggle penalty state on checkbox change
               disabled={!isPenaltyAllowed} // Disable penalty checkbox if not allowed
             />
-            Add Penalty
+            <p className="">Add Penalty</p>
           </label>
           {!isPenaltyAllowed && (
             <p className="text-red-500 text-xs mt-2">
