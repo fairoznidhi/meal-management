@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 import InstantGuest from "@/features/dashboard/InstantGuest";
+import { FaStar } from "react-icons/fa";
 
 interface MealStatus {
   status: boolean;
@@ -482,7 +483,7 @@ const MealActivityComponent = () => {
         <p>Loading or no data available...</p>
       ) : (
         <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[650px] max-lg:max-h-[800px]">
-          <table className="table-auto w-full border-collapse border border-gray-300">
+          {/*<table className="table-auto w-full border-collapse border border-gray-300">
             <thead className="">
               <tr className="border border-black">
                 <th className="p-2 text-center">Employee Name</th>
@@ -565,7 +566,112 @@ const MealActivityComponent = () => {
                 );
               })}
             </tbody>
-          </table>
+          </table>*/}
+
+
+
+
+
+
+
+<table className="table-auto w-full border-collapse border border-gray-300">
+  <thead>
+    <tr className="border border-black">
+      <th className="p-2 text-center">Employee Name</th>
+      {dates.map((date, index) => (
+        <th key={index} className="p-2 border border-black">
+          <div>{date}</div>
+          <div className="text-xs text-gray-600">
+            Guests: {totalGuestsPerDay.lunchGuests[date] || 0}
+          </div>
+        </th>
+      ))}
+    </tr>
+  </thead>
+  <tbody>
+    {filteredData.map((employee) => {
+      const dateStatusMap: Record<
+        string,
+        { status: boolean; holiday: boolean; penalty: boolean }
+      > = {};
+      employee.employee_details.forEach((detail) => {
+        const meal = detail.meal[mealType - 1]; // Use the selected meal type
+        const status = meal?.meal_status[0]?.status;
+        const penalty = meal?.meal_status[0]?.penalty || false;
+        dateStatusMap[detail.date] = {
+          status,
+          holiday: detail.holiday,
+          penalty,
+        };
+      });
+
+      return (
+        <tr key={employee.employee_id}>
+          <td className="border border-gray-500 p-2 text-center">
+            {employee.employee_name}
+          </td>
+          {dates.map((date, index) => {
+            const cellData = dateStatusMap[date] || {
+              status: null,
+              holiday: false,
+              penalty: false,
+            };
+
+            let cellStyle = "border border-gray-500 p-2 text-center cursor-pointer";
+            let statusText = "-";
+            let textColor = "text-black";
+
+            if (cellData.holiday) {
+              cellStyle += " bg-red-100";
+            }
+
+            if (cellData.status === true) {
+              statusText = "Yes";
+              textColor = "text-green-500";
+            } else if (cellData.status === false) {
+              statusText = "No";
+              textColor = "text-red-500";
+            }
+
+            return (
+              <td
+                key={index}
+                className={`${cellStyle} ${textColor}`}
+                onClick={() =>
+                  handleCellClick(
+                    employee.employee_id,
+                    employee.employee_name,
+                    date,
+                    cellData.status,
+                    cellData.penalty
+                  )
+                }
+              >
+                <div className="flex items-center ms-16">
+                  {statusText}
+                  {cellData.penalty && (
+                    <span className="ms-2 mt-1 w-1 h-1 bg-red-500 rounded-full"></span>
+                  )}
+                </div>
+              </td>
+            );
+          })}
+        </tr>
+      );
+    })}
+  </tbody>
+</table>;
+
+
+
+
+
+
+
+
+
+
+
         </div>
       )}
 
@@ -576,6 +682,7 @@ const MealActivityComponent = () => {
         initialStatus={selectedCell?.currentStatus ?? false}
         initialPenalty={selectedCell?.currentPenalty || false}
         selectedDate={selectedCell?.date ?? ""}
+        mealType={mealType}
       />
     </div>
   );

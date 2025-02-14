@@ -8,6 +8,7 @@ import {
   UsersIcon,
   CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
+import { FaHome, FaUsers, FaClipboardList, FaCalendarAlt, FaUtensils } from "react-icons/fa";
 import { Session } from "next-auth";
 import { getSession, SessionProvider, signOut } from "next-auth/react";
 import Image from "next/image";
@@ -37,16 +38,17 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   const sidebarItemsAdmin = [
-    { name: "Dashboard", route: "/adminDashboard", icon: HomeModernIcon },
-    { name: "Employee List", route: "/employeeList", icon: UsersIcon },
+    { name: "Dashboard", route: "/adminDashboard", icon: FaHome },
+    { name: "Employee List", route: "/employeeList", icon: FaUsers },
+    
+    { name: "Menu", route: "/menuPlan", icon: FaClipboardList },
+    //{ name: "My Profie", route: "/profile", icon: UserIcon },
+    { name: "Meal History", route:"/MealHistory", icon: FaCalendarAlt},
     {
       name: "My Meal Entry",
       route: "/adminmealPlan",
-      icon: UserIcon ,
+      icon: FaUtensils,
     },
-    { name: "Menu", route: "/menuPlan", icon: ClipboardDocumentListIcon },
-    //{ name: "My Profie", route: "/profile", icon: UserIcon },
-    { name: "Meal History", route:"/MealHistory", icon: CalendarDaysIcon}
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: HomeModernIcon },
@@ -129,7 +131,7 @@ export default function AuthLayout({
         <div
             className={`transition-all duration-300 ${
               isCollapsed ? "w-16" : "w-64"
-            } bg-[#005A8F] text-white fixed h-full z-50 pt-8`}
+            } bg-aliceBlue text-white fixed h-full z-50 pt-8`}
             onClick={toggleSidebar}
           >
             {/* <button
@@ -149,7 +151,7 @@ export default function AuthLayout({
                 VivaMeal
               </p>*/}
                {!isCollapsed && (
-    <p className="text-white font-semibold text-2xl font-serif mt-1">
+    <p className="text-midnightBlue font-semibold text-2xl font-serif mt-1">
       VivaMeal
     </p>
     
