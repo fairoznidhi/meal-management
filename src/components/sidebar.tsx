@@ -28,15 +28,15 @@ const Sidebar = ({
           }}>
             <Link href={item.route} className={`block p-2 rounded-md ${
                   isActive
-                    ? "bg-[#007CB1] text-white font-bold" // Active styles
-                    : "hover:bg-[#007CB1] hover:text-white text-gray-300" // Default styles
+                    ? "bg-vivaBlue text-white" // Active styles
+                    : "hover:bg-white text-midnightBlue" // Default styles
                 } ${isCollapsed ? "text-center text-sm" : "text-base"}`}>
              
                  {/* Render icon*/} 
                  <div className="flex gap-x-3">
                  <Icon
                   className={`h-6 w-6 ${
-                    isActive ? "text-white" : "text-gray-300"
+                    isActive ? "text-white" : "text-midnightBlue"
                   }`}
                 />
               

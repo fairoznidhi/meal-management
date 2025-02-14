@@ -131,7 +131,7 @@ export default function AuthLayout({
         <div
             className={`transition-all duration-300 ${
               isCollapsed ? "w-16" : "w-64"
-            } bg-[#005A8F] text-white fixed h-full z-50 pt-8`}
+            } bg-aliceBlue text-white fixed h-full z-50 pt-8`}
             onClick={toggleSidebar}
           >
             {/* <button
@@ -151,7 +151,7 @@ export default function AuthLayout({
                 VivaMeal
               </p>*/}
                {!isCollapsed && (
-    <p className="text-white font-semibold text-2xl font-serif mt-1">
+    <p className="text-midnightBlue font-semibold text-2xl font-serif mt-1">
       VivaMeal
     </p>
     

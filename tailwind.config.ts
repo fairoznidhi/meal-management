@@ -19,6 +19,9 @@ export default {
         foreground: "var(--foreground)",
         lightBlue: "var(--lightBlue)", 
         darkBlue: "var(--darkBlue)",
+        aliceBlue:"var(--aliceBlue)",
+        midnightBlue:"var(--midnightBlue)",
+        vivaBlue:"var(--vivaBlue)",
         
       },
 
