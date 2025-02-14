@@ -126,18 +126,7 @@ const Check = () => {
             legend: { position: "bottom" },
             title: { display: true, text: chartLabel },
           },
-          scales: {
-            x: {
-              grid: {
-                display: false,
-              },
-            },
-            y: {
-              grid: {
-                display: true, 
-              },
-            },
-          },
+          
         }}
       />
     </div>

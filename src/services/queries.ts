@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getEmployeePhoto, getExtraMeal, getRangeMealPlan, getSingleEmployee, getSingleEmployeeMealActivity, getTokenSingleEmployee } from "./api";
+import { getEmployeePhoto, getExtraMeal, getMealSummaryYear, getRangeMealPlan, getSingleEmployee, getSingleEmployeeMealActivity, getTokenSingleEmployee } from "./api";
 
 export function useSingleEmployee(id: number) {
     return useQuery({
@@ -40,4 +40,11 @@ export function useExtraMeal(date:string){
     queryKey: ['extraMeal',date], 
     queryFn: () => getExtraMeal(date)
   });
+}
+
+export function useMealSummaryYear(year:number){
+  return useQuery({
+    queryKey: ['mealSummaryYear',year], 
+    queryFn: () => getMealSummaryYear(year)
+  })
 }
