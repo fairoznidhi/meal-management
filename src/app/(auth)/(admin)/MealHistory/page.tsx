@@ -1,6 +1,6 @@
 "use client";
 
-{/*import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePatchTotalLunchSnacksCount, usePatchTotalMealGroup } from "@/services/mutations";
 import Table, { Column } from "@/components/Table";
 import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
@@ -149,7 +149,7 @@ const MealHistory = () => {
       {/* Month & Year Filter */}
       
 
-      {/* Table Display 
+      {/* Table Display */}
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
@@ -162,11 +162,11 @@ const MealHistory = () => {
   );
 };
 
-export default MealHistory;*/}
+export default MealHistory;
 
 
 
-import React, { useEffect, useState } from "react";
+{/*import React, { useEffect, useState } from "react";
 import { usePatchTotalLunchSnacksCount, usePatchTotalMealGroup } from "@/services/mutations";
 import Table, { Column } from "@/components/Table";
 import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
@@ -308,7 +308,7 @@ const MealHistory = () => {
         </div>
       </div>
 
-      {/* Table Display */}
+      {/* Table Display 
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
@@ -322,3 +322,4 @@ const MealHistory = () => {
 };
 
 export default MealHistory;
+*/}
