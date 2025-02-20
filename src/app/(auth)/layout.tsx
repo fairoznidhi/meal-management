@@ -9,6 +9,7 @@ import {
   ClockIcon,
   NewspaperIcon,
 } from "@heroicons/react/24/outline";
+import { FaHome, FaUsers, FaClipboardList, FaCalendarAlt, FaUtensils, FaChartBar, FaAtlas, FaAccusoft, FaBacon, FaBreadSlice, FaCalendarWeek, FaClipboardCheck } from "react-icons/fa";
 import { Session } from "next-auth";
 import { getSession, SessionProvider, signOut } from "next-auth/react";
 import Image from "next/image";

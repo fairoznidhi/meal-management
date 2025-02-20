@@ -1,5 +1,5 @@
-
-import React, { useState, useEffect } from "react";
+{
+  /*import React, { useState, useEffect } from "react";
 
 interface MealStatusModalProps {
   isOpen: boolean;
@@ -8,6 +8,7 @@ interface MealStatusModalProps {
   initialStatus: boolean;
   initialPenalty: boolean;
   selectedDate: string; // Add selected date as a prop
+  mealType: number;
 }
 
 const MealStatusModal: React.FC<MealStatusModalProps> = ({
@@ -17,10 +18,12 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
   initialStatus,
   initialPenalty,
   selectedDate,
+  mealType,
 }) => {
   const [mealStatus, setMealStatus] = useState<boolean>(initialStatus);
   const [penalty, setPenalty] = useState<boolean>(initialPenalty);
   const [isPenaltyAllowed, setIsPenaltyAllowed] = useState<boolean>(true);
+  
 
   // Sync state with initial values when modal opens
   useEffect(() => {
@@ -60,12 +63,16 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
 
   if (!isOpen) return null;
 
+
+    // Convert mealType number to corresponding meal name
+    const mealTypeName = mealType === 1 ? "Lunch" : mealType === 2 ? "Snacks" : "Meal";
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
       <div className="bg-white p-6 rounded-md w-1/3">
-        <h2 className="text-xl font-bold mb-4">Update Meal Status</h2>
+        <h2 className="text-xl font-bold mb-4">Update {mealTypeName} Status</h2>
 
-        {/* Meal Status Section */}
+        {/* Meal Status Section 
         <div className="mb-4">
           <label className="block text-sm font-semibold mb-2">Meal Status</label>
           <div>
@@ -76,7 +83,7 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
                 checked={mealStatus === true} // "Meal On" is checked if mealStatus is true
                 onChange={() => setMealStatus(true)} // Set mealStatus to true for "Meal On"
               />
-              Meal On
+              {mealTypeName} On
             </label>
             <label className="ml-4">
               <input
@@ -85,7 +92,144 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
                 checked={mealStatus === false} // "Meal Off" is checked if mealStatus is false
                 onChange={() => setMealStatus(false)} // Set mealStatus to false for "Meal Off"
               />
-              Meal Off
+              {mealTypeName} Off
+            </label>
+          </div>
+        </div>
+
+        {/* Penalty Section 
+        <div className="mb-4">
+          <label className="block text-sm font-semibold mb-2">Penalty</label>
+          <label className="flex gap-x-2">
+            <input
+              type="checkbox"
+              checked={penalty} // Checkbox is checked if penalty is true
+              onChange={() => setPenalty(!penalty)} // Toggle penalty state on checkbox change
+              disabled={!isPenaltyAllowed} // Disable penalty checkbox if not allowed
+            />
+            <p className="">Add Penalty</p>
+          </label>
+          {!isPenaltyAllowed && (
+            <p className="text-red-500 text-xs mt-2">
+              Penalty cannot be added for future dates.
+            </p>
+          )}
+        </div>
+
+        {/* Action Buttons 
+        <div className="flex justify-end">
+          <button
+            onClick={onClose}
+            className="bg-gray-300 text-black p-2 rounded-md mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            className="bg-blue-500 text-white p-2 rounded-md"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MealStatusModal;
+
+*/
+}
+
+import React, { useState, useEffect } from "react";
+
+interface MealStatusModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdateStatus: (
+    mealStatus: boolean,
+    penalty: boolean,
+    penaltyValue: number
+  ) => void;
+  initialStatus: boolean;
+  initialPenalty: boolean;
+  selectedDate: string;
+  mealType: number;
+}
+
+const MealStatusModal: React.FC<MealStatusModalProps> = ({
+  isOpen,
+  onClose,
+  onUpdateStatus,
+  initialStatus,
+  initialPenalty,
+  selectedDate,
+  mealType,
+}) => {
+  const [mealStatus, setMealStatus] = useState<boolean>(initialStatus);
+  const [penalty, setPenalty] = useState<boolean>(initialPenalty);
+  const [penaltyValue, setPenaltyValue] = useState<number>(0); // New state for penalty value
+  const [isPenaltyAllowed, setIsPenaltyAllowed] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (isOpen) {
+      setMealStatus(initialStatus);
+      setPenalty(initialPenalty);
+      setPenaltyValue(0); // Reset slider when modal opens
+      checkPenaltyEligibility(selectedDate);
+    }
+  }, [isOpen, initialStatus, initialPenalty, selectedDate]);
+
+  const checkPenaltyEligibility = (date: string) => {
+    const today = new Date();
+    const selectedDateObj = new Date(date);
+
+    setIsPenaltyAllowed(selectedDateObj <= today);
+  };
+
+  const handleSave = () => {
+    if (!isPenaltyAllowed && penalty) {
+      alert("You cannot add a penalty to a future date.");
+      return;
+    }
+
+    onUpdateStatus(mealStatus, penalty, penalty ? penaltyValue : 0);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  const mealTypeName =
+    mealType === 1 ? "Lunch" : mealType === 2 ? "Snacks" : "Meal";
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+      <div className="bg-white p-6 rounded-md w-1/3">
+        <h2 className="text-xl font-bold mb-4">Update {mealTypeName} Status</h2>
+
+        {/* Meal Status Section */}
+        <div className="mb-4">
+          <label className="block text-sm font-semibold mb-2">
+            Meal Status
+          </label>
+          <div>
+            <label>
+              <input
+                type="radio"
+                name="mealStatus"
+                checked={mealStatus === true}
+                onChange={() => setMealStatus(true)}
+              />
+              {mealTypeName} On
+            </label>
+            <label className="ml-4">
+              <input
+                type="radio"
+                name="mealStatus"
+                checked={mealStatus === false}
+                onChange={() => setMealStatus(false)}
+              />
+              {mealTypeName} Off
             </label>
           </div>
         </div>
@@ -93,14 +237,14 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
         {/* Penalty Section */}
         <div className="mb-4">
           <label className="block text-sm font-semibold mb-2">Penalty</label>
-          <label>
+          <label className="flex gap-x-2">
             <input
               type="checkbox"
-              checked={penalty} // Checkbox is checked if penalty is true
-              onChange={() => setPenalty(!penalty)} // Toggle penalty state on checkbox change
-              disabled={!isPenaltyAllowed} // Disable penalty checkbox if not allowed
+              checked={penalty}
+              onChange={() => setPenalty(!penalty)}
+              disabled={!isPenaltyAllowed}
             />
-            Add Penalty
+            <p>Add Penalty</p>
           </label>
           {!isPenaltyAllowed && (
             <p className="text-red-500 text-xs mt-2">
@@ -130,5 +274,3 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
 };
 
 export default MealStatusModal;
-
-

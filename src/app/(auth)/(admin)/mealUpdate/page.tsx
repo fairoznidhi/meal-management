@@ -420,135 +420,143 @@ const MealActivityComponent = () => {
 
   return (
     <div className="p-4">
-
       <div className="bg-stone-50 p-2 mt-2 rounded-lg">
-      <div className="flex items-center mb-2 my-2 relative">
-        <div className="flex items-center">
-          <label className="mx-2">Select Meal Type: </label>
-          <select
-            value={mealType}
-            onChange={handleMealTypeChange}
-            className="px-2 py-1 border rounded bg-[#f4f4f4]"
-          >
-            <option value={1}>Lunch</option>
-            <option value={2}>Snack</option>
-          </select>
+        <div className="flex items-center mb-2 my-2 relative">
+          <div className="flex items-center">
+            <label className="mx-2">Select Meal Type: </label>
+            <select
+              value={mealType}
+              onChange={handleMealTypeChange}
+              className="px-2 py-1 border rounded bg-[#f4f4f4]"
+            >
+              <option value={1}>Lunch</option>
+              <option value={2}>Snack</option>
+            </select>
+          </div>
+
+          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
+            <button
+              onClick={handlePreviousWeek}
+              className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
+            >
+              <FaCaretSquareLeft />
+            </button>
+            <h2 className="p-2 text-base font-bold">{`Start Date: ${
+              startDate.toISOString().split("T")[0]
+            }`}</h2>
+            <button
+              onClick={handleNextWeek}
+              className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
+            >
+              <FaCaretSquareRight />
+            </button>
+          </div>
+
+          <div className="ml-auto">
+            <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+          </div>
         </div>
 
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
-          <button
-            onClick={handlePreviousWeek}
-            className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
-          >
-            <FaCaretSquareLeft />
-          </button>
-          <h2 className="p-2 text-base font-bold">{`Start Date: ${
-            startDate.toISOString().split("T")[0]
-          }`}</h2>
-          <button
-            onClick={handleNextWeek}
-            className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
-          >
-            <FaCaretSquareRight />
-          </button>
-        </div>
-
-        <div className="ml-auto">
-          <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-        </div>
-      </div>
-
-      {error && <p className="text-red-500">Error: {error}</p>}
-      {filteredData.length === 0 ? (
-        <span className="loading loading-dots loading-lg"></span>
-      ) : (
-        <div className="overflow-y-auto sm:max-h-[300px] md:max-h-[400px] lg:max-h-[550px] max-lg:max-h-[700px] rounded-t-lg overflow-hidden">
-          <table className="table-auto w-full rounded-t-lg">
-            <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
-              <tr>
-                <th className="p-2 py-5 text-left pl-8 w-[10px] whitespace-nowrap">Employee Name</th>
-                {dates.map((date, index) => (
-                  <th key={index} className="p-2">
-                    <div>{date}</div>
-                    <div className="text-xs text-gray-600">
-                      Guests: {totalGuestsPerDay.lunchGuests[date] || 0}
-                    </div>
+        {error && <p className="text-red-500">Error: {error}</p>}
+        {filteredData.length === 0 ? (
+          <span className="loading loading-dots loading-lg"></span>
+        ) : (
+          <div className="overflow-y-auto sm:max-h-[300px] md:max-h-[400px] lg:max-h-[550px] max-lg:max-h-[700px] rounded-t-lg overflow-hidden">
+            <table className="table-auto w-full rounded-t-lg">
+              <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
+                <tr>
+                  <th className="p-2 py-5 text-left pl-8 w-[10px] whitespace-nowrap">
+                    Employee Name
                   </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.map((employee) => {
-                const dateStatusMap: Record<
-                  string,
-                  { status: boolean; holiday: boolean; penalty: boolean }
-                > = {};
-                employee.employee_details.forEach((detail) => {
-                  const meal = detail.meal[mealType - 1]; // Use the selected meal type
-                  const status = meal?.meal_status[0]?.status;
-                  const penalty = meal?.meal_status[0]?.penalty || false;
-                  dateStatusMap[detail.date] = {
-                    status,
-                    holiday: detail.holiday,
-                    penalty,
-                  };
-                });
+                  {dates.map((date, index) => (
+                    <th key={index} className="p-2">
+                      <div>{date}</div>
+                      <div className="text-xs text-gray-600">
+                        Guests: {totalGuestsPerDay.lunchGuests[date] || 0}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((employee) => {
+                  const dateStatusMap: Record<
+                    string,
+                    { status: boolean; holiday: boolean; penalty: boolean }
+                  > = {};
+                  employee.employee_details.forEach((detail) => {
+                    const meal = detail.meal[mealType - 1]; // Use the selected meal type
+                    const status = meal?.meal_status[0]?.status;
+                    const penalty = meal?.meal_status[0]?.penalty || false;
+                    dateStatusMap[detail.date] = {
+                      status,
+                      holiday: detail.holiday,
+                      penalty,
+                    };
+                  });
 
-                return (
-                  <tr key={employee.employee_id} className="hover:bg-gray-100">
-                    <td className="border border-gray-200 p-2 pl-8 overflow-x-auto text-left w-[10px] whitespace-nowrap">
-                      {employee.employee_name}
-                    </td>
-                    {dates.map((date, index) => {
-                      const cellData = dateStatusMap[date] || {
-                        status: null,
-                        holiday: false,
-                        penalty: false,
-                      };
+                  return (
+                    <tr
+                      key={employee.employee_id}
+                      className="hover:bg-gray-100"
+                    >
+                      <td className="border border-gray-200 p-2 pl-8 overflow-x-auto text-left w-[10px] whitespace-nowrap">
+                        {employee.employee_name}
+                      </td>
+                      {dates.map((date, index) => {
+                        const cellData = dateStatusMap[date] || {
+                          status: null,
+                          holiday: false,
+                          penalty: false,
+                        };
 
-                      let cellStyle = "border border-gray-200 p-2 text-center";
-                      let statusText = "-";
-                      let textColor = "text-black";
+                        let cellStyle =
+                          "border border-gray-200 p-2 text-center cursor-pointer";
+                        let statusText = "-";
+                        let textColor = "text-black";
 
-                      if (cellData.holiday) {
-                        cellStyle += " bg-blue-100";
-                      } else if (cellData.penalty) {
-                        cellStyle += " bg-red-200";
-                      }
+                        if (cellData.holiday) {
+                          cellStyle += " bg-red-100";
+                        }
 
-                      if (cellData.status === true) {
-                        statusText = "Yes";
-                        textColor = "text-green-500";
-                      } else if (cellData.status === false) {
-                        statusText = "No";
-                        textColor = "text-red-500";
-                      }
+                        if (cellData.status === true) {
+                          statusText = "Yes";
+                          textColor = "text-green-500";
+                        } else if (cellData.status === false) {
+                          statusText = "No";
+                          textColor = "text-red-500";
+                        }
 
-                      return (
-                        <td
-                          key={index}
-                          className={`${cellStyle} ${textColor}`}
-                          onClick={() =>
-                            handleCellClick(
-                              employee.employee_id,
-                              employee.employee_name,
-                              date,
-                              cellData.status,
-                              cellData.penalty
-                            )
-                          }
-                        >
-                          {statusText}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+                        return (
+                          <td
+                            key={index}
+                            className={`${cellStyle} ${textColor}`}
+                            onClick={() =>
+                              handleCellClick(
+                                employee.employee_id,
+                                employee.employee_name,
+                                date,
+                                cellData.status,
+                                cellData.penalty
+                              )
+                            }
+                          >
+                            <div className="flex items-center justify-center">
+                              {statusText}
+                              {cellData.penalty && (
+                                <span className="ms-2 mt-1 w-1 h-1 bg-red-500 rounded-full"></span>
+                              )}
+                            </div>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <MealStatusModal
@@ -558,6 +566,7 @@ const MealActivityComponent = () => {
         initialStatus={selectedCell?.currentStatus ?? false}
         initialPenalty={selectedCell?.currentPenalty || false}
         selectedDate={selectedCell?.date ?? ""}
+        mealType={mealType}
       />
     </div>
   );
