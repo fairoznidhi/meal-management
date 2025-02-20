@@ -48,7 +48,7 @@ export default function AuthLayout({
     { name: "Meal History", route: "/MealHistory", icon: ClockIcon },
   ];
   const sidebarItemsUser = [
-    { name: "Dashboard", route: "/UserDashboard", icon: Squares2X2Icon },
+    { name: "Dashboard", route: "/userDashboard", icon: Squares2X2Icon },
     // {
     //   name: "Meal Update",
     //   route: "/UserMealUpdate",
@@ -183,7 +183,7 @@ export default function AuthLayout({
                     className="cursor-pointer bg-gray-100 px-4 py-1 rounded-lg text-gray-700 font-extrabold hover:bg-gray-300 transition"
                     onClick={() => {
                       setAdminView(!adminView);
-                      router.push(adminView ? "/UserDashboard" : "/adminDashboard");
+                      router.push(adminView ? "/userDashboard" : "/adminDashboard");
                     }}
                   >
                     {adminView ? "Admin" : "Employee"}
