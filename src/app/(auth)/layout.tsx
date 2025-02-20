@@ -2,19 +2,22 @@
 import Sidebar from "@/components/sidebar";
 import { useEmployeePhoto, useTokenSingleEmployee } from "@/services/queries";
 import {
-  ClipboardDocumentListIcon,
-  HomeModernIcon,
-  UserIcon,
   UsersIcon,
   CalendarDaysIcon,
+  Squares2X2Icon,
+  ClipboardDocumentCheckIcon,
+  ClockIcon,
+  NewspaperIcon,
 } from "@heroicons/react/24/outline";
 import { Session } from "next-auth";
 import { getSession, SessionProvider, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import vslogo from "public/Vivasoft_logo_mark.svg";
 import profileImage from "public/profile-image.jpg";
 import { createContext, useEffect, useState } from "react";
+import { MdSpaceDashboard } from "react-icons/md";
 type profilePictureType = {
   userProfilePicture: string;
   setUserProfilePicture: React.Dispatch<React.SetStateAction<string>>;
@@ -37,26 +40,27 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   const sidebarItemsAdmin = [
-    { name: "Dashboard", route: "/adminDashboard", icon: HomeModernIcon },
-    { name: "Employee List", route: "/employeeList", icon: UsersIcon },
-    {
-      name: "My Meal Entry",
-      route: "/adminmealPlan",
-      icon: UserIcon,
-    },
-    { name: "Menu", route: "/menuPlan", icon: ClipboardDocumentListIcon },
-    //{ name: "My Profie", route: "/profile", icon: UserIcon },
-    { name: "Meal History", route: "/MealHistory", icon: CalendarDaysIcon },
+    { name: "Dashboard", route: "/adminDashboard", icon: Squares2X2Icon },
     { name: "Meal Update", route: "/mealUpdate", icon: CalendarDaysIcon },
+    { name: "Menu", route: "/menuPlan", icon: NewspaperIcon },
+    { name: "Employee List", route: "/employeeList", icon: UsersIcon },
+    { name: "Meal History", route: "/MealHistory", icon: ClockIcon },
   ];
   const sidebarItemsUser = [
-    { name: "Dashboard", route: "/userDashboard", icon: HomeModernIcon },
-    { name: "Profile", route: "/profile", icon: UserIcon },
+    { name: "Dashboard", route: "/UserDashboard", icon: Squares2X2Icon },
+    // {
+    //   name: "Meal Update",
+    //   route: "/UserMealUpdate",
+    //   icon: ClipboardDocumentCheckIcon,
+    // },
+    // { name: "Meal History", route: "/UserMealHistory", icon: ClockIcon },
   ];
+  const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const { data: profileList } = useTokenSingleEmployee();
+  const [adminView, setAdminView] = useState(true);
   useEffect(() => {
     if (profileList) {
       const profile = profileList[0];
@@ -157,7 +161,7 @@ export default function AuthLayout({
               )}
             </div>
             <Sidebar
-              items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser}
+              items={isAdmin ? adminView? sidebarItemsAdmin : sidebarItemsUser : sidebarItemsUser}
               isCollapsed={isCollapsed}
             />
           </div>
@@ -165,6 +169,26 @@ export default function AuthLayout({
           {/* navbar */}
           <div className=" fixed z-40 w-full h-[60px]">
             <div className="navbar bg-white border-dashed border-b-[1px] pt-2 px-8">
+              {isAdmin && (
+                <div>
+                  <div
+                    className={`text-gray-500 text-xs pr-1 ${
+                      isCollapsed ? "pl-16" : "pl-60"
+                    }`}
+                  >
+                    View as
+                  </div>
+                  <label
+                    className="cursor-pointer bg-gray-100 px-4 py-1 rounded-lg text-gray-700 font-extrabold hover:bg-gray-300 transition"
+                    onClick={() => {
+                      setAdminView(!adminView);
+                      router.push(adminView ? "/UserDashboard" : "/adminDashboard");
+                    }}
+                  >
+                    {adminView ? "Admin" : "Employee"}
+                  </label>
+                </div>
+              )}
               <div className="flex-1"></div>
               <div className="flex-none gap-2">
                 <div className="dropdown dropdown-end">
@@ -195,7 +219,7 @@ export default function AuthLayout({
                       </Link>
                     </li>
                     <li>
-                      <a onClick={() => signOut({ callbackUrl: "/login"})}>
+                      <a onClick={() => signOut({ callbackUrl: "/login" })}>
                         Logout
                       </a>
                     </li>

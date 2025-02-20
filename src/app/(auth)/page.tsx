@@ -8,7 +8,7 @@ export default function HomePage() {
   if (session?.user?.is_admin) {
     router.push("/adminDashboard");
   } else if (!session?.user?.is_admin) {
-    router.push("/userDashboard");
+    router.push("/UserDashboard");
   }
   return (
     <div className="m-20 items-center justify-center">
