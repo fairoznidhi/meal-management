@@ -23,7 +23,7 @@ const LoginPage = () => {
     if (status === "authenticated" && session?.user?.is_admin) {
       router.push("/adminDashboard");
     } else if (status === "authenticated" && !session?.user?.is_admin) {
-      router.push("/userDashboard");
+      router.push("/UserDashboard");
     }
   }, [session, status, router]);
   const onSubmit = async (data: Inputs) => {
@@ -45,7 +45,7 @@ const LoginPage = () => {
         if (session?.user?.is_admin) {
           router.push("/adminDashboard");
         } else {
-          router.push("/userDashboard");
+          router.push("/UserDashboard");
         }
       }
     } catch (err: unknown) {

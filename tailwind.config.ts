@@ -29,13 +29,7 @@ export default {
         dm: "var(--font-dm-sans)",
         open: "var(--font-open-sans)",
         space: "var(--font-space-grotesk)",
-        aliceBlue:"var(--aliceBlue)",
-        midnightBlue:"var(--midnightBlue)",
-        vivaBlue:"var(--vivaBlue)",
-        
       },
-
-      
     },
   },
   plugins: [daisyui],

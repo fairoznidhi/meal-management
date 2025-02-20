@@ -6,9 +6,7 @@ import React, { useEffect, useState } from "react";
 import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 import InstantGuest from "@/features/dashboard/InstantGuest";
-import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
-import notificationToast from "@/components/notificationToast";
-import dayjs from "dayjs";
+import { FaCaretSquareLeft, FaCaretSquareRight } from "react-icons/fa";
 
 interface MealStatus {
   status: boolean;
@@ -32,10 +30,10 @@ interface MealActivityData {
   employee_name: string;
   employee_details: EmployeeDetail[];
 }
-type totalmeal={
-  date:string,
-  count:number,
-}
+type totalmeal = {
+  date: string;
+  count: number;
+};
 const MealActivityComponent = () => {
   const [mealActivityData, setMealActivityData] = useState<MealActivityData[]>(
     []
@@ -43,19 +41,13 @@ const MealActivityComponent = () => {
   const [lunchTotal, setLunchTotal] = useState<number | null>(null);
   const [snacksTotal, setSnacksTotal] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState(new Date()); 
-   const [endDate, setEndDate]= useState(dayjs(startDate).add(6,"day").format("YYYY-MM-DD"));// Use Date object for easy manipulation
+  const [startDate, setStartDate] = useState(new Date()); // Use Date object for easy manipulation
   const [days, setDays] = useState<number>(7);
   const [mealType, setMealType] = useState<number>(1); // 1 for lunch, 2 for snack
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
   const [lunchGuestsToday, setLunchGuestsToday] = useState<number>(0);
   const [snackGuestsToday, setSnackGuestsToday] = useState<number>(0);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [isDateModalOpen, setIsDateModalOpen] = useState<boolean>(false);
-  const [isHoliday, setIsHoliday] = useState<boolean | null>(null);
-  const [employeeIds, setEmployeeIds] = useState<number[]>([]);
-  const [employees, setEmployees] = useState<any[]>([]);
   const [selectedCell, setSelectedCell] = useState<{
     employeeId: number;
     employeeName: string;
@@ -83,7 +75,7 @@ const MealActivityComponent = () => {
         data: {
           date: formattedDate,
           meal_type: 1,
-          days:1
+          days: 1,
         },
         useAuth: true,
       })) as totalmeal[];
@@ -103,7 +95,7 @@ const MealActivityComponent = () => {
         data: {
           date: formattedDate,
           meal_type: 2,
-          days:1
+          days: 1,
         },
         useAuth: true,
       })) as totalmeal[];
@@ -139,13 +131,9 @@ const MealActivityComponent = () => {
       if (response) {
         // If response is not null, update state
         setMealActivityData(response);
-        // Extract and store employee IDs
-      const ids = response.map((item) => item.employee_id);
-      setEmployeeIds(ids);
       } else {
         // Handle case where response is null
         setMealActivityData([]); // Set an empty array or appropriate fallback value
-        setEmployeeIds([]); // Reset employee IDs if no data
         console.warn("Meal activity data is empty.");
       }
     } catch (err: any) {
@@ -241,8 +229,6 @@ const MealActivityComponent = () => {
   */
   }
 
-  
-
   useEffect(() => {
     const initializeMealPlan = async () => {
       try {
@@ -259,18 +245,6 @@ const MealActivityComponent = () => {
 
     initializeMealPlan();
   }, [startDate, days]);
-
-
-
-
-
-  
-
-
-
-
-
-
 
   const dates = generateDates(startDate, days);
 
@@ -360,13 +334,6 @@ const MealActivityComponent = () => {
     setMealType(Number(event.target.value));
   };
 
-
-  
-
-
-
-
-
   {
     /*const handlePreviousWeek = () => {
     setStartDate((prev) => {
@@ -451,297 +418,146 @@ const MealActivityComponent = () => {
   const lunchGuestsT = lunchGuests[todayDate] || 0;
   const snacksGuestsT = snackGuests[todayDate] || 0;
 
-
-
-
-  
-
-
-  {/*const handleDateClick = (date: string) => {
-    setSelectedDate(date);
-    setIsDateModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsDateModalOpen(false);
-    setSelectedDate(null);
-  };
-
-
-
-
-  const handleSaveHoliday = async (date: string) => {
-    try {
-      const formattedDate = dayjs(date).format("YYYY-MM-DD"); // Ensure proper date format
-  
-      // Create an array of objects, each with a single employee_id
-      const requestData = employeeIds.map((id) => ({
-        date: formattedDate,
-        holiday: isHoliday,
-        employee_id: id, // Assign each employee_id separately
-        meal_type: 1, 
-      }));
-  
-      await request({
-        url: "/meal_activity/group-update",
-        method: "PATCH",
-        data: requestData, // Send the properly formatted array
-        useAuth: true, // Use authentication if required
-      });
-  
-      console.log(`Holiday status updated for ${formattedDate}: ${isHoliday}`);
-      
-      setIsHoliday(null);
-      closeModal(); // Close modal after successful update
-    } catch (err: any) {
-      console.error("Error updating holiday status:", err);
-    }
-  };
-  */}
-
-
-
-
-
-
-  
-
   return (
     <div className="p-4">
-      {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
-      {/*<div className="flex gap-4 mb-8">
-        <div className="p-4 bg-blue-200 rounded-md shadow-md text-center">
-          <h3 className="text-lg font-semibold">Today&apos;s Total Lunch</h3>
-          <p className="text-xl">
-            {lunchTotal !== null ? lunchTotal : "Loading..."}
-          </p>
-        </div>
-
-        <div className="p-4 bg-green-200 rounded-md shadow-md text-center">
-          <h3 className="text-lg font-semibold">Today&apos;s Total Snacks</h3>
-          <p className="text-xl">
-            {snacksTotal !== null ? snacksTotal : "Loading..."}
-          </p>
-        </div>
-
-        <div className="p-4 bg-violet-200 rounded-md shadow-md text-center w-64">
-          <InstantGuest onUpdateSuccess={handleBothUpdates}/>
-        </div>
-      </div>*/}
-
-      <div className="flex justify-between items-center mb-4 gap-x-2">
-        <div className="mb-4">
-          <label className="mr-2 font-bold">Select Meal Type: </label>
-          <select
-            value={mealType}
-            onChange={handleMealTypeChange}
-            className="p-2 border rounded bg-blue-200 font-semibold"
-          >
-            <option value={1}>Lunch</option>
-            <option value={2}>Snack</option>
-          </select>
-        </div>
-        <div className="flex absolute left-1/2 gap-x-2">
-          <button
-            onClick={handlePreviousWeek}
-            className="p-2 text-base bg-gray-200 rounded-md hover:bg-[#D7DFE9]"
-          >
-            {/*<span className="text-lg">&#171;</span>*/}
-            <FaCaretLeft/>
-          </button>
-          <h2 className="p-2 text-base font-bold me-2">
-            {/*{`Start Date: ${startDate.toISOString().split("T")[0]}`}*/}
-            {dayjs(startDate).format("DD MMM")}-{dayjs(endDate).format("DD MMM")}
-          </h2>
-          <button
-            onClick={handleNextWeek}
-            className="p-2 text-base bg-gray-200 rounded-md hover:bg-[#D7DFE9]"
-          >
-            {/*<span className="text-lg">&raquo;</span>*/}
-            <FaCaretRight></FaCaretRight>
-          </button>
-        </div>
-        <div>
-          <Search
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-          ></Search>
-        </div>
-      </div>
-
-      {error && <p className="text-red-500">Error: {error}</p>}
-      {filteredData.length === 0 ? (
-        <p>Loading or no data available...</p>
-      ) : (
-        <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[650px] max-lg:max-h-[800px]">
-          
-
-
-
-
-
-
-
-<table className="table-auto w-full border-collapse border border-gray-300">
-  <thead>
-    <tr className="border border-black">
-      <th className="p-2 text-center">Employee Name</th>
-      {dates.map((date, index) => (
-        <th key={index} className="p-2 border border-black">
-          <div>{dayjs(date).format("ddd, DD MMM")}</div>
-          <div className="text-xs text-gray-600">
-            Guests: {totalGuestsPerDay.lunchGuests[date] || 0}
+      <div className="bg-stone-50 p-2 mt-2 rounded-lg">
+        <div className="flex items-center mb-2 my-2 relative">
+          <div className="flex items-center">
+            <label className="mx-2">Select Meal Type: </label>
+            <select
+              value={mealType}
+              onChange={handleMealTypeChange}
+              className="px-2 py-1 border rounded bg-[#f4f4f4]"
+            >
+              <option value={1}>Lunch</option>
+              <option value={2}>Snack</option>
+            </select>
           </div>
-        </th>
-      ))}
-    </tr>
-  </thead>
-  <tbody>
-    {filteredData.map((employee) => {
-      const dateStatusMap: Record<
-        string,
-        { status: boolean; holiday: boolean; penalty: boolean }
-      > = {};
-      employee.employee_details.forEach((detail) => {
-        const meal = detail.meal[mealType - 1]; // Use the selected meal type
-        const status = meal?.meal_status[0]?.status;
-        const penalty = meal?.meal_status[0]?.penalty || false;
-        dateStatusMap[detail.date] = {
-          status,
-          holiday: detail.holiday,
-          penalty,
-        };
-      });
 
-      return (
-        <tr key={employee.employee_id}>
-          <td className="border border-gray-500 p-2 text-center">
-            {employee.employee_name}
-          </td>
-          {dates.map((date, index) => {
-            const cellData = dateStatusMap[date] || {
-              status: null,
-              holiday: false,
-              penalty: false,
-            };
+          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
+            <button
+              onClick={handlePreviousWeek}
+              className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
+            >
+              <FaCaretSquareLeft />
+            </button>
+            <h2 className="p-2 text-base font-bold">{`Start Date: ${
+              startDate.toISOString().split("T")[0]
+            }`}</h2>
+            <button
+              onClick={handleNextWeek}
+              className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
+            >
+              <FaCaretSquareRight />
+            </button>
+          </div>
 
-            let cellStyle = "border border-gray-500 p-2 text-center cursor-pointer";
-            let statusText = "-";
-            let textColor = "text-black";
-
-            if (cellData.holiday) {
-              cellStyle += " bg-red-100";
-            }
-
-            if (cellData.status === true) {
-              statusText = "Yes";
-              textColor = "text-green-500";
-            } else if (cellData.status === false) {
-              statusText = "No";
-              textColor = "text-red-500";
-            }
-
-            return (
-              <td
-                key={index}
-                className={`${cellStyle} ${textColor}`}
-                onClick={() =>
-                  handleCellClick(
-                    employee.employee_id,
-                    employee.employee_name,
-                    date,
-                    cellData.status,
-                    cellData.penalty
-                  )
-                }
-              >
-                <div className="flex items-center justify-center">
-                  {statusText}
-                  {cellData.penalty && (
-                    <span className="ms-2 mt-1 w-1 h-1 bg-red-500 rounded-full"></span>
-                  )}
-                </div>
-              </td>
-            );
-          })}
-        </tr>
-      );
-    })}
-  </tbody>
-</table>
-
- 
-{/* Date Header Click Modal 
-{isDateModalOpen && selectedDate && (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-    <div className="bg-white p-6 rounded-md w-1/3">
-      <h2 className="text-xl font-bold mb-4">
-        Details for {dayjs(selectedDate).format("ddd, DD MMM YYYY")}
-      </h2>
-
-      {/* Add Holiday Section 
-<div className="mt-4">
-  <label className="block text-sm font-semibold mb-2">Mark as Holiday:</label>
-  <div className="flex gap-x-4">
-    <label className="flex items-center">
-      <input
-        type="radio"
-        name="holiday"
-        value="yes"
-        checked={isHoliday === true} // Explicitly check for true
-        onChange={() => setIsHoliday(true)}
-      />
-      <span className="ml-2">Yes</span>
-    </label>
-    <label className="flex items-center">
-      <input
-        type="radio"
-        name="holiday"
-        value="no"
-        checked={isHoliday === false} // Explicitly check for false
-        onChange={() => setIsHoliday(false)}
-      />
-      <span className="ml-2">No</span>
-    </label>
-  </div>
-</div>
-
-
-      {/* Action Buttons 
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={closeModal}
-          className="bg-gray-300 text-black p-2 rounded-md mr-2"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => handleSaveHoliday(selectedDate)}
-          className="bg-blue-500 text-white p-2 rounded-md"
-        >
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-*/}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+          <div className="ml-auto">
+            <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+          </div>
         </div>
-      )}
+
+        {error && <p className="text-red-500">Error: {error}</p>}
+        {filteredData.length === 0 ? (
+          <span className="loading loading-dots loading-lg"></span>
+        ) : (
+          <div className="overflow-y-auto sm:max-h-[300px] md:max-h-[400px] lg:max-h-[550px] max-lg:max-h-[700px] rounded-t-lg overflow-hidden">
+            <table className="table-auto w-full rounded-t-lg">
+              <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
+                <tr>
+                  <th className="p-2 py-5 text-left pl-8 w-[10px] whitespace-nowrap">
+                    Employee Name
+                  </th>
+                  {dates.map((date, index) => (
+                    <th key={index} className="p-2">
+                      <div>{date}</div>
+                      <div className="text-xs text-gray-600">
+                        Guests: {totalGuestsPerDay.lunchGuests[date] || 0}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map((employee) => {
+                  const dateStatusMap: Record<
+                    string,
+                    { status: boolean; holiday: boolean; penalty: boolean }
+                  > = {};
+                  employee.employee_details.forEach((detail) => {
+                    const meal = detail.meal[mealType - 1]; // Use the selected meal type
+                    const status = meal?.meal_status[0]?.status;
+                    const penalty = meal?.meal_status[0]?.penalty || false;
+                    dateStatusMap[detail.date] = {
+                      status,
+                      holiday: detail.holiday,
+                      penalty,
+                    };
+                  });
+
+                  return (
+                    <tr
+                      key={employee.employee_id}
+                      className="hover:bg-gray-100"
+                    >
+                      <td className="border border-gray-200 p-2 pl-8 overflow-x-auto text-left w-[10px] whitespace-nowrap">
+                        {employee.employee_name}
+                      </td>
+                      {dates.map((date, index) => {
+                        const cellData = dateStatusMap[date] || {
+                          status: null,
+                          holiday: false,
+                          penalty: false,
+                        };
+
+                        let cellStyle =
+                          "border border-gray-200 p-2 text-center cursor-pointer";
+                        let statusText = "-";
+                        let textColor = "text-black";
+
+                        if (cellData.holiday) {
+                          cellStyle += " bg-red-100";
+                        }
+
+                        if (cellData.status === true) {
+                          statusText = "Yes";
+                          textColor = "text-green-500";
+                        } else if (cellData.status === false) {
+                          statusText = "No";
+                          textColor = "text-red-500";
+                        }
+
+                        return (
+                          <td
+                            key={index}
+                            className={`${cellStyle} ${textColor}`}
+                            onClick={() =>
+                              handleCellClick(
+                                employee.employee_id,
+                                employee.employee_name,
+                                date,
+                                cellData.status,
+                                cellData.penalty
+                              )
+                            }
+                          >
+                            <div className="flex items-center justify-center">
+                              {statusText}
+                              {cellData.penalty && (
+                                <span className="ms-2 mt-1 w-1 h-1 bg-red-500 rounded-full"></span>
+                              )}
+                            </div>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       <MealStatusModal
         isOpen={modalOpen}
