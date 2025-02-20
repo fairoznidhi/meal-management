@@ -164,8 +164,8 @@ const MealHistory = () => {
   );
 };
 
-export default MealHistory;*/}
-
+export default MealHistory;
+*/}
 
 
 import React, { useEffect, useState } from "react";
@@ -206,9 +206,9 @@ const MealHistory = () => {
   const formattedStartDate = dayjs(startDate).format("YYYY-MM-DD");
   const formattedEndDate = dayjs(endDate).format("YYYY-MM-DD");
 
-  const { mutate: lunchMealCount } = usePatchTotalMealGroup(startDate.toISOString(), 1, daysInRange);
-  const { mutate: snacksMealCount } = usePatchTotalMealGroup(startDate.toISOString(), 2, daysInRange);
-  const { mutate: totalCount } = usePatchTotalLunchSnacksCount(startDate.toISOString(), daysInRange);
+  const { mutate: lunchMealCount } = usePatchTotalMealGroup(formattedStartDate, 1, daysInRange);
+  const { mutate: snacksMealCount } = usePatchTotalMealGroup(formattedStartDate, 2, daysInRange);
+  const { mutate: totalCount } = usePatchTotalLunchSnacksCount(formattedStartDate, daysInRange);
 
   const formatData = (
     lunchData: totalMealGroup[],
@@ -217,9 +217,10 @@ const MealHistory = () => {
   ) => {
     const formattedData = lunchData.map((lunch) => {
       const matchingSnack = snacksData.find((snack) => snack.date === lunch.date);
-
+      const formattedDate=dayjs(lunch.date).format("DD MMM, ddd");
+            
       return {
-        date: lunch.date,
+        date: formattedDate,
         total_lunch: lunch.count || 0,
         total_snacks: matchingSnack?.count || 0,
       };
@@ -234,6 +235,15 @@ const MealHistory = () => {
     formattedData.push(totalRow);
     return formattedData;
   };
+
+
+ 
+
+
+
+
+
+
 
   useEffect(() => {
     setLoading(true);
@@ -295,12 +305,14 @@ const MealHistory = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-extrabold mb-4">Meal History</h2>
         <div className="mb-4 flex gap-4">
+          <p className="font-semibold mt-1">Start Date</p>
           <input
             type="date"
             value={dayjs(startDate).format("YYYY-MM-DD")} // Format to YYYY-MM-DD
             onChange={(e) => setStartDate(new Date(e.target.value))}
             className="border rounded px-2 py-1"
           />
+          <p className="font-semibold mt-1">End Date</p>
           <input
             type="date"
             value={dayjs(endDate).format("YYYY-MM-DD")} // Format to YYYY-MM-DD
@@ -324,3 +336,7 @@ const MealHistory = () => {
 };
 
 export default MealHistory;
+
+
+
+

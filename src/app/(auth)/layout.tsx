@@ -8,7 +8,7 @@ import {
   UsersIcon,
   CalendarDaysIcon,
 } from "@heroicons/react/24/outline";
-import { FaHome, FaUsers, FaClipboardList, FaCalendarAlt, FaUtensils } from "react-icons/fa";
+import { FaHome, FaUsers, FaClipboardList, FaCalendarAlt, FaUtensils, FaChartBar, FaAtlas, FaAccusoft, FaBacon, FaBreadSlice, FaCalendarWeek, FaClipboardCheck } from "react-icons/fa";
 import { Session } from "next-auth";
 import { getSession, SessionProvider, signOut } from "next-auth/react";
 import Image from "next/image";
@@ -38,11 +38,13 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   const sidebarItemsAdmin = [
-    { name: "Dashboard", route: "/adminDashboard", icon: FaHome },
+    { name: "Dashboard", route: "/adminDashboard", icon: FaChartBar },
+    { name: "Meal Update", route: "/mealUpdate", icon: FaClipboardCheck},
+    { name: "Menu", route: "/menuPlan", icon: FaClipboardList },
     { name: "Employee List", route: "/employeeList", icon: FaUsers },
     
-    { name: "Menu", route: "/menuPlan", icon: FaClipboardList },
-    //{ name: "My Profie", route: "/profile", icon: UserIcon },
+    
+    
     { name: "Meal History", route:"/MealHistory", icon: FaCalendarAlt},
     {
       name: "My Meal Entry",
