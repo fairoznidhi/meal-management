@@ -46,6 +46,7 @@ import {
 import { Line } from "react-chartjs-2";
 import { useMealSummaryYear } from "@/services/queries";
 import BarChart from "@/components/barChart";
+import AdminWeeklyMealData from "@/features/dashboard/adminWeeklyMealData";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -403,17 +404,8 @@ const MealActivityComponent = () => {
           />
         </div>
       </div> */}
-      <div className="h-64">
-      <BarChart
-        data={{
-          labels: ["a", "b", "c"],
-          datasets: [
-            { label: "data1", data: [1, 2, 3] },
-            { label: "data2", data: [4, 5, 6] },
-          ],
-        }}
-        color={["red", "green"]}
-      ></BarChart>
+      <div className="">
+      <AdminWeeklyMealData/>
       </div>
     </div>
   );

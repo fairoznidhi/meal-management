@@ -47,6 +47,7 @@ export default function AuthLayout({
     { name: "Menu", route: "/menuPlan", icon: ClipboardDocumentListIcon },
     //{ name: "My Profie", route: "/profile", icon: UserIcon },
     { name: "Meal History", route: "/MealHistory", icon: CalendarDaysIcon },
+    { name: "Meal Update", route: "/mealUpdate", icon: CalendarDaysIcon },
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: HomeModernIcon },

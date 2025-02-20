@@ -22,8 +22,9 @@ ChartJS.register(
 type BarChartProps = {
   data: ChartData<"bar">;
   color?: string[];
+  height?:string;
 };
-const BarChart: React.FC<BarChartProps> = ({ data, color }) => {
+const BarChart: React.FC<BarChartProps> = ({ data, color, height}) => {
   const modifiedData = {
     labels: [...(data?.labels ?? [])],
     datasets: data.datasets.map((dataset, index) => ({
@@ -57,8 +58,8 @@ const BarChart: React.FC<BarChartProps> = ({ data, color }) => {
         position: "right" as const,
         align: "start" as const,
         labels: {
-          boxHeight: 30, 
-          boxWidth: 30, 
+          boxHeight: 20, 
+          boxWidth: 20, 
           padding: 0, 
           borderRadius:2
         },
@@ -67,7 +68,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, color }) => {
   };
   console.log(modifiedData);
   return (
-    <div>
+    <div className={`${height}`}>
       <Bar data={modifiedData} options={options}></Bar>
     </div>
   );
