@@ -6,7 +6,7 @@ import { EmployeeMealDetails } from "@/model/userMealActivity";
 import { RangeMenuDetails } from "@/model/rangeMealPlan";
 import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
 import { extraMeal } from "@/model/extraMeal";
-import { MealSummaryYear } from "@/model/mealActivity";
+import { MealSummaryGraph } from "@/model/mealActivity";
 
 const BASE_URL=`${process.env.NEXT_PUBLIC_PROXY_URL}`;
 const axiosInstance=axios.create({baseURL:BASE_URL});
@@ -158,14 +158,14 @@ export const patchExtraMeal = async (data: object) => {
     return res ;
 };
 
-export const getMealSummaryYear=async(year:number)=>{
+export const getMealSummaryGraph=async(monthCount:number)=>{
     const res=await apiClient({
-        url: "/meal_activity/meal-summary-year",
+        url: "/meal_activity/meal-summary-graph",
         method: "GET",
         params:{
-            year:`${year}`
+            month:`${monthCount}`
         },
-        useAuth:true
+        useAuth: true,
     })
-    return res as MealSummaryYear[];
+    return res as MealSummaryGraph[];
 }

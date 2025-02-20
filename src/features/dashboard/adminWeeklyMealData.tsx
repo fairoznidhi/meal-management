@@ -51,7 +51,6 @@ const AdminWeeklyMealData = () => {
         ],
       }}
       color={["#bfdbfe", "green"]}
-      height="h-64"
     ></BarChart>
   );
 };

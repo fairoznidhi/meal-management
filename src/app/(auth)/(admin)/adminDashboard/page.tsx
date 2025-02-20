@@ -1,8 +1,22 @@
 "use client";
 
+import AdminMonthlyMealData from "@/features/dashboard/adminMonthlyMealData";
+import AdminWeeklyMealData from "@/features/dashboard/adminWeeklyMealData";
 import InstantGuest from "@/features/dashboard/InstantGuest";
+import { totalMealGroup } from "@/model/totalMealGroup";
 import { baseRequest } from "@/services/HttpClientAPI";
-import React, { useEffect, useState } from "react";
+import { usePatchTotalMealGroup } from "@/services/mutations";
+import {
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+} from "chart.js";
+import { useEffect, useState } from "react";
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
 interface MealStatus {
@@ -31,22 +45,6 @@ type totalmeal = {
   date: string;
   count: number;
 };
-import { totalMealGroup } from "@/model/totalMealGroup";
-import { usePatchTotalMealGroup } from "@/services/mutations";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
-import { useMealSummaryYear } from "@/services/queries";
-import BarChart from "@/components/barChart";
-import AdminWeeklyMealData from "@/features/dashboard/adminWeeklyMealData";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -124,36 +122,6 @@ const MealActivityComponent = () => {
       });
   }, [firstDate, daysInMonth]);
   console.log(selectedYear.toString());
-  const { data: mealSummaryYear } = useMealSummaryYear(selectedYear);
-  const months = mealSummaryYear?.map((items) => items.month);
-  const totalLunch = mealSummaryYear?.map((items) => items.lunch);
-  const totalSnacks = mealSummaryYear?.map((items) => items.snack);
-  console.log(months);
-  console.log(mealSummaryYear?.toString());
-  const chartLabel = "Line Chart Example";
-  const xLabels = months;
-  const datasets = [
-    {
-      label: "Lunch Count",
-      data: totalLunch,
-      borderColor: "rgb(75, 182, 173)",
-      backgroundColor: "rgb(75, 182, 173,0.3)",
-      tension: 0.2,
-      spanGaps: true,
-      pointRadius: 4,
-      pointHoverRadius: 6,
-    },
-    {
-      label: "Snacks Count",
-      data: totalSnacks,
-      borderColor: "rgb(255, 182, 78)",
-      backgroundColor: "rgb(255, 182, 78,0.3)",
-      tension: 0.2,
-      spanGaps: true,
-      pointRadius: 4,
-      pointHoverRadius: 6,
-    },
-  ];
 
   const [mealActivityData, setMealActivityData] = useState<MealActivityData[]>(
     []
@@ -347,7 +315,7 @@ const MealActivityComponent = () => {
   return (
     <div className="p-4">
       {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
-      <div className="flex gap-4 mb-2">
+      <div className="grid grid-cols-6 gap-4 mb-4">
         <div className="p-4 bg-blue-200 rounded-md text-center">
           <h3 className="text-lg font-semibold">Today&apos;s Total Lunch</h3>
           <p className="text-2xl font-bold">
@@ -404,8 +372,9 @@ const MealActivityComponent = () => {
           />
         </div>
       </div> */}
-      <div className="">
+      <div className="grid grid-cols-3">
       <AdminWeeklyMealData/>
+      <AdminMonthlyMealData/>
       </div>
     </div>
   );
