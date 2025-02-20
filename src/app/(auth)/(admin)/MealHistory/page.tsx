@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+{/*import React, { useEffect, useState } from "react";
 import { usePatchTotalLunchSnacksCount, usePatchTotalMealGroup } from "@/services/mutations";
 import Table, { Column } from "@/components/Table";
 import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
@@ -33,10 +33,15 @@ const MealHistory = () => {
   const { mutate: totalCount } = usePatchTotalLunchSnacksCount(firstDate, daysInMonth);
 
   const formatData = (
-    lunchData: totalMealGroup[],
-    snacksData: totalMealGroup[],
+    lunchData: totalMealGroup[] = [],
+    snacksData: totalMealGroup[] = [],
     totalCountData: TotalMeal
   ) => {
+    // Ensure lunchData and snacksData are arrays before calling map or find
+    if (!Array.isArray(lunchData) || !Array.isArray(snacksData)) {
+      return []; // Return an empty array if either lunchData or snacksData are not valid arrays
+    }
+
     const formattedData = lunchData.map((lunch) => {
       const matchingSnack = snacksData.find((snack) => snack.date === lunch.date);
 
@@ -81,7 +86,8 @@ const MealHistory = () => {
       }),
     ])
       .then(([lunchData, snacksData, totalCountData]) => {
-        if (!lunchData.length && !snacksData.length && !totalCountData) {
+        // Check if the data is available and valid
+        if ((lunchData && lunchData.length === 0) && (snacksData && snacksData.length === 0) && !totalCountData) {
           setError("No meal data available for the selected month.");
         } else {
           const formatted = formatData(lunchData, snacksData, totalCountData);
@@ -113,44 +119,40 @@ const MealHistory = () => {
   ];
 
   return (
-    <div className="p-4">
+    <div className="p-4 rounded">
       <div className="flex justify-between items-center">
-      <h2 className="text-3xl font-extrabold mb-4">Meal History</h2>
-      <div className="mb-4 flex gap-4">
-        <select
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-          className="border rounded px-2 py-1"
-        >
-          {Array.from({ length: 12 }, (_, i) => (
-            <option key={i} value={i}>
-              {new Date(0, i).toLocaleString("default", { month: "long" })}
-            </option>
-          ))}
-        </select>
-        <select
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-          className="border rounded px-2 py-1"
-        >
-          {Array.from({ length: 5 }, (_, i) => {
-            const year = now.getFullYear() - 2 + i; // Show 2 years before and 2 years after
-            return (
-              <option key={year} value={year}>
-                {year}
+        <h2 className="text-3xl font-extrabold mb-4">Meal History</h2>
+        <div className="mb-4 flex gap-4">
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+            className="border rounded px-2 py-1"
+          >
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i} value={i}>
+                {new Date(0, i).toLocaleString("default", { month: "long" })}
               </option>
-            );
-          })}
-        </select>
+            ))}
+          </select>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+            className="border rounded px-2 py-1"
+          >
+            {Array.from({ length: 5 }, (_, i) => {
+              const year = now.getFullYear() - 2 + i; // Show 2 years before and 2 years after
+              return (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              );
+            })}
+          </select>
+        </div>
       </div>
-      </div>
-      
 
-      {/* Month & Year Filter */}
-      
-
-      {/* Table Display */}
-      {loading && <p>Loading...</p>}
+      {/* Table Display 
+      {loading && <span className="loading loading-dots loading-lg"></span>}
       {error && <p className="text-red-500">{error}</p>}
 
       {!loading && !error && totalMeal.length > 0 ? (
@@ -162,11 +164,11 @@ const MealHistory = () => {
   );
 };
 
-export default MealHistory;
+export default MealHistory;*/}
 
 
 
-{/*import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePatchTotalLunchSnacksCount, usePatchTotalMealGroup } from "@/services/mutations";
 import Table, { Column } from "@/components/Table";
 import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
@@ -308,7 +310,7 @@ const MealHistory = () => {
         </div>
       </div>
 
-      {/* Table Display 
+      {/* Table Display */}
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
@@ -322,4 +324,3 @@ const MealHistory = () => {
 };
 
 export default MealHistory;
-*/}

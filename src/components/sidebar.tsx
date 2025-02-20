@@ -8,25 +8,32 @@ const Sidebar = ({
   items,
   isCollapsed,
 }: {
-  items: { name: string; route: string ; icon: React.ComponentType<{ className: string }>}[];
+  items: {
+    name: string;
+    route: string;
+    icon: React.ComponentType<{ className: string }>;
+  }[];
   isCollapsed: boolean;
 }) => {
   const pathname = usePathname(); // Get the current path
 
   return (
     <div>
-     <div className="flex">
-      
-     </div>
-    <ul className="space-y-4 p-4">
-      {items.map((item, index) => {
-        const isActive = pathname === item.route; // Check if the current path matches the route
-        const Icon=item.icon;
-        return (
-          <li key={index} onClick={(e) => {
-            e.stopPropagation();
-          }}>
-            <Link href={item.route} className={`block p-2 rounded-md ${
+      <div className="flex"></div>
+      <ul className="space-y-2 p-4">
+        {items.map((item, index) => {
+          const isActive = pathname === item.route; // Check if the current path matches the route
+          const Icon = item.icon;
+          return (
+            <li
+              key={index}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <Link
+                href={item.route}
+                className={`flex items-center rounded-md min-h-12 ${
                   isActive
                     ? "bg-vivaBlue text-white" // Active styles
                     : "hover:bg-white text-midnightBlue" // Default styles

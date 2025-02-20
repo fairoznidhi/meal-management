@@ -145,12 +145,12 @@ const InstantGuest = ({ onUpdateSuccess }: { onUpdateSuccess?: () => void }) => 
 
   return (
     <div>
-      <h3 className="text-lg font-semibold">Instant Guest</h3>
-      <div>
+      <h3 className="text-lg font-semibold">{`Today's Guest`}</h3>
+      <div className="h-8">
         {!instantGuestEditable ? (
           <div className="flex justify-between items-center">
             <div></div>
-            <div className="text-xl">{count}</div>
+            <div className="text-2xl font-bold">{count}</div>
             <button
               className="text-violet-600 hover:text-violet-700 text-[20px]"
               onClick={handleInstantGuestEdit}
@@ -168,7 +168,7 @@ const InstantGuest = ({ onUpdateSuccess }: { onUpdateSuccess?: () => void }) => 
               >
                 -
               </button>
-              <span className="text-xl px-2">{count}</span>
+              <span className="text-2xl font-bold px-2">{count}</span>
               <button
                 onClick={() => setCount((prev) => prev + 1)}
                 className="px-2 py-1 text-violet-500 bg-violet-100 rounded hover:bg-gray-200"

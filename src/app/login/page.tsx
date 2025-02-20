@@ -61,8 +61,8 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   return (
     <div>
-      <div className="grid grid-cols-2 min-h-screen ">
-        <div className="bg-[#e7f5fd] flex justify-center pt-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen ">
+        <div className="hidden bg-[#e7f5fd] md:flex justify-center pt-10">
           <div className="">
             <Image
               src={loginhero}
