@@ -3,15 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --lightBlue: #2fa5ed;
-  --darkBlue: #0187da;
-  --white: #ffffff;
-  --black: #000000;
-  --aliceBlue:#f3faff;
-  --midnightBlue:#00156a;
-  --vivaBlue:#3467fc;
-}
+    --lightBlue: #2fa5ed;
+    --darkBlue: #0187da;
+    --white: #ffffff;
+    --black: #000000;
+    --aliceBlue:#f3faff;
+    --midnightBlue:#00156a;
+    --vivaBlue:#3467fc;
+  }
+  .Toastify__toast {
+    justify-content: flex-start !important
+  }
 
-.Toastify__toast {
-  justify-content: flex-start !important;
-}
+  

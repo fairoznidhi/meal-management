@@ -201,8 +201,8 @@ const MealPlanTable = () => {
 
 
   return (
-    <div className="p-4">
-          <div className="flex items-center mt-10 ms-96">
+    <div className="p-4 mt-40">
+          <div className="flex right-[78vh] items-center mt-10 mb-8 absolute left-1/2 transform -translate-x-1/2">
                   <button
                     onClick={()=>changeWeek('prev')}
                     className={`px-4 text-gray-300 text-4xl rounded hover:text-gray-400 ms-16`} 
@@ -226,7 +226,7 @@ const MealPlanTable = () => {
         <p>Loading...</p>
       ) : (
         <>
-          <table className="w-full border-collapse border border-black mt-6">
+          <table className="w-full border-collapse border border-black mt-20">
             <thead>
               <tr className="bg-gray-50 border border-black">
                 <th className="border p-2">Date</th>

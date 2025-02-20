@@ -22,6 +22,16 @@ export default {
         aliceBlue:"var(--aliceBlue)",
         midnightBlue:"var(--midnightBlue)",
         vivaBlue:"var(--vivaBlue)",
+      },
+      fontFamily: {
+        geist: "var(--font-geist-sans)",
+        mono: "var(--font-geist-mono)",
+        dm: "var(--font-dm-sans)",
+        open: "var(--font-open-sans)",
+        space: "var(--font-space-grotesk)",
+        aliceBlue:"var(--aliceBlue)",
+        midnightBlue:"var(--midnightBlue)",
+        vivaBlue:"var(--vivaBlue)",
         
       },
 

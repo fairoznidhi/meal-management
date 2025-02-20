@@ -571,13 +571,13 @@ const EmployeeComponent: React.FC = () => {
             <>
                 {!isEditing ? (
                     <>
-                        {/* Cancel Button */}
+                        {/* Cancel Button 
                         <button
                             onClick={() => setShowDeleteModal(false)}
                             className="px-4 py-2 bg-gray-300 rounded me-3"
                         >
                             Cancel
-                        </button>
+                        </button>*/}
 
                         {/* Update Button */}
                         <button

@@ -1,6 +1,6 @@
 import notificationToast from "@/components/notificationToast";
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import { getSession, signOut } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 export interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
   useAuth?: boolean;
   isFormData?: boolean;
@@ -22,17 +22,22 @@ class HttpClient {
     );
 
     this.client.interceptors.response.use(
-      (response) => response.data,
+      async(response) => {
+        // console.log("Res Interceptor response: ",response)
+        if(response?.status === 401){
+          await signOut();
+          notificationToast("Token expired","error");
+          window.location.href = "/login";
+        }
+        return response.data
+      },
       async (error) => {
-        if (error.response?.status === 401) {
-          const session = await getSession();
-          if (session) {
+        if (error.response?.status === 401 || error.status===401) {
             await signOut();
             notificationToast("Token expired","error");
             window.location.href = "/login";
-          }
         }
-        console.log("Req Interceptor", error.response?.status);
+        // console.log("Res Interceptor error: ", error);
         return Promise.reject(error);
       }
     );

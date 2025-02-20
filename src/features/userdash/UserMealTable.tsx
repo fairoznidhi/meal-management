@@ -90,7 +90,7 @@ const UserMealTable = () => {
       label: "Date",
       render: (value,row) => {
         return (
-          <span className="font-medium text-gray-700 text-left">
+          <span className="font-medium text-gray-700 text-left whitespace-nowrap">
             {format(new Date(value), "dd MMM")}{" "}
             <span className={`${row.isHoliday?'text-red-600':'text-green-600'} font-semibold`}>
               ({format(new Date(value), "EEE")})
@@ -162,7 +162,8 @@ const UserMealTable = () => {
         );
       },
     },
-    { key: "snacks", label: "Snacks" },
+    { key: "snacks", label: "Snacks"
+     },
     {
       key: "snacksStatus",
       label: "Snacks Status",
