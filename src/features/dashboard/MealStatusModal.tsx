@@ -245,6 +245,7 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
               Penalty cannot be added for future dates.
             </p>
           )}
+          
 
         
         </div>
