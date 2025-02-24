@@ -1,5 +1,5 @@
-
-{/*import React, { useState, useEffect } from "react";
+{
+  /*import React, { useState, useEffect } from "react";
 
 interface MealStatusModalProps {
   isOpen: boolean;
@@ -138,16 +138,19 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
 
 export default MealStatusModal;
 
-*/}
-
-
+*/
+}
 
 import React, { useState, useEffect } from "react";
 
 interface MealStatusModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdateStatus: (mealStatus: boolean, penalty: boolean, penaltyValue: number) => void;
+  onUpdateStatus: (
+    mealStatus: boolean,
+    penalty: boolean,
+    penaltyValue: number
+  ) => void;
   initialStatus: boolean;
   initialPenalty: boolean;
   selectedDate: string;
@@ -196,7 +199,8 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
 
   if (!isOpen) return null;
 
-  const mealTypeName = mealType === 1 ? "Lunch" : mealType === 2 ? "Snacks" : "Meal";
+  const mealTypeName =
+    mealType === 1 ? "Lunch" : mealType === 2 ? "Snacks" : "Meal";
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
@@ -205,7 +209,9 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
 
         {/* Meal Status Section */}
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-2">Meal Status</label>
+          <label className="block text-sm font-semibold mb-2">
+            Meal Status
+          </label>
           <div>
             <label>
               <input
@@ -271,4 +277,3 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
 };
 
 export default MealStatusModal;
-

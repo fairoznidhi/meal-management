@@ -27,7 +27,11 @@ const AdminMonthlyMealData = () => {
     }
   }, [selectedMonthRange, MealSummaryGraph]);
   return (
-    <div>
+    <div className="bg-stone-50 rounded-xl p-4">
+      <div className="flex justify-between mb-2">
+        <div className="pl-2">
+          Monthly Meal Summary
+        </div>
       <div>
         <select
           value={selectedMonthRange}
@@ -40,6 +44,7 @@ const AdminMonthlyMealData = () => {
             </option>
           ))}
         </select>
+      </div>
       </div>
       <LineChart
         data={{
