@@ -193,6 +193,7 @@ export default function AuthLayout({
               <div className="flex-1"></div>
               <div className="flex-none gap-2">
                 <div className="dropdown dropdown-end">
+                  
                   <div
                     className="flex items-center "
                     tabIndex={0}
@@ -210,6 +211,7 @@ export default function AuthLayout({
                       </div>
                     </div>
                   </div>
+                  
                   <ul
                     tabIndex={0}
                     className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
