@@ -2,6 +2,7 @@ export type EmployeeMealStatus={
   status?:boolean;
   guest_count?:number;
   penalty?:boolean;
+  penaltyScore?:number;
 }
 export type EmployeeMeal={
   meal_type?:number;
