@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getEmployeePhoto, getExtraMeal, getMealSummaryGraph, getRangeMealPlan, getSingleEmployee, getSingleEmployeeMealActivity, getTokenSingleEmployee } from "./api";
+import { getEmployeePhoto, getExtraMeal, getMealSummaryGraph, getRangeMealPlan, getSingleEmployee, getSingleEmployeeMealActivity, getTokenSingleEmployee, getUserMonthlyData } from "./api";
 
 export function useSingleEmployee(id: number) {
     return useQuery({
@@ -46,5 +46,12 @@ export function useMealSummaryGraph(monthCount:number){
   return useQuery({
     queryKey: ['monthCount',monthCount], 
     queryFn: () => getMealSummaryGraph(monthCount)
+  });
+}
+
+export function useUserMonthlyData(month:number){
+  return useQuery({
+    queryKey: ['userMonthlyData', month], 
+    queryFn: () => getUserMonthlyData(month)
   });
 }

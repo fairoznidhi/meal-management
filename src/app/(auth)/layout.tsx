@@ -62,12 +62,12 @@ export default function AuthLayout({
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: Squares2X2Icon },
+    {
+      name: "Meal Update",
+      route: "/UserMealUpdate",
+      icon: ClipboardDocumentCheckIcon,
+    },
     { name: "Meal History", route: "/UserMealHistory", icon: ClockIcon },
-    // {
-    //   name: "Meal Update",
-    //   route: "/UserMealUpdate",
-    //   icon: ClipboardDocumentCheckIcon,
-    // },
     // { name: "Meal History", route: "/UserMealHistory", icon: ClockIcon },
   ];
   const router = useRouter();
