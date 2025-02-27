@@ -122,7 +122,7 @@ const MealPlanTable = () => {
         ]),
         useAuth: true,
       });
-
+      console.log("Edited data",editedData);
       setMealData(editedData); // Sync mealData with editedData
       setIsEditing(false); // Exit edit mode
       notificationToast("Successfully Saved Menu", "success");
@@ -187,10 +187,40 @@ const MealPlanTable = () => {
         "Successfully copied meals from the previous week",
         "success"
       );
+      
       // Update local state with new meal data
       //setMealData((prev) => [...prev, ...mealsForCurrentWeek]);
 
       setMealData((prev) => {
+        // Convert existing data into a Map for easy merging
+        const mealMap = new Map(prev.map((meal) => [meal.date, { ...meal }]));
+
+        // Merge new meals into the mealMap
+        mealsForCurrentWeek.forEach(({ date, meal_type, food }) => {
+          if (!mealMap.has(date)) {
+            mealMap.set(date, { date, lunch: "", snacks: "" });
+          }
+          if (meal_type === "lunch") {
+            mealMap.get(date)!.lunch = food;
+          } else if (meal_type === "snacks") {
+            mealMap.get(date)!.snacks = food;
+          }
+        });
+
+        // Convert back to an array
+        setEditedData(Array.from(mealMap.values()));
+        return Array.from(mealMap.values());
+      });
+    } catch (err) {
+      console.error("❌ Error copying meals:", err);
+      alert("Failed to copy meals. Please try again.");
+    }
+    
+
+
+
+
+      /*setMealData((prev) => {
         // Convert existing data into a Map for easy merging
         const mealMap = new Map(prev.map((meal) => [meal.date, { ...meal }]));
 
@@ -212,8 +242,25 @@ const MealPlanTable = () => {
     } catch (err) {
       console.error("❌ Error copying meals:", err);
       alert("Failed to copy meals. Please try again.");
-    }
+    }*/
   };
+
+
+
+
+
+ 
+  
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div className="p-4">
@@ -363,5 +410,4 @@ const MealPlanTable = () => {
     </div>
   );
 };
-
 export default MealPlanTable;
