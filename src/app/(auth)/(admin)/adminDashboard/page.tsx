@@ -352,10 +352,14 @@ const MealActivityComponent = () => {
         <div className="p-4 bg-violet-200 rounded-md text-center w-64">
           <InstantGuest onUpdateSuccess={handleBothUpdates} />
         </div>
-        
+
+        <div>
+                
         
       </div>
-      <div className="flex justify-end">
+      
+        </div>
+        <div className="flex justify-end">
       <button
          onClick={handleOpenPrintModal}
          className="bg-blue-200  py-2 px-4 mb-2 rounded-md  flex items-center"
@@ -365,6 +369,7 @@ const MealActivityComponent = () => {
       </button>
 
         </div>
+        
       {/* <div className="grid grid-cols-1">
         <div className=" h-64 w-full">
           <Line
