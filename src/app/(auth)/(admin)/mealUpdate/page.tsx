@@ -461,7 +461,7 @@ const MealActivityComponent = () => {
         {filteredData.length === 0 ? (
           <span className="loading loading-dots loading-lg"></span>
         ) : (
-          <div className="overflow-y-auto sm:max-h-[300px] md:max-h-[400px] lg:max-h-[550px] max-lg:max-h-[700px] rounded-t-lg overflow-hidden">
+          <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[650px] max-lg:max-h-[800px] rounded-t-lg overflow-hidden">
             <table className="table-auto w-full rounded-t-lg">
               <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
                 <tr>
