@@ -4,14 +4,18 @@ import Search from "@/components/Search";
 import MealStatusModal from "@/features/dashboard/MealStatusModal";
 import React, { useEffect, useState } from "react";
 import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
-const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
+
 import InstantGuest from "@/features/dashboard/InstantGuest";
 import { FaCaretSquareLeft, FaCaretSquareRight } from "react-icons/fa";
+import dayjs from "dayjs";
+
+const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
 interface MealStatus {
   status: boolean;
   guest_count: number;
   penalty: boolean;
+
 }
 
 interface Meal {
@@ -41,13 +45,15 @@ const MealActivityComponent = () => {
   const [lunchTotal, setLunchTotal] = useState<number | null>(null);
   const [snacksTotal, setSnacksTotal] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState(new Date()); // Use Date object for easy manipulation
+  const [startDate, setStartDate] = useState(new Date()); 
+  const [endDate, setEndDate]= useState(dayjs(startDate).add(6,"day").format("YYYY-MM-DD"));// Use Date object for easy manipulation
   const [days, setDays] = useState<number>(7);
   const [mealType, setMealType] = useState<number>(1); // 1 for lunch, 2 for snack
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
   const [lunchGuestsToday, setLunchGuestsToday] = useState<number>(0);
   const [snackGuestsToday, setSnackGuestsToday] = useState<number>(0);
+  const [penaltyScore, setPenaltyScore] = useState<number>(0);
   const [selectedCell, setSelectedCell] = useState<{
     employeeId: number;
     employeeName: string;
@@ -253,14 +259,15 @@ const MealActivityComponent = () => {
     employeeName: string,
     date: string,
     currentStatus: boolean | null,
-    currentPenalty: boolean
+    currentPenalty: boolean,
+  
   ) => {
     setSelectedCell({
       employeeId,
       employeeName,
       date,
       currentStatus: currentStatus ?? null, // Ensure null is passed if no status exists
-      currentPenalty: currentPenalty ?? false, // Default penalty to false if undefined
+      currentPenalty: currentPenalty ?? false,
     });
     setModalOpen(true);
   };
@@ -293,11 +300,11 @@ const MealActivityComponent = () => {
     return { lunchGuests, snackGuests };
   };
 
-  const handleUpdateStatus = async (status: boolean, penalty: boolean) => {
+  const handleUpdateStatus = async (status: boolean, penalty: boolean, penaltyScore: number) => {
     if (selectedCell) {
-      const { employeeId, date } = selectedCell;
+      const { employeeId, date} = selectedCell;
       const guestCount = 0;
-
+      console.log(penaltyScore);
       const updatedData = [
         {
           employee_id: employeeId,
@@ -306,6 +313,7 @@ const MealActivityComponent = () => {
           status: status,
           guest_count: guestCount,
           penalty,
+          penalty_score:penaltyScore
         },
       ];
 
@@ -380,6 +388,10 @@ const MealActivityComponent = () => {
         return oneMonthBeforeToday; // Set to the one month before today if it exceeds
       }
 
+      // Set endDate to 6 days after new start date
+    const newEndDate = dayjs(newDate).add(6, "day").format("YYYY-MM-DD");
+    setEndDate(newEndDate); // Update endDate state
+
       return newDate;
     });
   };
@@ -395,7 +407,9 @@ const MealActivityComponent = () => {
       if (newDate > oneMonthAfterToday) {
         return oneMonthAfterToday; // Set to the one month after today if it exceeds
       }
-
+      // Set endDate to 6 days after new start date
+    const newEndDate = dayjs(newDate).add(6, "day").format("YYYY-MM-DD");
+    setEndDate(newEndDate); // Update endDate state
       return newDate;
     });
   };
@@ -441,9 +455,11 @@ const MealActivityComponent = () => {
             >
               <FaCaretSquareLeft />
             </button>
-            <h2 className="p-2 text-base font-bold">{`Start Date: ${
+            <h2 className="p-2 text-base font-bold">
+             { /*{`Start Date: ${
               startDate.toISOString().split("T")[0]
-            }`}</h2>
+            }`}*/}
+            {dayjs(startDate).format("DD MMM")}-{dayjs(endDate).format("DD MMM")}</h2>
             <button
               onClick={handleNextWeek}
               className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
@@ -470,7 +486,7 @@ const MealActivityComponent = () => {
                   </th>
                   {dates.map((date, index) => (
                     <th key={index} className="p-2">
-                      <div>{date}</div>
+                      <div>{dayjs(date).format("ddd, DD MMM")}</div>
                       <div className="text-xs text-gray-600">
                         Guests: {totalGuestsPerDay.lunchGuests[date] || 0}
                       </div>
@@ -508,6 +524,7 @@ const MealActivityComponent = () => {
                           status: null,
                           holiday: false,
                           penalty: false,
+
                         };
 
                         let cellStyle =
@@ -537,7 +554,8 @@ const MealActivityComponent = () => {
                                 employee.employee_name,
                                 date,
                                 cellData.status,
-                                cellData.penalty
+                                cellData.penalty,
+                  
                               )
                             }
                           >
@@ -566,6 +584,7 @@ const MealActivityComponent = () => {
         initialStatus={selectedCell?.currentStatus ?? false}
         initialPenalty={selectedCell?.currentPenalty || false}
         selectedDate={selectedCell?.date ?? ""}
+        initialPenaltyScore={1}
         mealType={mealType}
       />
     </div>

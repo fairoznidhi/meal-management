@@ -502,14 +502,11 @@ const EmployeeComponent: React.FC = () => {
 
     return (
         <div className="p-4">
-            <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-            <div className="flex justify-between mb-4">
-             
-            <div className="mb-1 flex gap-4 mt-2">
+          <div className="flex justify-end gap-4 mt-2 mb-2">
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-          className="border rounded px-2 py-1"
+          className="border rounded px-4 py-2 bg-gray-100 appearance-none cursor-pointer text-center"
         >
           {Array.from({ length: 12 }, (_, i) => (
             <option key={i} value={i}>
@@ -521,7 +518,7 @@ const EmployeeComponent: React.FC = () => {
         <select
           value={selectedYear}
           onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-          className="border rounded px-2 py-1"
+          className="border rounded px-4 py-2 bg-gray-100 appearance-none cursor-pointer text-center"
         >
           {Array.from({ length: 5 }, (_, i) => {
             const year = now.getFullYear() - 2 + i; // Show 2 years before and 2 years after
@@ -532,15 +529,20 @@ const EmployeeComponent: React.FC = () => {
             );
           })}
         </select>
+        
       </div>
-
+            
+            <div className="flex justify-between mb-4">
+             
+            
+           
                 <button
                     onClick={() => handleAddEmployeeClick()}
                     className="bg-blue-500 text-white px-4 py-2 rounded me-3"
                 >
                     Add Employee
                 </button>
-                
+                <div className="flex justify-end"><Search searchTerm={searchTerm} onSearchChange={setSearchTerm} /></div>
             </div>
 
             <div className="mt-4">

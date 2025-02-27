@@ -3,6 +3,9 @@
 import AdminMonthlyMealData from "@/features/dashboard/adminMonthlyMealData";
 import AdminWeeklyMealData from "@/features/dashboard/adminWeeklyMealData";
 import InstantGuest from "@/features/dashboard/InstantGuest";
+import PrintModal from "@/features/dashboard/printHTML";
+import { FaPrint } from "react-icons/fa";
+
 import { totalMealGroup } from "@/model/totalMealGroup";
 import { baseRequest } from "@/services/HttpClientAPI";
 import { usePatchTotalMealGroup } from "@/services/mutations";
@@ -74,6 +77,14 @@ const MealActivityComponent = () => {
   const [snacksData, setSnacksData] = useState<number[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState<boolean>(false);
+  const handleOpenPrintModal = () => {
+    setIsPrintModalOpen(true);
+  };
+
+  const handleClosePrintModal = () => {
+    setIsPrintModalOpen(false);
+  };
 
   const { firstDate, daysInMonth } = getMonthDetails(
     selectedYear,
@@ -341,7 +352,24 @@ const MealActivityComponent = () => {
         <div className="p-4 bg-violet-200 rounded-md text-center w-64">
           <InstantGuest onUpdateSuccess={handleBothUpdates} />
         </div>
+
+        <div>
+                
+        
       </div>
+      
+        </div>
+        <div className="flex justify-end">
+      <button
+         onClick={handleOpenPrintModal}
+         className="bg-blue-200  py-2 px-4 mb-2 rounded-md  flex items-center"
+       >
+        <FaPrint className="bg-gray-200"/>
+        
+      </button>
+
+        </div>
+        
       {/* <div className="grid grid-cols-1">
         <div className=" h-64 w-full">
           <Line
@@ -375,6 +403,13 @@ const MealActivityComponent = () => {
       <div className="grid grid-cols-2 gap-4">
       <AdminWeeklyMealData/>
       <AdminMonthlyMealData/>
+      </div>
+      <div>
+        {/* Render PrintLunchModal and pass necessary props */}
+      <PrintModal
+        isOpen={isPrintModalOpen}
+        onClose={handleClosePrintModal}
+      />
       </div>
     </div>
   );

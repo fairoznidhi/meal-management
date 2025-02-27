@@ -122,7 +122,7 @@ const MealPlanTable = () => {
         ]),
         useAuth: true,
       });
-
+      console.log("Edited data",editedData);
       setMealData(editedData); // Sync mealData with editedData
       setIsEditing(false); // Exit edit mode
       notificationToast("Successfully Saved Menu", "success");
@@ -187,10 +187,40 @@ const MealPlanTable = () => {
         "Successfully copied meals from the previous week",
         "success"
       );
+      
       // Update local state with new meal data
       //setMealData((prev) => [...prev, ...mealsForCurrentWeek]);
 
       setMealData((prev) => {
+        // Convert existing data into a Map for easy merging
+        const mealMap = new Map(prev.map((meal) => [meal.date, { ...meal }]));
+
+        // Merge new meals into the mealMap
+        mealsForCurrentWeek.forEach(({ date, meal_type, food }) => {
+          if (!mealMap.has(date)) {
+            mealMap.set(date, { date, lunch: "", snacks: "" });
+          }
+          if (meal_type === "lunch") {
+            mealMap.get(date)!.lunch = food;
+          } else if (meal_type === "snacks") {
+            mealMap.get(date)!.snacks = food;
+          }
+        });
+
+        // Convert back to an array
+        setEditedData(Array.from(mealMap.values()));
+        return Array.from(mealMap.values());
+      });
+    } catch (err) {
+      console.error("❌ Error copying meals:", err);
+      alert("Failed to copy meals. Please try again.");
+    }
+    
+
+
+
+
+      /*setMealData((prev) => {
         // Convert existing data into a Map for easy merging
         const mealMap = new Map(prev.map((meal) => [meal.date, { ...meal }]));
 
@@ -212,12 +242,29 @@ const MealPlanTable = () => {
     } catch (err) {
       console.error("❌ Error copying meals:", err);
       alert("Failed to copy meals. Please try again.");
-    }
+    }*/
   };
+
+
+
+
+
+ 
+  
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div className="p-4">
-      <div className="flex right-[78vh] items-center mt-10 mb-8 absolute left-1/2 transform -translate-x-1/2">
+      {/*<div className="flex right-[78vh] items-center mt-10 mb-8 absolute left-1/2 transform -translate-x-1/2">
         <button
           onClick={() => changeWeek("prev")}
           className={`px-4 text-gray-300 text-4xl rounded hover:text-gray-400 ms-16`}
@@ -233,13 +280,38 @@ const MealPlanTable = () => {
         >
           <FaCaretSquareRight />
         </button>
+      </div>*/}
+
+       <div className="flex items-center  my-2 relative mt-8">
+                
+      
+                <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
+                  <button
+                    onClick={()=>changeWeek("prev")}
+                    className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
+                  >
+                    <FaCaretSquareLeft />
+                  </button>
+                  <h2 className="p-2 text-base font-bold">
+                   { /*{`Start Date: ${
+                    startDate.toISOString().split("T")[0]
+                  }`}*/}
+                  {dayjs(startDate).format("DD MMM")}-{dayjs(endDate).format("DD MMM")}</h2>
+                  <button
+                    onClick={()=>changeWeek("next")}
+                    className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
+                  >
+                    <FaCaretSquareRight />
+                  </button>
+                </div>
       </div>
+
 
       {loading ? (
         <p>Loading...</p>
       ) : (
         <>
-          <table className="w-full border-collapse border border-black mt-20">
+          <table className="w-full border-collapse border border-black mt-16">
             <thead>
               <tr className="bg-gray-50 border border-black">
                 <th className="border p-2">Date</th>
@@ -362,6 +434,6 @@ const MealPlanTable = () => {
       )}
     </div>
   );
+  
 };
-
 export default MealPlanTable;
