@@ -27,15 +27,16 @@ import {
     data: ChartData<"line">;
     color?: string[];
     height?: string;
+    aspectRatio?:boolean
   };
   
-  const LineChart: React.FC<LineChartProps> = ({ data, color, height }) => {
+  const LineChart: React.FC<LineChartProps> = ({ data, color, height,aspectRatio }) => {
     const modifiedData = {
       labels: [...(data?.labels ?? [])],
       datasets: data.datasets.map((dataset, index) => ({
         ...dataset,
-        borderColor: color ? color[index % color.length] : "blue",
-        backgroundColor: color ? color[index % color.length] + "50" : "blue50", // Transparent fill color
+        borderColor: color ? color[index % color.length] : "50",
+        backgroundColor: color ? color[index % color.length] : "blue50",
         borderWidth: 2,
         pointRadius: 4,
         pointHoverRadius: 6,
@@ -43,6 +44,8 @@ import {
     };
   
     const options = {
+      maintainAspectRatio: aspectRatio,
+      responsive: true,
       layout: {
         autoPadding: false,
         padding: 0,

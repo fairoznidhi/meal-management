@@ -22,6 +22,7 @@ const LoginPage = () => {
   useEffect(() => {
     if (status === "authenticated" && session?.user?.is_admin) {
       router.push("/adminDashboard");
+      localStorage.setItem("adminView","true")
     } else if (status === "authenticated" && !session?.user?.is_admin) {
       router.push("/userDashboard");
     }

@@ -9,7 +9,20 @@ import {
   ClockIcon,
   NewspaperIcon,
 } from "@heroicons/react/24/outline";
-import { FaHome, FaUsers, FaClipboardList, FaCalendarAlt, FaUtensils, FaChartBar, FaAtlas, FaAccusoft, FaBacon, FaBreadSlice, FaCalendarWeek, FaClipboardCheck } from "react-icons/fa";
+import {
+  FaHome,
+  FaUsers,
+  FaClipboardList,
+  FaCalendarAlt,
+  FaUtensils,
+  FaChartBar,
+  FaAtlas,
+  FaAccusoft,
+  FaBacon,
+  FaBreadSlice,
+  FaCalendarWeek,
+  FaClipboardCheck,
+} from "react-icons/fa";
 import { Session } from "next-auth";
 import { getSession, SessionProvider, signOut } from "next-auth/react";
 import Image from "next/image";
@@ -49,11 +62,12 @@ export default function AuthLayout({
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: Squares2X2Icon },
-    // {
-    //   name: "Meal Update",
-    //   route: "/UserMealUpdate",
-    //   icon: ClipboardDocumentCheckIcon,
-    // },
+    {
+      name: "Meal Update",
+      route: "/UserMealUpdate",
+      icon: ClipboardDocumentCheckIcon,
+    },
+    { name: "Meal History", route: "/UserMealHistory", icon: ClockIcon },
     // { name: "Meal History", route: "/UserMealHistory", icon: ClockIcon },
   ];
   const router = useRouter();
@@ -62,6 +76,12 @@ export default function AuthLayout({
   const [session, setSession] = useState<Session | null>(null);
   const { data: profileList } = useTokenSingleEmployee();
   const [adminView, setAdminView] = useState(true);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedAdminView = localStorage.getItem("adminView") === "true";
+      setAdminView(storedAdminView);
+    }
+  }, []);
   useEffect(() => {
     if (profileList) {
       const profile = profileList[0];
@@ -162,7 +182,13 @@ export default function AuthLayout({
               )}
             </div>
             <Sidebar
-              items={isAdmin ? adminView? sidebarItemsAdmin : sidebarItemsUser : sidebarItemsUser}
+              items={
+                isAdmin
+                  ? adminView
+                    ? sidebarItemsAdmin
+                    : sidebarItemsUser
+                  : sidebarItemsUser
+              }
               isCollapsed={isCollapsed}
             />
           </div>
@@ -182,8 +208,12 @@ export default function AuthLayout({
                   <label
                     className="cursor-pointer bg-gray-100 px-4 py-1 rounded-lg text-gray-700 font-extrabold hover:bg-gray-300 transition"
                     onClick={() => {
+                      const view = !adminView;
+                      localStorage.setItem("adminView", view.toString());
                       setAdminView(!adminView);
-                      router.push(adminView ? "/userDashboard" : "/adminDashboard");
+                      router.push(
+                        adminView ? "/userDashboard" : "/adminDashboard"
+                      );
                     }}
                   >
                     {adminView ? "Admin" : "Employee"}
