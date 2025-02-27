@@ -264,7 +264,7 @@ const MealPlanTable = () => {
 
   return (
     <div className="p-4">
-      <div className="flex right-[78vh] items-center mt-10 mb-8 absolute left-1/2 transform -translate-x-1/2">
+      {/*<div className="flex right-[78vh] items-center mt-10 mb-8 absolute left-1/2 transform -translate-x-1/2">
         <button
           onClick={() => changeWeek("prev")}
           className={`px-4 text-gray-300 text-4xl rounded hover:text-gray-400 ms-16`}
@@ -280,13 +280,38 @@ const MealPlanTable = () => {
         >
           <FaCaretSquareRight />
         </button>
+      </div>*/}
+
+       <div className="flex items-center  my-2 relative mt-8">
+                
+      
+                <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
+                  <button
+                    onClick={()=>changeWeek("prev")}
+                    className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
+                  >
+                    <FaCaretSquareLeft />
+                  </button>
+                  <h2 className="p-2 text-base font-bold">
+                   { /*{`Start Date: ${
+                    startDate.toISOString().split("T")[0]
+                  }`}*/}
+                  {dayjs(startDate).format("DD MMM")}-{dayjs(endDate).format("DD MMM")}</h2>
+                  <button
+                    onClick={()=>changeWeek("next")}
+                    className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
+                  >
+                    <FaCaretSquareRight />
+                  </button>
+                </div>
       </div>
+
 
       {loading ? (
         <p>Loading...</p>
       ) : (
         <>
-          <table className="w-full border-collapse border border-black mt-20">
+          <table className="w-full border-collapse border border-black mt-16">
             <thead>
               <tr className="bg-gray-50 border border-black">
                 <th className="border p-2">Date</th>
@@ -409,5 +434,6 @@ const MealPlanTable = () => {
       )}
     </div>
   );
+  
 };
 export default MealPlanTable;

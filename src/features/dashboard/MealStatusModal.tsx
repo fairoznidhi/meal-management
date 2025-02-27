@@ -416,7 +416,7 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
                   type="range"
                   min="1"
                   max="5"
-                  step="1"
+                  step="0.25"
                   value={penaltyScore}
                   onChange={(e) => setPenaltyScore(Number(e.target.value))}
                   className="w-full"
@@ -424,9 +424,13 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
                 {/* Indicators */}
                 <div className="absolute top-8 left-0 right-0 flex justify-between text-sm">
                   <span>1</span>
+                  <span>1.5</span>
                   <span>2</span>
+                  <span>2.5</span>
                   <span>3</span>
+                  <span>3.5</span>
                   <span>4</span>
+                  <span>4.5</span>
                   <span>5</span>
                 </div>
               </div>
