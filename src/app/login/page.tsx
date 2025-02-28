@@ -20,14 +20,15 @@ const LoginPage = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   useEffect(() => {
-    console.log("Login session error flickr ",session)
-    if (status === "authenticated" && session?.user?.is_admin) {
-      router.push("/adminDashboard");
+  //   console.log("Login session error flickr ",session)
+  //   if (status === "authenticated" && session?.user?.is_admin) {
+  //     router.push("/adminDashboard");
       localStorage.setItem("adminView","true")
-    } else if (status === "authenticated" && !session?.user?.is_admin) {
-      router.push("/userDashboard");
-    }
-  }, [session, status, router]);
+  //   } else if (status === "authenticated" && !session?.user?.is_admin) {
+  //     router.push("/userDashboard");
+  //   }
+  }, 
+  [session, status, router]);
   const onSubmit = async (data: Inputs) => {
     setLoading(true);
     try {

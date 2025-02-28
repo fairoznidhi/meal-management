@@ -3,13 +3,15 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req) {
-    const token = req.nextauth.token;
-    console.log("User Token:", token);
-    // if(token?.is_admin){
-    //   return NextResponse.redirect(new URL("/adminDashboard", req.url));
-    // }
-    // else{
-    //   return NextResponse.redirect(new URL("/userDashboard", req.url));
+    // const token = req.nextauth.token;
+    // console.log("User Token:", token);
+    // if(token){
+    //   if(token?.is_admin){
+    //     return NextResponse.redirect(new URL("/adminDashboard", req.url));
+    //   }
+    //   else{
+    //     return NextResponse.redirect(new URL("/userDashboard", req.url));
+    //   }
     // }
   },
   {
