@@ -1,9 +1,16 @@
 import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
     console.log("User Token:", token);
+    // if(token?.is_admin){
+    //   return NextResponse.redirect(new URL("/adminDashboard", req.url));
+    // }
+    // else{
+    //   return NextResponse.redirect(new URL("/userDashboard", req.url));
+    // }
   },
   {
     callbacks: {
@@ -11,17 +18,25 @@ export default withAuth(
         const pathname = req.nextUrl.pathname;
         if (!token) return false;
         if (token?.is_admin) {
-          return ["/adminDashboard", 
-                "/adminProfile", 
-                "/employeeList",
-                "/adminmealPlan",
-                "/profile",
-              "/menuPlan",
-            "/userDashboard",].includes(pathname);
+          return [
+            "/profile",
+            "/adminDashboard",
+            "/adminmealPlan",
+            "/employeeList",
+            "/MealHistory",
+            "/mealUpdate",
+            "/menuPlan",
+            "/userDashboard",
+            "/UserMealHistory",
+            "/UserMealUpdate",
+          ].includes(pathname);
         } else {
-          return ["/userDashboard", "/userProfile", "/profile"].includes(
-            pathname
-          );
+          return [
+            "/profile",
+            "/userDashboard",
+            "/UserMealHistory",
+            "/UserMealUpdate",
+          ].includes(pathname);
         }
       },
     },
@@ -30,14 +45,16 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    "/adminDashboard",
-    "/adminProfile",
-    "/employeeList",
-    "/mealPlan",
-    "/userDashboard",
-    "/userProfile",
     "/profile",
-    "/mealPlan",
+    "/adminDashboard",
+    "/adminmealPlan",
+    "/employeeList",
+    "/MealHistory",
+    "/mealUpdate",
+    "/menuPlan",
+    "/userDashboard",
+    "/UserMealHistory",
+    "/UserMealUpdate",
     "/",
   ],
 };

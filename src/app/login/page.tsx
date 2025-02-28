@@ -20,6 +20,7 @@ const LoginPage = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   useEffect(() => {
+    console.log("Login session error flickr ",session)
     if (status === "authenticated" && session?.user?.is_admin) {
       router.push("/adminDashboard");
       localStorage.setItem("adminView","true")

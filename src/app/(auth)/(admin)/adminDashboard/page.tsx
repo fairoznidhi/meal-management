@@ -22,6 +22,7 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import OfficeDailyPenaltyGraphAdmin from "@/features/dashboard/adminDashboard/graphs/officeDailyPenaltyGraphAdmin";
+import { useOfficeMonthlyPenalties } from "@/services/queries";
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
 interface MealStatus {
@@ -325,7 +326,14 @@ const MealActivityComponent = () => {
   const totalGuests = calculateTotalGuestsForToday();
   console.log(totalGuests);
   const router = useRouter();
+  const [thisMonthPenalty,setThisMonthPenalty]=useState<number| null>(null);
+  const {data:monthlyPenalty}=useOfficeMonthlyPenalties(1);
   const h3ClassName = "text-lg font-semibold mb-2";
+  useEffect(()=>{
+    if(monthlyPenalty){
+      setThisMonthPenalty(monthlyPenalty?.[0]?.count ?? 0);
+    }
+  },[monthlyPenalty,thisMonthPenalty])
   return (
     <div className="p-4">
       {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
@@ -365,10 +373,17 @@ const MealActivityComponent = () => {
           </p>
         </div>
         {/* Instant guest Update */}
-        <div className="p-4 bg-violet-200 rounded-md text-center w-64">
+        <div className="p-4 bg-violet-200 hover:bg-violet-300 rounded-md text-center transition duration-300 ease-in-out">
           <InstantGuest onUpdateSuccess={handleBothUpdates} />
         </div>
-        <div className="col-span-4"></div>
+        {/* Penalty */}
+        <div className="p-4 bg-rose-100 rounded-md text-center">
+        <h3 className={`${h3ClassName}`}>Penalty of This Month</h3>
+          <p className="text-2xl font-bold">
+            {thisMonthPenalty!==null ? (thisMonthPenalty):(<span className="loading loading-spinner loading-xs"></span>)}
+          </p>
+        </div>
+        <div className="col-span-3"></div>
         {/* <div className="bg-red-50"></div>
         <div className="bg-red-50"></div>
         <div className="bg-red-50"></div>
