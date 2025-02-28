@@ -20,6 +20,7 @@ import {
   Tooltip,
 } from "chart.js";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
 interface MealStatus {
@@ -322,12 +323,15 @@ const MealActivityComponent = () => {
   };
   const totalGuests = calculateTotalGuestsForToday();
   console.log(totalGuests);
-
+  const router=useRouter()
   return (
     <div className="p-4">
       {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
       <div className="grid grid-cols-6 gap-4 mb-4">
-        <div className="p-4 bg-blue-200 rounded-md text-center">
+        <div className="p-4 bg-blue-200 hover:bg-blue-300 rounded-md text-center cursor-pointer transition duration-300 ease-in-out" onClick={()=>{
+          localStorage.setItem("MealType","1");
+          router.push("/mealUpdate");
+        }}>
           <h3 className="text-lg font-semibold">Today&apos;s Total Lunch</h3>
           <p className="text-2xl font-bold">
             {lunchTotal !== null ? (
@@ -338,7 +342,10 @@ const MealActivityComponent = () => {
           </p>
         </div>
 
-        <div className="p-4 bg-green-200 rounded-md text-center">
+        <div className="p-4 bg-green-200 hover:bg-green-300 rounded-md text-center cursor-pointer transition duration-300 ease-in-out" onClick={()=>{
+          localStorage.setItem("MealType","2");
+          router.push("/mealUpdate");
+        }}>
           <h3 className="text-lg font-semibold">Today&apos;s Total Snacks</h3>
           <p className="text-2xl font-bold">
             {snacksTotal !== null ? (
