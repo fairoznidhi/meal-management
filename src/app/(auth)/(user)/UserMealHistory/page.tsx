@@ -109,7 +109,7 @@ const MealHistory = () => {
       key: "snacks_guest",
       label: "Snacks(Guest No.)",
       render: (value, row) => (
-        <span className={`font-normal ${row.lunch_status ? "text-green-600" : "text-red-600"}`}>
+        <span className={`font-normal ${row.snacks_status ? "text-green-600" : "text-red-600"}`}>
           {value}
         </span>
       ),
