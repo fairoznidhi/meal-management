@@ -325,10 +325,11 @@ const MealActivityComponent = () => {
   const totalGuests = calculateTotalGuestsForToday();
   console.log(totalGuests);
   const router = useRouter();
+  const h3ClassName = "text-lg font-semibold mb-2";
   return (
     <div className="p-4">
       {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
-      <div className="grid grid-cols-6 gap-2 mb-2">
+      <div className="grid grid-cols-8 gap-2 mb-2">
         {/* Todays total lunch */}
         <div
           className="p-4 bg-blue-200 hover:bg-blue-300 rounded-md text-center cursor-pointer transition duration-300 ease-in-out"
@@ -337,7 +338,7 @@ const MealActivityComponent = () => {
             router.push("/mealUpdate");
           }}
         >
-          <h3 className="text-lg font-semibold">Today&apos;s Total Lunch</h3>
+          <h3 className={`${h3ClassName}`}>Today&apos;s Total Lunch</h3>
           <p className="text-2xl font-bold">
             {lunchTotal !== null ? (
               lunchTotal
@@ -354,7 +355,7 @@ const MealActivityComponent = () => {
             router.push("/mealUpdate");
           }}
         >
-          <h3 className="text-lg font-semibold">Today&apos;s Total Snacks</h3>
+          <h3 className={`${h3ClassName}`}>Today&apos;s Total Snacks</h3>
           <p className="text-2xl font-bold">
             {snacksTotal !== null ? (
               snacksTotal
@@ -367,7 +368,11 @@ const MealActivityComponent = () => {
         <div className="p-4 bg-violet-200 rounded-md text-center w-64">
           <InstantGuest onUpdateSuccess={handleBothUpdates} />
         </div>
-        <div className="col-span-2"></div>
+        <div className="col-span-4"></div>
+        {/* <div className="bg-red-50"></div>
+        <div className="bg-red-50"></div>
+        <div className="bg-red-50"></div>
+        <div className="bg-red-50"></div> */}
         {/* Print Meal */}
         <div className="flex justify-end items-end h-full">
           <button
