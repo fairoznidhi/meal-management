@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 import notificationToast from "@/components/notificationToast";
-import { FaCaretSquareLeft, FaCaretSquareRight } from "react-icons/fa";
+import { FaCaretSquareLeft, FaCaretSquareRight, FaExclamation, FaTimes } from "react-icons/fa";
 import Modal from "@/components/modal";
 
 const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
@@ -22,6 +22,8 @@ interface Row {
   snacks: string;
 }
 
+
+
 const MealPlanTable = () => {
   const [startDate, setStartDate] = useState(
     dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD")
@@ -33,9 +35,78 @@ const MealPlanTable = () => {
   const [editedData, setEditedData] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-  const [showcopyModal, setShowcopyModal] = useState(false);
-  useEffect(() => {
+  const [isCopyModalOpen, setIsCopyModalOpen] = useState(false); // Modal state
+  const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
+  const [foodOptions, setFoodOptions] = useState<{ food_Id: number; food: string }[]>([]);
+ 
+  const [prefmodalOpen, setprefModalOpen] = useState(false);
+
+  const [selectedPreferences, setSelectedPreferences] = useState<Record<string, { lunch: number[]; snacks: number[] }>>({});
+
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedMealType, setSelectedMealType] = useState<"lunch" | "snacks">("lunch");
+
+  const openprefModal = (date: string, mealType: "lunch" | "snacks") => {
+    setSelectedDate(date);
+    setSelectedMealType(mealType);
+  
+    // Load selected preferences for the specific date and mealType
+    const selectedMealPreferences = selectedPreferences[date]?.[mealType] || [];
+    setSelectedOptions(selectedMealPreferences); // Populate selected options when opening the modal
+    fetchFoodOptions();
+    setprefModalOpen(true);
+  };
+  
+
+
+
+
+  const closeprefModal = () => {
+    setprefModalOpen(false);
+   
+  };
+
+  const handleOptionChange = (optionId: number) => {
+    setSelectedOptions((prev) =>
+      prev.includes(optionId) ? prev.filter((id) => id !== optionId) : [...prev, optionId]
+    );
+  };
+
+  
+ 
+  const handlePreferenceChange = (date: string, mealType: "lunch" | "snacks", foodId: number) => {
+    setSelectedOptions((prev) => {
+      const newSelectedOptions = prev.includes(foodId)
+        ? prev.filter((id) => id !== foodId)
+        : [...prev, foodId];
+
+      // Update selected preferences for the specific date and meal type
+      setSelectedPreferences((prevPreferences) => {
+        const updatedPreferences = { ...prevPreferences };
+        if (!updatedPreferences[date]) {
+          updatedPreferences[date] = { lunch: [], snacks: [] };
+        }
+        updatedPreferences[date][mealType] = newSelectedOptions;
+        return updatedPreferences;
+      });
+      return newSelectedOptions;
+    });
+};
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  /*useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -87,6 +158,106 @@ const MealPlanTable = () => {
 
     fetchData();
   }, [startDate]);
+*/
+
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+
+      const start = dayjs(startDate);
+      const end = start.add(6, "day");
+      const dateSequence = [];
+      for (
+        let d = start;
+        d.isBefore(end) || d.isSame(end);
+        d = d.add(1, "day")
+      ) {
+        dateSequence.push(d.format("YYYY-MM-DD"));
+      }
+
+      const data = (await request({
+        url: `/mealplan`,
+        method: "GET",
+        params: { start: startDate, days: 7 },
+        useAuth: true,
+      })) as Meal[] | null;
+
+      const mealDataMap: Record<
+        string,
+        Record<string, { food: string; preference_food: number[] }>
+      > = data?.reduce((acc: any, meal: any) => {
+        acc[meal.date] = meal.menu.reduce((mealAcc: any, item: any) => {
+          mealAcc[item.meal_type] = {
+            food: item.food,
+            preference_food: item.preference_food || [],
+          };
+          return mealAcc;
+        }, {});
+        return acc;
+      }, {}) || {};
+
+      const formattedData: Row[] = dateSequence.map((date) => ({
+        date,
+        lunch: mealDataMap[date]?.lunch?.food || "",
+        snacks: mealDataMap[date]?.snacks?.food || "",
+      }));
+
+      // Store preferences separately to maintain state
+      const preferences: Record<string, { lunch: number[]; snacks: number[] }> = {};
+      Object.keys(mealDataMap).forEach((date) => {
+        preferences[date] = {
+          lunch: mealDataMap[date]?.lunch?.preference_food || [],
+          snacks: mealDataMap[date]?.snacks?.preference_food || [],
+        };
+      });
+
+      setMealData(formattedData);
+      setEditedData(formattedData);
+      setSelectedPreferences(preferences); // Save preferences
+
+    } catch (error) {
+      console.error("Error fetching meal plan:", error);
+      notificationToast("Failed to Load Menu", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, [startDate]);
+
+
+
+
+
+
+
+
+
+
+
+
+  const fetchFoodOptions = async () => {
+    try {
+      const data = (await request({
+        url: `/preference`,
+        method: "GET",
+        useAuth: true,
+      })) as { food_Id: number; food: string }[] | null;
+  
+      if (data) {
+        setFoodOptions(data);
+      }
+    } catch (error) {
+      console.error("Error fetching food options:", error);
+    }
+  };
+  
+
+
+
 
   const changeWeek = (direction: "prev" | "next") => {
     setStartDate((prevDate) => {
@@ -111,14 +282,14 @@ const MealPlanTable = () => {
     );
   };
 
-  const handleSave = async () => {
+  /*const handleSave = async () => {
     try {
       await request({
         url: "/mealplan",
         method: "POST",
         data: editedData.flatMap((row) => [
-          { date: row.date, meal_type: "lunch", food: row.lunch },
-          { date: row.date, meal_type: "snacks", food: row.snacks },
+          { date: row.date, meal_type: "lunch", food: row.lunch , preference:[]},
+          { date: row.date, meal_type: "snacks", food: row.snacks, preference:[] },
         ]),
         useAuth: true,
       });
@@ -130,7 +301,50 @@ const MealPlanTable = () => {
       console.error("Error saving meal plan:", err);
       notificationToast("Failed to Save Menu", "error");
     }
+  };*/
+
+
+
+  const handleSave = async () => {
+    try {
+      // Prepare the meal data for saving
+      const mealDataToSave = editedData.flatMap((row) => [
+        {
+          date: row.date,
+          meal_type: "lunch",
+          food: row.lunch,
+          preference_food: selectedPreferences[row.date]?.lunch || [],
+        },
+        {
+          date: row.date,
+          meal_type: "snacks",
+          food: row.snacks,
+          preference_food: selectedPreferences[row.date]?.snacks || [],
+        },
+      ]);
+  
+      // Send meal data to API
+      await request({
+        url: "/mealplan",
+        method: "POST",
+        data: mealDataToSave,
+        useAuth: true,
+      });
+  
+      setMealData(editedData); // Sync mealData with editedData
+      setIsEditing(false); // Exit edit mode
+      notificationToast("Successfully Saved Menu", "success");
+    } catch (err) {
+      console.error("Error saving meal plan:", err);
+      notificationToast("Failed to Save Menu", "error");
+    }
   };
+  
+
+
+
+
+
 
   const handleCopyMealsFromPreviousWeek = async () => {
     const previousWeekStart = dayjs(startDate)
@@ -168,6 +382,7 @@ const MealPlanTable = () => {
           date: dayjs(meal.date).add(7, "day").format("YYYY-MM-DD"), // Shift date forward
           meal_type: menuItem.meal_type,
           food: menuItem.food,
+          preference:[]
         }))
       );
 
@@ -220,29 +435,7 @@ const MealPlanTable = () => {
 
 
 
-      /*setMealData((prev) => {
-        // Convert existing data into a Map for easy merging
-        const mealMap = new Map(prev.map((meal) => [meal.date, { ...meal }]));
-
-        // Merge new meals into the mealMap
-        mealsForCurrentWeek.forEach(({ date, meal_type, food }) => {
-          if (!mealMap.has(date)) {
-            mealMap.set(date, { date, lunch: "", snacks: "" });
-          }
-          if (meal_type === "lunch") {
-            mealMap.get(date)!.lunch = food;
-          } else if (meal_type === "snacks") {
-            mealMap.get(date)!.snacks = food;
-          }
-        });
-
-        // Convert back to an array
-        return Array.from(mealMap.values());
-      });
-    } catch (err) {
-      console.error("❌ Error copying meals:", err);
-      alert("Failed to copy meals. Please try again.");
-    }*/
+      
   };
 
 
@@ -264,23 +457,7 @@ const MealPlanTable = () => {
 
   return (
     <div className="p-4">
-      {/*<div className="flex right-[78vh] items-center mt-10 mb-8 absolute left-1/2 transform -translate-x-1/2">
-        <button
-          onClick={() => changeWeek("prev")}
-          className={`px-4 text-gray-300 text-4xl rounded hover:text-gray-400 ms-16`}
-        >
-          <FaCaretSquareLeft />
-        </button>
-        <h3 className="text-lg text-center font-bold min-w-40 select-none">
-          {dayjs(startDate).format("DD MMM")}-{dayjs(endDate).format("DD MMM")}
-        </h3>
-        <button
-          onClick={() => changeWeek("next")}
-          className={`px-4 text-gray-300 text-4xl rounded hover:text-gray-400 `}
-        >
-          <FaCaretSquareRight />
-        </button>
-      </div>*/}
+     
 
        <div className="flex items-center  my-2 relative mt-8">
                 
@@ -335,6 +512,7 @@ const MealPlanTable = () => {
                     {["lunch", "snacks"].map((mealType) => (
                       <td key={mealType} className="border p-2">
                         {isEditing ? (
+                          <div className="flex items-center justify-between">
                           <input
                             type="text"
                             value={
@@ -351,6 +529,14 @@ const MealPlanTable = () => {
                             }
                             className="border p-1 w-full"
                           />
+                          {/* Edit button */}
+                        <button
+                        onClick={() => openprefModal(row.date,mealType as "lunch"|"snacks")}
+                        className="ml-2 text-blue-500 hover:text-blue-700"
+                      >
+                        <FaExclamation />
+                      </button>
+                      </div>
                         ) : (
                           row[mealType as keyof Row] || "—"
                         )}
@@ -362,6 +548,15 @@ const MealPlanTable = () => {
             </tbody>
           </table>
 
+           
+
+
+
+
+
+
+
+
           <div className="flex justify-end mt-4">
             {!isEditing ? (
               <div className="flex justify-end gap-x-8">
@@ -372,7 +567,7 @@ const MealPlanTable = () => {
                   Update Menu
                 </button>
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => setIsCopyModalOpen(true)}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 mr-2"
                 >
                   Copy Menu
@@ -398,8 +593,8 @@ const MealPlanTable = () => {
               </>
             )}
 
-            {/* Modal */}
-            {isModalOpen && (
+            {/*  copy Modal */}
+            {isCopyModalOpen && (
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg">
                   <h2 className="text-xl font-bold mb-4">
@@ -411,7 +606,7 @@ const MealPlanTable = () => {
                   </p>
                   <div className="mt-4 flex justify-end">
                     <button
-                      onClick={() => setIsModalOpen(false)}
+                      onClick={() => setIsCopyModalOpen(false)}
                       className="bg-gray-500 text-white px-4 py-2 mr-2"
                     >
                       Cancel
@@ -419,7 +614,7 @@ const MealPlanTable = () => {
                     <button
                       onClick={() => {
                         handleCopyMealsFromPreviousWeek();
-                        setIsModalOpen(false);
+                        setIsCopyModalOpen(false);
                       }}
                       className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2"
                     >
@@ -428,11 +623,74 @@ const MealPlanTable = () => {
                   </div>
                 </div>
               </div>
+             
             )}
           </div>
+          
+          
+
+
+
+
         </>
       )}
-    </div>
+       
+
+       {/* Prefernce/food tag Modal */}
+      {prefmodalOpen&& (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+          <div className="bg-white p-6 rounded-md shadow-lg w-80 relative">
+            {/* Close Button (Top Right) */}
+            <button
+              onClick={closeprefModal}
+              className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
+            >
+              <FaTimes size={20} />
+            </button>
+
+            <h2 className="text-lg font-bold mb-4">
+              Select  Food Tags for Counting Special Meals
+            </h2>
+            <div className="flex flex-col gap-3">
+           {/* {foodOptions.map((food) => (
+            <label key={food.food_Id} className="flex items-center space-x-2">
+            <input
+               type="checkbox"
+               value={food.food_Id}
+               checked={(selectedPreferences[selectedDate]?.[selectedMealType] || []).includes(food.food_Id)}
+               onChange={() => handlePreferenceChange(selectedDate, selectedMealType, food.food_Id)}
+             />
+            <span>{food.food}</span>
+            </label>
+            ))}
+            */}
+             {foodOptions.map((food) => (
+             <label key={food.food_Id} className="flex items-center space-x-2">
+             <input
+              type="checkbox"
+              value={food.food_Id}
+              checked={selectedOptions.includes(food.food_Id)} // Check if the food is selected
+              onChange={() => handlePreferenceChange(selectedDate, selectedMealType, food.food_Id)}
+             />
+             <span>{food.food}</span>
+             </label>
+             ))}
+
+            <div className="flex justify-end"><button className="p-2 bg-blue-500 hover:bg-blue-600 text-white w-auto m-2" onClick={closeprefModal}>Save</button></div>
+             
+            </div>
+             
+
+
+
+
+
+          </div>
+          
+        </div>
+         )}
+      </div>
+
   );
   
 };

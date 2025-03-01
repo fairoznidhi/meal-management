@@ -81,10 +81,10 @@ const ResetPassword = () => {
           <FormField
             id="password"
             label={`New Password`}
-            value={formData.newPassword}
+            value={formData.newPassword as string}
             isEditable={true}
             type="password"
-            onChange={(value) => handleFieldChange("newPassword", value)}
+            onChange={(value) => handleFieldChange("newPassword", value as string)}
           />
           <div className="mb-6"></div>
           <FormField
@@ -93,7 +93,7 @@ const ResetPassword = () => {
             value={formData.confirmNewPassword}
             isEditable={true}
             type="password"
-            onChange={(value) => handleFieldChange("confirmNewPassword", value)}
+            onChange={(value) => handleFieldChange("confirmNewPassword", value as string)}
           />
         </div>
         <div className="modal-action">

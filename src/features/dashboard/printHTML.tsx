@@ -96,21 +96,26 @@ export default TodayLunchPrint;
 */}
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { baseRequest } from "@/services/HttpClientAPI";
 
 interface PrintModalProps {
-  isOpen: boolean; // Boolean to control modal visibility
-  onClose: () => void; // Function to close modal
+  isOpen: boolean;
+  onClose: () => void;
 }
+
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
+
 const PrintModal: React.FC<PrintModalProps> = ({ isOpen, onClose }) => {
   const [htmlContent1, setHtmlContent1] = useState<string>("");
   const [htmlContent2, setHtmlContent2] = useState<string>("");
-  const [selectedOption, setSelectedOption] = useState<string>(""); // Default to Option 1
+  const [selectedOption, setSelectedOption] = useState<string>("lunch"); // Default to "lunch"
+
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
+      setSelectedOption("lunch"); // Automatically select "Lunch" when the modal opens
       fetchHtml("lunch");
       fetchHtml("snacks");
     }
@@ -121,18 +126,16 @@ const PrintModal: React.FC<PrintModalProps> = ({ isOpen, onClose }) => {
       const response = await request({
         url: option === "lunch" ? "/meal_activity/today-lunch" : "/meal_activity/today-snack",
         method: "GET",
-        useAuth: true, // Add this if authentication is needed
-      })as any;
-  
+        useAuth: true,
+      }) as any;
+
       const text = typeof response === "string" ? response : await response.text();
-  
-      // Set the HTML content based on the selected option
       option === "lunch" ? setHtmlContent1(text) : setHtmlContent2(text);
     } catch (error) {
-      console.error(`Error fetching HTML (Option ${option}):`, error);
+      console.error(`Error fetching HTML (${option}):`, error);
     }
   };
-  
+
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
     if (printWindow) {
@@ -144,56 +147,64 @@ const PrintModal: React.FC<PrintModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-      <div className="bg-white px-3 rounded-md w-3/4 h-[100vh] overflow-auto mt-20 absolute"
-      style={{ transform: "scale(0.8)", transformOrigin: "center" }} >
-       
-
-        {/* Toggle Button */}
-        
-
-        
+      <div
+        ref={modalRef}
+        className="bg-white px-3 rounded-md w-3/4 h-[100vh] overflow-auto mt-20 absolute"
+        style={{ transform: "scale(0.8)", transformOrigin: "center" }}
+      >
+        {/* Toggle Buttons */}
         <div className="flex gap-4 mb-4 mt-2">
           <button
-            className={`p-2 rounded-md ${
-              selectedOption === "lunch" ? "bg-blue-500 text-white" : "bg-gray-300"
-            }`}
+            className={`p-2 rounded-md ${selectedOption === "lunch" ? "bg-blue-500 text-white" : "bg-gray-300"}`}
             onClick={() => setSelectedOption("lunch")}
           >
             Lunch
           </button>
           <button
-            className={`p-2 rounded-md ${
-              selectedOption === "snacks"? "bg-blue-500 text-white" : "bg-gray-300"
-            }`}
+            className={`p-2 rounded-md ${selectedOption === "snacks" ? "bg-blue-500 text-white" : "bg-gray-300"}`}
             onClick={() => setSelectedOption("snacks")}
           >
             Snacks
           </button>
         </div>
-        
+
+        {/* Print Button */}
         <div className="flex justify-end mb-2">
-          
           <button onClick={handlePrint} className="bg-green-500 text-white px-4 py-2 rounded-md">
             Print
           </button>
         </div>
-        
 
-        {/* Render HTML */}
+        {/* Render HTML Content */}
         <div className="border p-4 bg-gray-100">
           <div dangerouslySetInnerHTML={{ __html: selectedOption === "lunch" ? htmlContent1 : htmlContent2 }} />
         </div>
 
-        {/* Buttons */}
+        {/* Close Button */}
         <div className="flex justify-end mt-4">
           <button onClick={onClose} className="bg-gray-300 text-black p-2 rounded-md mr-2">
             Close
           </button>
-         
         </div>
       </div>
     </div>

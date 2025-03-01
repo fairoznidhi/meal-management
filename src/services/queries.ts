@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getEmployeePhoto, getExtraMeal, getMealSummaryGraph, getRangeMealPlan, getSingleEmployee, getSingleEmployeeMealActivity, getTokenSingleEmployee, getUserMonthlyData } from "./api";
-
+import { fetchPreferences } from "@/services/api";
+import { Preference } from "./types"; 
 export function useSingleEmployee(id: number) {
     return useQuery({
       queryKey: ["employee", { id }],
@@ -55,3 +56,10 @@ export function useUserMonthlyData(month:number){
     queryFn: () => getUserMonthlyData(month)
   });
 }
+
+export const useFetchPreferences = () => {
+  return useQuery<Preference[], Error>({
+    queryKey: ["preferences"], // Unique key for this query
+    queryFn: fetchPreferences, // Fetching function
+  });
+};

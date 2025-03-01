@@ -1,5 +1,6 @@
 import axios from "axios";
 import { UserProfileDataType } from "./types";
+import { Preference } from "./types";
 import { getSession } from "next-auth/react";
 import { baseRequest } from "./HttpClientAPI";
 import { EmployeeMealDetails } from "@/model/userMealActivity";
@@ -181,3 +182,20 @@ export const getUserMonthlyData=async(month:number)=>{
     })
     return res as MonthlyData[];
 }
+
+export const fetchPreferences = async (): Promise<Preference[]> => {
+    try {
+      // Fetch the data from the API
+      const res = await apiClient({
+        url: "/preference",
+        method: "GET",
+        useAuth: true,
+      });
+  
+      // If res contains a `data` field with the preferences, assert the type
+      return res as Preference[];
+    } catch (error) {
+      console.error("Error fetching preferences:", error);
+      throw error;
+    }
+  };
