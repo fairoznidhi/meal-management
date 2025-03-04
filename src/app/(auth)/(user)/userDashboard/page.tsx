@@ -30,7 +30,10 @@ const UserDashboard = () => {
           (monthlyData?.[0]?.total_snack ?? 1)) *
         5;
       console.log("total", total);
-      const waste = penalty / total;
+      let waste = penalty / total;
+      if (isNaN(waste)) {
+        waste = 0;
+    }
       console.log("waste", waste);
       setFoodWaste(waste * 100);
     }
@@ -40,8 +43,8 @@ const UserDashboard = () => {
       setMonthGraphLabel(
         monthlyData?.map((monthMeal) => {
           const monthAbbreviation = monthMeal?.month?.substring(0, 3);
-          const yearAbbreviation = monthMeal?.year?.toString().slice(-2);
-          return `${monthAbbreviation}'${yearAbbreviation}`;
+          const yearAbbreviation = monthMeal?.year?.toString();
+          return `${monthAbbreviation} ${yearAbbreviation}`;
         }).reverse()
       );
       setMonthLunchCount(monthlyData?.map((monthMeal) => monthMeal?.total_lunch ?? 0).reverse());
@@ -89,7 +92,7 @@ const UserDashboard = () => {
         </div>
         <div className="col-span-2 bg-gray-100 h-full rounded-lg py-8">
           <h3 className="text-center font-semibold">Food Wastage</h3>
-          <GaugeComponent type="semicircle" value={foodWaste} />
+          <GaugeComponent type="radial" value={foodWaste} />
         </div>
       </div>
     </div>
