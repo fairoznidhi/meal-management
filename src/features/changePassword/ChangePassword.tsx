@@ -105,20 +105,20 @@ const ChangePassword = () => {
             <FormField
               id="password"
               label={`New Password`}
-              value={formData.newPassword}
+              value={formData.newPassword as string}
               isEditable={true}
               type="password"
-              onChange={(value) => handleFieldChange("newPassword", value)}
+              onChange={(value) => handleFieldChange("newPassword", value as string)}
             />
             <div className="mb-6"></div>
             <FormField
               id="confirm_password"
               label={`Confirm New Password`}
-              value={formData.confirmNewPassword}
+              value={formData.confirmNewPassword as string}
               isEditable={true}
               type="password"
               onChange={(value) =>
-                handleFieldChange("confirmNewPassword", value)
+                handleFieldChange("confirmNewPassword", value as string)
               }
             />
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

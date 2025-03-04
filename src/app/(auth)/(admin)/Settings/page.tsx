@@ -69,10 +69,11 @@ const SettingsComponent = () => {
 
       {/* Set Holidays Button */}
       <div className="flex flex-col w-full h-[40vh] rounded shadow-md">
-        <p className="text-2xl font-bold mt-5 mb-5 ms-4">Holidays</p>
+        <p className="text-2xl font-bold mt-5 mb-5 ms-10">Holidays</p>
+        
       <button
         onClick={() => setIsCalendarOpen(true)}
-        className="absolute flex top-32 left-28 bg-transparent p-2 text-gray-700 hover:text-gray-900 text-xl"
+        className="absolute flex top-32 ms-20 bg-transparent p-2 text-gray-700 hover:text-gray-900 text-xl"
       >
         <span className="me-2 mt-1"><FaList/></span>
           Set Holidays
@@ -81,7 +82,7 @@ const SettingsComponent = () => {
       {/* See Holiday List Button */}
       <button
         onClick={() => setIsHolidayListOpen(true)}
-        className="absolute flex top-48 left-28 bg-transparent p-2 text-gray-700 hover:text-gray-900 text-xl"
+        className="absolute flex top-48 ms-20 bg-transparent p-2 text-gray-700 hover:text-gray-900 text-xl"
       >
         <span className="me-2 mt-1"><FaCalendar/></span>
           See Holiday List
