@@ -403,7 +403,7 @@ const MealActivityComponent = () => {
         <AdminWeeklyMealData />
         <AdminMonthlyMealData />
       </div>
-      <div className="mt-2">
+      <div className="">
         <OfficeDailyPenaltyGraphAdmin />
       </div>
       <div>

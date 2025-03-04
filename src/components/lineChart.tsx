@@ -46,7 +46,7 @@ const LineChart: React.FC<LineChartProps> = ({ data, color, height, aspectRatio 
 
   const options: ChartOptions<'line'> = {
     maintainAspectRatio: aspectRatio,
-    responsive: true,
+    // responsive: true,
     scales: {
       y: {
         beginAtZero: true,

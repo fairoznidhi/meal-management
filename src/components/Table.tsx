@@ -38,15 +38,15 @@ const Table: React.FC<TableProps> = ({
   };
 
   return (
-    <div className="overflow-x-auto overflow-auto rounded-t-lg">
+    <div className="overflow-y-auto sm:max-h-[400px] md:max-h-[500px] lg:max-h-[650px] max-lg:max-h-[800px] overflow-hidden rounded-t-lg">
       {title && <p className="text-xl font-bold my-4">{title}</p>}
       <table className="table-auto w-full">
-        <thead className="bg-gray-200 border-gray-200">
+        <thead className="bg-gray-200 border-gray-200 sticky top-0">
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
-                className="p-2  py-4 text-center"
+                className="p-2  py-4 text-center whitespace-nowrap"
               >
                 {col.label}
               </th>
@@ -57,7 +57,7 @@ const Table: React.FC<TableProps> = ({
           {data.map((row, rowIndex) => {
             const rowStyle = columns.find(col => col.renderRow)?.renderRow!(row, rowIndex);
             return (
-              <tr key={rowIndex} className={rowStyle}>
+              <tr key={rowIndex} className={`${rowStyle} hover:bg-gray-100`}>
               {columns.map((col) => {
                 const cellStyle = col.renderCellStyle?.(row[col.key], row, rowIndex) || "";
                 return (

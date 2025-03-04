@@ -75,13 +75,19 @@ export default function AuthLayout({
   const [isAdmin, setIsAdmin] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const { data: profileList } = useTokenSingleEmployee();
-  const [adminView, setAdminView] = useState(true);
-  useEffect(() => {
+  const [adminView, setAdminView] = useState(() => {
     if (typeof window !== "undefined") {
       const storedAdminView = localStorage.getItem("adminView") === "true";
-      setAdminView(storedAdminView);
+      console.log("storedAdminView", storedAdminView);
+      return storedAdminView;
     }
-  }, []);
+  });
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const storedAdminView = localStorage.getItem("adminView") === "true";
+  //     setAdminView(storedAdminView);
+  //   }
+  // }, []);
   useEffect(() => {
     if (profileList) {
       const profile = profileList[0];
@@ -210,7 +216,7 @@ export default function AuthLayout({
                     onClick={() => {
                       const view = !adminView;
                       localStorage.setItem("adminView", view.toString());
-                      setAdminView(!adminView);
+                      setAdminView((prev) => !prev);
                       router.push(
                         adminView ? "/userDashboard" : "/adminDashboard"
                       );
@@ -223,7 +229,6 @@ export default function AuthLayout({
               <div className="flex-1"></div>
               <div className="flex-none gap-2">
                 <div className="dropdown dropdown-end">
-                  
                   <div
                     className="flex items-center "
                     tabIndex={0}
@@ -241,14 +246,11 @@ export default function AuthLayout({
                       </div>
                     </div>
                   </div>
-                  
+
                   <ul
                     tabIndex={0}
                     className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
                   >
-                  
-                  
-
                     <li>
                       <Link href="/profile" className="justify-between">
                         Profile
@@ -256,13 +258,13 @@ export default function AuthLayout({
                     </li>
 
                     {isAdmin && (
-                  <li>
-                     <Link href="/Settings" className="justify-between">
-                      Settings
-                    </Link>
-                  </li>
-                  )}
-                  
+                      <li>
+                        <Link href="/Settings" className="justify-between">
+                          Settings
+                        </Link>
+                      </li>
+                    )}
+
                     <li>
                       <a onClick={() => signOut({ callbackUrl: "/login" })}>
                         Logout

@@ -542,7 +542,7 @@ const MealActivityComponent = () => {
                         let textColor = "text-black";
 
                         if (cellData.holiday) {
-                          cellStyle += " bg-red-100";
+                          cellStyle += " bg-red-50";
                         }
 
                         if (cellData.status === true) {

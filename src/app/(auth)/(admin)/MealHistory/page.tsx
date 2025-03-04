@@ -8,6 +8,7 @@ import {
 import Table, { Column } from "@/components/Table";
 import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
 import dayjs from "dayjs";
+import { formatDate } from "date-fns";
 
 // Function to calculate the first and last date of the current month
 const getMonthBoundaries = () => {
@@ -65,7 +66,7 @@ const MealHistory = () => {
       const matchingSnack = snacksData.find(
         (snack) => snack.date === lunch.date
       );
-      const formattedDate = dayjs(lunch.date).format("DD MMM, ddd");
+      const formattedDate = dayjs(lunch.date).format("DD MMM (ddd)");
 
       return {
         date: formattedDate,
@@ -128,6 +129,13 @@ const MealHistory = () => {
     {
       key: "date",
       label: "Date",
+      render: (value, row) => {
+        return (
+          <span className="font-medium text-gray-700 whitespace-nowrap">
+            {value}
+          </span>
+        );
+      },
     },
     {
       key: "total_lunch",
@@ -163,7 +171,7 @@ const MealHistory = () => {
         </div>
 
         {/* Table Display */}
-        {loading && <p>Loading...</p>}
+        {loading && <span className="loading loading-dots loading-lg"></span>}
         {error && <p className="text-red-500">{error}</p>}
 
         {!loading && !error && totalMeal.length > 0 ? (

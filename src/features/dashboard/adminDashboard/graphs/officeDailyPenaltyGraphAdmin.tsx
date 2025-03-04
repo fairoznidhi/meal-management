@@ -23,7 +23,7 @@ const OfficeDailyPenaltyGraphAdmin = () => {
     }, [selectedDaysRange, DailyPenaltyData]);
     
     return (
-      <div className="bg-stone-50 rounded-xl p-4">
+      <div className="bg-stone-50 rounded-xl p-4 mt-2">
         <div className="flex justify-between mb-2">
           <div className="pl-2">
             Daily Penalty

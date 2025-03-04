@@ -121,28 +121,29 @@ const MealHistory = () => {
   ];
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-extrabold mb-4">Meal History</h2>
-        <div className="mb-4 flex gap-4">
-          <p className="font-semibold mt-1">Start Date</p>
+      <div className="bg-stone-50 p-2 mt-2 rounded-lg">
+      <div className="flex justify-between items-end">
+        <h2 className="text-3xl font-extrabold mb-2 px-2">Meal History</h2>
+        <div className="mb-2 flex gap-4 items-center">
+          <p className="font-semibold">Start Date</p>
           <input
             type="date"
             value={dayjs(startDate).format("YYYY-MM-DD")}
             onChange={(e) => setStartDate(new Date(e.target.value))}
-            className="border rounded px-2 py-1"
+            className="px-2 py-1 border rounded bg-[#f4f4f4]"
           />
-          <p className="font-semibold mt-1">End Date</p>
+          <p className="font-semibold">End Date</p>
           <input
             type="date"
             value={dayjs(endDate).format("YYYY-MM-DD")} // Format to YYYY-MM-DD
             onChange={(e) => setEndDate(new Date(e.target.value))}
-            className="border rounded px-2 py-1"
+            className="px-2 py-1 border rounded bg-[#f4f4f4]"
           />
         </div>
       </div>
 
       {/* Table Display */}
-      {loading && <p>Loading...</p>}
+      {loading && <span className="loading loading-dots loading-lg"></span>}
       {error && <p className="text-red-500">{error}</p>}
 
       {!loading && !error && totalMeal.length > 0 ? (
@@ -151,6 +152,7 @@ const MealHistory = () => {
         !loading &&
         !error && <p>No meal records found for the selected date range.</p>
       )}
+      </div>
     </div>
   );
 };
