@@ -430,7 +430,7 @@ const MealActivityComponent = () => {
         <div className="bg-red-50"></div>
         <div className="bg-red-50"></div>
         <div className="bg-red-50"></div> */}
-        {/* Print Meal */}
+        {/* Print Meal 
         <div className="flex justify-end items-end h-full">
           <button
             onClick={handleOpenPrintModal}
@@ -438,8 +438,19 @@ const MealActivityComponent = () => {
           >
             <FaPrint className="bg-gray-200" />
           </button>
-        </div>
+        </div>*/}
       </div>
+
+      
+      {/*Print meal */}
+      <div className="flex justify-end items-end h-full">
+          <button
+            onClick={handleOpenPrintModal}
+            className="bg-blue-200  py-2 px-4 mb-2 rounded-md  flex items-center"
+          >
+            <FaPrint className="bg-gray-200" />
+          </button>
+        </div>
 
       <div className="grid grid-cols-2 gap-2">
         <AdminWeeklyMealData />

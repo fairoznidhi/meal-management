@@ -188,6 +188,17 @@ export default FormField;
 
 import React, { useState } from "react";
 
+
+function labelShow(labelName: string) {
+  if (labelName === "phone_number") return "Phone Number";
+  if (labelName === "dept_name") return "Department";
+  if (labelName === "remarks") return "Notes";
+  if (labelName === "preference_food") return "Allergies/Aversions";
+  return labelName;
+}
+
+
+
 type FormFieldProps = {
   id: string;
   label: string;
@@ -207,7 +218,7 @@ const FormField: React.FC<FormFieldProps> = ({
   onChange,
   options,
   type = "text",
-  labelShow = (label) => label,
+  //labelShow = (label) => label,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
