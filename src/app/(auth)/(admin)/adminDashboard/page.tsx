@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import OfficeDailyPenaltyGraphAdmin from "@/features/dashboard/adminDashboard/graphs/officeDailyPenaltyGraphAdmin";
 import { useOfficeMonthlyPenalties } from "@/services/queries";
+
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
 interface MealStatus {
@@ -50,6 +51,7 @@ interface MealActivityData {
 type totalmeal = {
   date: string;
   count: number;
+  special_count:number;
 };
 ChartJS.register(
   CategoryScale,
@@ -142,6 +144,10 @@ const MealActivityComponent = () => {
   );
   const [lunchTotal, setLunchTotal] = useState<number | null>(null);
   const [snacksTotal, setSnacksTotal] = useState<number | null>(null);
+  const [regularLunch, setRegularLunch]= useState<number | null>(null);
+  const [specialLunch, setSpecialLunch]= useState<number | null>(null);
+  const [regularSnacks, setRegularSnacks]= useState<number | null>(null);
+  const [specialSnacks, setSpecialSnacks]= useState<number | null>(null);
   const [startDate, setStartDate] = useState(new Date());
   const [days, setDays] = useState<number>(7);
   const [modalOpen, setModalOpen] = useState(false);
@@ -176,7 +182,10 @@ const MealActivityComponent = () => {
         },
         useAuth: true,
       })) as totalmeal[];
-      setLunchTotal(response[0].count);
+      console.log("lunch",response)
+      setLunchTotal(response[0].count-response[0].special_count);
+      //setRegularLunch(response[1].count);
+      setSpecialLunch(response[0].special_count);
     } catch (err: any) {
       console.log("Error Fetching Lunch");
     }
@@ -350,11 +359,44 @@ const MealActivityComponent = () => {
           <p className="text-2xl font-bold">
             {lunchTotal !== null ? (
               lunchTotal
+              
             ) : (
               <span className="loading loading-spinner loading-xs"></span>
             )}
           </p>
         </div>
+
+        {/* Special Meal Count */}
+          {specialLunch!=0&&(
+             <div className="p-4 bg-blue-200 rounded-md text-center"
+          
+        >
+          <h3 className={`${h3ClassName}`}>Today&apos;s Special Lunch</h3>
+          <p className="text-2xl font-bold">
+            {specialLunch !== null ? (
+              specialLunch
+            ) : (
+              <span className="loading loading-spinner loading-xs"></span>
+            )}
+          </p>
+        </div>
+          
+          
+          )}
+          
+
+        
+        
+
+
+
+
+
+
+
+
+
+
         {/* Todays total snacks */}
         <div
           className="p-4 bg-green-200 hover:bg-green-300 rounded-md text-center cursor-pointer transition duration-300 ease-in-out"
