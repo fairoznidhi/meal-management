@@ -183,6 +183,29 @@ export const getUserMonthlyData=async(month:number)=>{
     return res as MonthlyData[];
 }
 
+export const getOfficeDailyPenalties=async(days:number)=>{
+    const res=await apiClient({
+        url: "/meal_activity/penalty",
+        method: "GET",
+        params:{
+            days:days
+        },
+        useAuth: true,
+    })
+    return res as OfficeDailyPenalties[];
+}
+export const getOfficeMonthlyPenalties=async(month:number)=>{
+    const res=await apiClient({
+        url: "/meal_activity/month-penalty",
+        method: "GET",
+        params:{
+            month:month
+        },
+        useAuth: true,
+    })
+    return res as OfficeMonthlyPenalties[];
+}
+
 export const fetchPreferences = async (): Promise<Preference[]> => {
     try {
       // Fetch the data from the API
