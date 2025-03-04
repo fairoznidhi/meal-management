@@ -15,3 +15,14 @@ export type MonthlyData={
     lunch_penalty?: number,
     snack_penalty?: number
 }
+
+export type OfficeDailyPenalties={
+    date?: string;
+    count?:number;
+}
+
+export type OfficeMonthlyPenalties={
+    month?:string;
+    year?:string;
+    count?:number;
+}

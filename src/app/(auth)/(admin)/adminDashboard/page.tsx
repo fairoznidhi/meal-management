@@ -20,6 +20,9 @@ import {
   Tooltip,
 } from "chart.js";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import OfficeDailyPenaltyGraphAdmin from "@/features/dashboard/adminDashboard/graphs/officeDailyPenaltyGraphAdmin";
+import { useOfficeMonthlyPenalties } from "@/services/queries";
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
 interface MealStatus {
@@ -322,13 +325,28 @@ const MealActivityComponent = () => {
   };
   const totalGuests = calculateTotalGuestsForToday();
   console.log(totalGuests);
-
+  const router = useRouter();
+  const [thisMonthPenalty,setThisMonthPenalty]=useState<number| null>(null);
+  const {data:monthlyPenalty}=useOfficeMonthlyPenalties(1);
+  const h3ClassName = "text-lg font-semibold mb-2";
+  useEffect(()=>{
+    if(monthlyPenalty){
+      setThisMonthPenalty(monthlyPenalty?.[0]?.count ?? 0);
+    }
+  },[monthlyPenalty,thisMonthPenalty])
   return (
     <div className="p-4">
       {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
-      <div className="grid grid-cols-6 gap-4 mb-4">
-        <div className="p-4 bg-blue-200 rounded-md text-center">
-          <h3 className="text-lg font-semibold">Today&apos;s Total Lunch</h3>
+      <div className="grid grid-cols-8 gap-2 mb-2">
+        {/* Todays total lunch */}
+        <div
+          className="p-4 bg-blue-200 hover:bg-blue-300 rounded-md text-center cursor-pointer transition duration-300 ease-in-out"
+          onClick={() => {
+            localStorage.setItem("MealType", "1");
+            router.push("/mealUpdate");
+          }}
+        >
+          <h3 className={`${h3ClassName}`}>Today&apos;s Total Lunch</h3>
           <p className="text-2xl font-bold">
             {lunchTotal !== null ? (
               lunchTotal
@@ -337,9 +355,15 @@ const MealActivityComponent = () => {
             )}
           </p>
         </div>
-
-        <div className="p-4 bg-green-200 rounded-md text-center">
-          <h3 className="text-lg font-semibold">Today&apos;s Total Snacks</h3>
+        {/* Todays total snacks */}
+        <div
+          className="p-4 bg-green-200 hover:bg-green-300 rounded-md text-center cursor-pointer transition duration-300 ease-in-out"
+          onClick={() => {
+            localStorage.setItem("MealType", "2");
+            router.push("/mealUpdate");
+          }}
+        >
+          <h3 className={`${h3ClassName}`}>Today&apos;s Total Snacks</h3>
           <p className="text-2xl font-bold">
             {snacksTotal !== null ? (
               snacksTotal
@@ -348,68 +372,43 @@ const MealActivityComponent = () => {
             )}
           </p>
         </div>
-
-        <div className="p-4 bg-violet-200 rounded-md text-center w-64">
+        {/* Instant guest Update */}
+        <div className="p-4 bg-violet-200 hover:bg-violet-300 rounded-md text-center transition duration-300 ease-in-out">
           <InstantGuest onUpdateSuccess={handleBothUpdates} />
         </div>
-
-        <div>
-                
-        
+        {/* Penalty */}
+        <div className="p-4 bg-rose-100 rounded-md text-center">
+        <h3 className={`${h3ClassName}`}>Penalty of This Month</h3>
+          <p className="text-2xl font-bold">
+            {thisMonthPenalty!==null ? (thisMonthPenalty):(<span className="loading loading-spinner loading-xs"></span>)}
+          </p>
+        </div>
+        <div className="col-span-3"></div>
+        {/* <div className="bg-red-50"></div>
+        <div className="bg-red-50"></div>
+        <div className="bg-red-50"></div>
+        <div className="bg-red-50"></div> */}
+        {/* Print Meal */}
+        <div className="flex justify-end items-end h-full">
+          <button
+            onClick={handleOpenPrintModal}
+            className="bg-blue-200  py-2 px-4 mb-2 rounded-md  flex items-center"
+          >
+            <FaPrint className="bg-gray-200" />
+          </button>
+        </div>
       </div>
-      
-        </div>
-        <div className="flex justify-end">
-      <button
-         onClick={handleOpenPrintModal}
-         className="bg-blue-200  py-2 px-4 mb-2 rounded-md  flex items-center"
-       >
-        <FaPrint className="bg-gray-200"/>
-        
-      </button>
 
-        </div>
-        
-      {/* <div className="grid grid-cols-1">
-        <div className=" h-64 w-full">
-          <Line
-            data={{
-              labels: xLabels,
-              datasets: datasets,
-            }}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: { position: "bottom" },
-                title: { display: true, text: chartLabel },
-              },
-              scales: {
-                x: {
-                  grid: {
-                    display: false,
-                  },
-                },
-                y: {
-                  grid: {
-                    display: true,
-                  },
-                },
-              },
-            }}
-          />
-        </div>
-      </div> */}
-      <div className="grid grid-cols-2 gap-4">
-      <AdminWeeklyMealData/>
-      <AdminMonthlyMealData/>
+      <div className="grid grid-cols-2 gap-2">
+        <AdminWeeklyMealData />
+        <AdminMonthlyMealData />
+      </div>
+      <div className="">
+        <OfficeDailyPenaltyGraphAdmin />
       </div>
       <div>
         {/* Render PrintLunchModal and pass necessary props */}
-      <PrintModal
-        isOpen={isPrintModalOpen}
-        onClose={handleClosePrintModal}
-      />
+        <PrintModal isOpen={isPrintModalOpen} onClose={handleClosePrintModal} />
       </div>
     </div>
   );

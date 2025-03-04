@@ -19,14 +19,17 @@ const LoginPage = () => {
   const { register, handleSubmit } = useForm<Inputs>();
   const router = useRouter();
   const { data: session, status } = useSession();
-  useEffect(() => {
-    if (status === "authenticated" && session?.user?.is_admin) {
-      router.push("/adminDashboard");
-      localStorage.setItem("adminView","true")
-    } else if (status === "authenticated" && !session?.user?.is_admin) {
-      router.push("/userDashboard");
-    }
-  }, [session, status, router]);
+  // useEffect(() => {
+  // //   console.log("Login session error flickr ",session)
+  //   if (status === "authenticated" && session?.user?.is_admin) {
+  //     // router.push("/adminDashboard");
+  //     localStorage.setItem("adminView","true")
+  //   } 
+  //   // else if (status === "authenticated" && !session?.user?.is_admin) {
+  // //     router.push("/userDashboard");
+  // //   }
+  // }, 
+  // [session, status, router]);
   const onSubmit = async (data: Inputs) => {
     setLoading(true);
     try {
@@ -44,6 +47,7 @@ const LoginPage = () => {
         );
         notificationToast("Welcome to your profile!","success");
         if (session?.user?.is_admin) {
+          localStorage.setItem("adminView","true")
           router.push("/adminDashboard");
         } else {
           router.push("/userDashboard");

@@ -7,7 +7,7 @@ import { EmployeeMealDetails } from "@/model/userMealActivity";
 import { RangeMenuDetails } from "@/model/rangeMealPlan";
 import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
 import { extraMeal } from "@/model/extraMeal";
-import { MealSummaryGraph, MonthlyData } from "@/model/mealActivity";
+import { MealSummaryGraph, MonthlyData, OfficeDailyPenalties, OfficeMonthlyPenalties } from "@/model/mealActivity";
 
 const BASE_URL=`${process.env.NEXT_PUBLIC_PROXY_URL}`;
 const axiosInstance=axios.create({baseURL:BASE_URL});

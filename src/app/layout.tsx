@@ -6,7 +6,7 @@ import { DM_Sans, Geist, Geist_Mono,Open_Sans,Space_Grotesk } from "next/font/go
 import { ToastContainer} from "react-toastify";
 
 import "./globals.css";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const dmSans = DM_Sans({ variable: "--font-dm-sans", subsets: ["latin"], weight: ["300", "400", "500", "700"] });
@@ -24,6 +24,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // useEffect(()=>{
+  //   localStorage.setItem("MealType","1")
+  // },[])
   return (
     <html lang="en" data-theme="light">
       <body

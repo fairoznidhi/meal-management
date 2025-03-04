@@ -399,7 +399,7 @@ const UserMealTable = () => {
           setUpdate,
         }}
       >
-        <div className="flex justify-between mb-8">
+        <div className="flex justify-between mb-4">
           {/* Stats */}
           <UserStats />
           {/* Global Meal Toggle */}
@@ -407,7 +407,8 @@ const UserMealTable = () => {
         </div>
 
         {/* Week Navigation */}
-        <div className={`flex items-center mb-4 relative`}>
+       <div className="bg-stone-50 p-2 mt-2 rounded-lg">
+       <div className={`flex items-end mb-2 relative pt-1 px-1`}>
           <h1 className="pl-2 text-3xl font-extrabold">Meal Entry</h1>
           <div className="flex items-center absolute left-1/2 transform -translate-x-1/2 ">
             <button
@@ -478,6 +479,7 @@ const UserMealTable = () => {
           // onEditRow={handleEditRow}
           {...(editTable ? { onEditRow: handleEditRow } : {})}
         />
+       </div>
         {/* Alert Notification */}
       </MealStatusContext.Provider>
     </div>

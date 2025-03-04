@@ -22,20 +22,24 @@ class HttpClient {
     );
 
     this.client.interceptors.response.use(
-      async(response) => {
+      async (response) => {
         // console.log("Res Interceptor response: ",response)
-        if(response?.status === 401){
+        if (response?.status === 401) {
           await signOut();
-          notificationToast("Token expired","error");
-          window.location.href = "/login";
+          notificationToast("Token expired", "error");
         }
-        return response.data
+        return response.data;
       },
       async (error) => {
-        if (error.response?.status === 401 || error.status===401) {
-            await signOut();
-            notificationToast("Token expired","error");
-            window.location.href = "/login";
+        // if (error.response?.status === 401 || error.status===401) {
+        // //   console.log("401 error ",error)
+        //     await signOut();
+        // //     notificationToast("Token expired","error");
+        // //     window.location.href = "/login";
+        // }
+        if (error.response?.status === 401 || error.status === 401) {
+          await signOut();
+          notificationToast("Token expired(Error)", "error");
         }
         // console.log("Res Interceptor error: ", error);
         return Promise.reject(error);

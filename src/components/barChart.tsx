@@ -58,10 +58,8 @@ const BarChart: React.FC<BarChartProps> = ({ data, color, height}) => {
         position: "right" as const,
         align: "start" as const,
         labels: {
-          boxHeight: 20, 
-          boxWidth: 20, 
-          padding: 0, 
-          borderRadius:2
+          usePointStyle: true,
+          pointStyle: 'circle',
         },
       },
     },
