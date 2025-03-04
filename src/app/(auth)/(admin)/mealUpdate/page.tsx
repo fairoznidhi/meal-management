@@ -49,6 +49,13 @@ const MealActivityComponent = () => {
   const [endDate, setEndDate]= useState(dayjs(startDate).add(6,"day").format("YYYY-MM-DD"));// Use Date object for easy manipulation
   const [days, setDays] = useState<number>(7);
   const [mealType, setMealType] = useState<number>(1); // 1 for lunch, 2 for snack
+  useEffect(()=>{
+    const val=localStorage.getItem("MealType");
+    if(val){
+      console.log("Val",val)
+      setMealType(parseInt(val));
+    }
+  },[mealType])
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
   const [lunchGuestsToday, setLunchGuestsToday] = useState<number>(0);
@@ -339,6 +346,8 @@ const MealActivityComponent = () => {
   const handleMealTypeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
+    const val=Number(event.target.value);
+    localStorage.setItem("MealType",val.toString())
     setMealType(Number(event.target.value));
   };
 
@@ -533,7 +542,7 @@ const MealActivityComponent = () => {
                         let textColor = "text-black";
 
                         if (cellData.holiday) {
-                          cellStyle += " bg-red-100";
+                          cellStyle += " bg-red-50";
                         }
 
                         if (cellData.status === true) {

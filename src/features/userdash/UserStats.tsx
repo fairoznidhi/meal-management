@@ -57,7 +57,7 @@ const UserStats = () => {
     //   </div>
     // </div>
     <div className="flex">
-      <div className="card bg-base-50 shadow rounded-box grid flex-grow place-items-center p-4 px-6">
+      <div className="card bg-base-50 shadow rounded-box grid flex-grow place-items-center p-4 px-6 mr-2">
         <div className="stat-title text-zinc-500">{`Today's Lunch`}</div>
         <div
           className={`stat-value text-3xl ${

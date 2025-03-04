@@ -18,8 +18,8 @@ const AdminMonthlyMealData = () => {
       setMonthYear(
         MealSummaryGraph?.map((monthMeal) => {
           const monthAbbreviation = monthMeal?.month?.substring(0, 3);
-          const yearAbbreviation = monthMeal?.year?.toString().slice(-2);
-          return `${monthAbbreviation}'${yearAbbreviation}`;
+          const yearAbbreviation = monthMeal?.year?.toString();
+          return `${monthAbbreviation} ${yearAbbreviation}`;
         }).reverse()
       );
       setLunchCount(MealSummaryGraph?.map((monthMeal) => monthMeal?.lunch ?? 0).reverse());
