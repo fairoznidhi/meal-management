@@ -367,7 +367,7 @@ const MealActivityComponent = () => {
         </div>
 
         {/* Special Meal Count */}
-          {specialLunch!=0&&(
+          {specialLunch!==0 &&(
              <div className="p-4 bg-blue-200 rounded-md text-center"
           
         >
@@ -377,7 +377,8 @@ const MealActivityComponent = () => {
               specialLunch
             ) : (
               <span className="loading loading-spinner loading-xs"></span>
-            )}
+            )
+            }
           </p>
         </div>
           

@@ -152,8 +152,8 @@ const InstantGuest = ({
         {!instantGuestEditable ? (
           <div className="relative h-full">
             <div className="text-center">
-              <h3 className="text-lg font-semibold mb-2">{`Today's Guest`}</h3>
-              <div className="text-2xl font-bold">{count}</div>
+              <h3 className="text-lg font-semibold mb-9">{`Today's Guest`}</h3>
+              <div className="text-2xl font-bold mt-2">{count}</div>
             </div>
             <button
               className="absolute bottom-0 right-0 text-violet-600 hover:text-violet-700 text-[20px] p-2"
