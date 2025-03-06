@@ -87,7 +87,7 @@ export const patchToggleDefaultMealStatus = async (
     url: "/employee/default-status",
     data: {
       date: `${date}`,
-      status: `${status}`,
+      status: !status,
     },
     method: "PATCH",
     useAuth: true,
