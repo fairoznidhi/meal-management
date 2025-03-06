@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { patchEmployeeProfile, patchExtraMeal, patchForgetPassword, patchGroupMealUpdate, patchResetPassword, patchToggleDefaultMealStatus, patchTotalLunchSnacksCount, patchTotalMealGroup } from "./api";
 
-export function useToggleDefaultMealStatus(date:string) {
+export function useToggleDefaultMealStatus(date:string,status:boolean) {
     return useMutation({
-        mutationFn: ()=>patchToggleDefaultMealStatus(date),
+        mutationFn: ()=>patchToggleDefaultMealStatus(date,status),
         onSuccess: () => {
           console.log("Meal preference toggled successfully");
         },
