@@ -63,7 +63,6 @@ const ChangePassword = () => {
       },
     });
     const formDataObject = Object.fromEntries(data.entries());
-    console.log("FormData as object:", formDataObject);
   };
   const handleCancel = () => {
     setError(null);

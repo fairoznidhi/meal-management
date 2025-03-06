@@ -14,7 +14,6 @@ const Form=()=>{
         label="Username"
         id="username"
         placeholder="Enter your username"
-        onChange={(e) => console.log(e.target.value)}
       />
         <br></br>
         <Input
@@ -23,21 +22,18 @@ const Form=()=>{
         type="password"
         placeholder="Enter your password"
         togglePasswordVisibility={true}
-        onChange={(e) => console.log(e.target.value)}
       />
         <br></br>
         <Input
         label="Email"
         id="Email"
         placeholder="Enter your Email"
-        onChange={(e) => console.log(e.target.value)}
       />
         <br></br>
         <Input
         label="Phone No."
         id="Phone"
         placeholder="Enter your Phone No."
-        onChange={(e) => console.log(e.target.value)}
       />
         <br></br>
         <label className="me-5 mb-5">Dept.</label>

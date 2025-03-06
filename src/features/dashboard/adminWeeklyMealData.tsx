@@ -44,7 +44,6 @@ const AdminWeeklyMealData = () => {
           snacksData &&
           snacksData.length === 0
         ) {
-          console.log("No data available");
         } else {
           setLunchCount(lunchData?.map((lunch) => lunch?.count ?? 0) || []);
           setSnacksCount(snacksData?.map((snack) => snack?.count ?? 0) || []);

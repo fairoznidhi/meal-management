@@ -21,7 +21,6 @@ export const authOptions:NextAuthOptions = {
             }).then((res) => res.json());
             //jwt decode
             const decoded = jwtDecode<CustomUserJwtPayload>(accessToken);
-            console.log({...decoded,accessToken})
             if (accessToken) {
               return {...decoded,accessToken};
             }
