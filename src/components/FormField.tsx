@@ -188,6 +188,17 @@ export default FormField;
 
 import React, { useState } from "react";
 
+
+function labelShow(labelName: string) {
+  if (labelName === "phone_number") return "Phone Number";
+  if (labelName === "dept_name") return "Department";
+  if (labelName === "remarks") return "Notes";
+  if (labelName === "preference_food") return "Allergies/Aversions";
+  return labelName;
+}
+
+
+
 type FormFieldProps = {
   id: string;
   label: string;
@@ -207,7 +218,7 @@ const FormField: React.FC<FormFieldProps> = ({
   onChange,
   options,
   type = "text",
-  labelShow = (label) => label,
+  //labelShow = (label) => label,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -233,7 +244,7 @@ const FormField: React.FC<FormFieldProps> = ({
               className="bg-gray-100 rounded-md px-4 py-2 border border-gray-200 cursor-pointer"
               onClick={() => setIsDropdownOpen((prev) => !prev)}
             >
-              {selectedFoods || "Select Food Preferences"}
+              {selectedFoods || "Select Options"}
             </div>
 
             {/* Dropdown Menu - Shows ALL options, with selected ones checked */}
@@ -293,7 +304,7 @@ const FormField: React.FC<FormFieldProps> = ({
       ) : (
         // View Mode - Show Selected Food Names OR "No preferences selected"
         <span className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-200">
-          {label === "preference_food" ? selectedFoods || "No preferences selected" : value}
+          {label === "preference_food" ? selectedFoods || "No options selected" : value}
         </span>
       )}
     </div>

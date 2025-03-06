@@ -38,6 +38,8 @@ const MealPlanTable = () => {
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false); // Modal state
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
   const [foodOptions, setFoodOptions] = useState<{ food_Id: number; food: string }[]>([]);
+  const [addFoodModal, setAddFoodModal] = useState(false);
+  const [newFood, setNewFood] = useState("");
  
   const [prefmodalOpen, setprefModalOpen] = useState(false);
 
@@ -438,7 +440,29 @@ useEffect(() => {
       
   };
 
+  const handleAddFood = async () => {
+    if (!newFood.trim()) return;
 
+    try {
+      // Simulate API PATCH request
+      
+      await request({
+        url: "/preference",
+        method: "POST",
+        data: {food:newFood}, // Send as an array of objects
+        useAuth: true,
+      });
+
+      // Update state to show new food option
+      setFoodOptions((prev) => [...prev, { food: newFood, food_Id: Date.now() }]);
+
+      // Close the modal
+      setNewFood("");
+      setAddFoodModal(false);
+    } catch (error) {
+      console.error("Error adding food:", error);
+    }
+  };
 
 
 
@@ -458,7 +482,7 @@ useEffect(() => {
   return (
     <div className="p-4">
      
-
+     <div className="bg-stone-50 p-2 mt-2 rounded-lg h-[100vh]">
        <div className="flex items-center  my-2 relative mt-8">
                 
       
@@ -488,9 +512,9 @@ useEffect(() => {
         <p>Loading...</p>
       ) : (
         <>
-          <table className="w-full border-collapse border border-black mt-16">
-            <thead>
-              <tr className="bg-gray-50 border border-black">
+          <table className="table-auto w-full rounded-t-lg mt-16">
+            <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
+              <tr className="">
                 <th className="border p-2">Date</th>
                 <th className="border p-2">Lunch</th>
                 <th className="border p-2">Snacks</th>
@@ -675,6 +699,20 @@ useEffect(() => {
              <span>{food.food}</span>
              </label>
              ))}
+             
+
+             {/* "Add New" Option */}
+             <button
+                className="flex justify-start hover:bg-gray-200 py-2 mt-2"
+                onClick={() => {
+                  closeprefModal();
+                  setAddFoodModal(true);
+                }}
+              >
+                + Add New
+              </button>
+
+
 
             <div className="flex justify-end"><button className="p-2 bg-blue-500 hover:bg-blue-600 text-white w-auto m-2" onClick={closeprefModal}>Save</button></div>
              
@@ -689,6 +727,44 @@ useEffect(() => {
           
         </div>
          )}
+
+
+         {/* Add New Food Modal */}
+      {addFoodModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+          <div className="bg-white p-6 rounded-md shadow-lg w-80 relative">
+            {/* Close Button */}
+            <button onClick={() => setAddFoodModal(false)} className="absolute top-2 right-2 text-gray-600 hover:text-red-600">
+              <FaTimes size={20} />
+            </button>
+
+            <h2 className="text-lg font-bold mb-4">Add New Food Tag</h2>
+
+            {/* Input Field */}
+            <input
+              type="text"
+              value={newFood}
+              onChange={(e) => setNewFood(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded"
+              placeholder="Enter food name"
+            />
+
+            {/* Save Button */}
+            <div className="flex justify-end">
+              <button
+                className="p-2 bg-blue-500 hover:bg-blue-600 text-white w-auto mt-4"
+                onClick={handleAddFood}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+      </div>
       </div>
 
   );
