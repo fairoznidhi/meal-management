@@ -25,7 +25,7 @@ const UserSettings = () => {
   const handleSettings = () => {
     setSettingsOpen(!settingsOpen);
   };
-  const {mutate,isPending} = useToggleDefaultMealStatus(formattedDate);
+  const {mutate,isPending} = useToggleDefaultMealStatus(formattedDate,mealStatusToggle);
   const handleMealStatus = () => {
     mutate(undefined, {
       onSuccess: () => {

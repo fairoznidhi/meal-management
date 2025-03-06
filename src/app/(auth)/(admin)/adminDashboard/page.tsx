@@ -203,7 +203,7 @@ const MealActivityComponent = () => {
         },
         useAuth: true,
       })) as totalmeal[];
-      setSnacksTotal(response[0].count);
+      setSnacksTotal(response[0].count-response[0].special_count);
       setSpecialSnacks(response[0].special_count);
     } catch (err: any) {
       console.log("Error Fetching Lunch");

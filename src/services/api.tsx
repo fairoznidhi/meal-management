@@ -66,11 +66,25 @@ export const getEmployeePhoto=async()=>{
     return res as Blob;
 }
 
-export const patchToggleDefaultMealStatus=async(date:string)=>{
+/*export const patchToggleDefaultMealStatus=async(date:string)=>{
     const res=await apiClient({
         url: "/employee/default-status",
         params:{
             date: `${date}`
+        },
+        method: "PATCH",
+        useAuth: true,
+    })
+    return res;
+}*/
+
+
+export const patchToggleDefaultMealStatus=async(date:string,status:boolean)=>{
+    const res=await apiClient({
+        url: "/employee/default-status",
+        data:{
+            date: `${date}`,
+            status: `${status}`,
         },
         method: "PATCH",
         useAuth: true,

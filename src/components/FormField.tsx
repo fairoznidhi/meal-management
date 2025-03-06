@@ -241,7 +241,7 @@ const FormField: React.FC<FormFieldProps> = ({
           <div>
             {/* Clickable Dropdown Opener */}
             <div
-              className="bg-gray-100 rounded-md px-4 py-2 border border-gray-200 cursor-pointer"
+              className="bg-gray-200 rounded-md px-4 py-2 border border-gray-200 cursor-pointer"
               onClick={() => setIsDropdownOpen((prev) => !prev)}
             >
               {selectedFoods || "Select Options"}
