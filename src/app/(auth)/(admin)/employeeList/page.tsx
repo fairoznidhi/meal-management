@@ -21,6 +21,7 @@ type Employee = {
   dept_id: string;
   phone_number: string;
   remarks: string;
+  preference_food:number[];
 };
 
 type TotalMeal = {
@@ -104,6 +105,7 @@ const EmployeeComponent: React.FC = () => {
     phone_number: string;
     remarks: string;
     photo: File | null;
+    preference_food:number[];
   }>({
     name: "",
     email: "",
@@ -112,6 +114,7 @@ const EmployeeComponent: React.FC = () => {
     phone_number: "",
     remarks: "",
     photo: null,
+   preference_food:[],
   });
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -143,6 +146,7 @@ const EmployeeComponent: React.FC = () => {
       phone_number: "",
       remarks: "",
       photo: null,
+      preference_food:[]
     });
   };
 
@@ -321,6 +325,7 @@ const EmployeeComponent: React.FC = () => {
       if (newEmployee.photo) {
         formData.append("photo", newEmployee.photo, newEmployee.photo.name);
       }
+      formData.append("preference_food", JSON.stringify([]));
       notificationToast("Processing", "info");
       const response = (await request({
         url: "/employee",
@@ -343,6 +348,7 @@ const EmployeeComponent: React.FC = () => {
           penalties: "N/A",
           lunch: 0,
           snacks: 0,
+          preference_food:[],
         },
       ]);
       await createMealPlan();
@@ -366,6 +372,7 @@ const EmployeeComponent: React.FC = () => {
       formData.append("dept_id", updatedEmployee?.dept_id);
       formData.append("phone_number", updatedEmployee?.phone_number);
       formData.append("remarks", updatedEmployee?.remarks);
+      //formData.append("preference_food", JSON.stringify([])); // Send empty array
 
       await request({
         url: `/employee`,
@@ -467,6 +474,11 @@ const EmployeeComponent: React.FC = () => {
       key: "snacks",
       label: "Snacks",
     },
+    /*{
+      key: "preference_food",
+      label: "Food Preferences",
+      render: (value) => (value && value.length > 0 ? value.join(", ") : "None"),
+    },*/
   ];
 
   const handleSelectChange = (e: any) => {
