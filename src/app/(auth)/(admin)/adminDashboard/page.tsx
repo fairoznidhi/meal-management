@@ -205,7 +205,8 @@ const MealActivityComponent = () => {
         },
         useAuth: true,
       })) as totalmeal[];
-      setSnacksTotal(response[0].count);
+      setSnacksTotal(response[0].count-response[0].special_count);
+      setSpecialSnacks(response[0].special_count);
     } catch (err: any) {
       console.log("Error Fetching Lunch");
     }
@@ -369,7 +370,6 @@ const MealActivityComponent = () => {
         {/* Special Meal Count */}
           {specialLunch!==0 &&(
              <div className="p-4 bg-blue-200 rounded-md text-center"
-          
         >
           <h3 className={`${h3ClassName}`}>Today&apos;s Special Lunch</h3>
           <p className="text-2xl font-bold">
@@ -415,6 +415,28 @@ const MealActivityComponent = () => {
             )}
           </p>
         </div>
+
+
+        {specialSnacks!==0 &&(
+             <div className="p-4 bg-green-200 rounded-md text-center"
+        >
+          <h3 className={`${h3ClassName}`}>Today&apos;s Special Lunch</h3>
+          <p className="text-2xl font-bold">
+            {specialSnacks !== null ? (
+              specialSnacks
+            ) : (
+              <span className="loading loading-spinner loading-xs"></span>
+            )
+            }
+          </p>
+        </div>
+      )}
+
+
+
+
+
+
         {/* Instant guest Update */}
         <div className="p-4 bg-violet-200 hover:bg-violet-300 rounded-md text-center transition duration-300 ease-in-out">
           <InstantGuest onUpdateSuccess={handleBothUpdates} />
