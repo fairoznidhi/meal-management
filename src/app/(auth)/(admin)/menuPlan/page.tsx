@@ -371,7 +371,6 @@ useEffect(() => {
         | { date: string; menu: { meal_type: string; food: string }[] }[]
         | null;
 
-      console.log("📋 Previous Week's Meal Data:", prevWeekMeals); // Debugging
 
       if (!prevWeekMeals || prevWeekMeals.length === 0) {
         alert("No meals found for the previous week.");

@@ -51,7 +51,7 @@ interface MealActivityData {
 type totalmeal = {
   date: string;
   count: number;
-  special_count:number;
+  special_count: number;
 };
 ChartJS.register(
   CategoryScale,
@@ -137,17 +137,16 @@ const MealActivityComponent = () => {
         setLoading(false);
       });
   }, [firstDate, daysInMonth]);
-  console.log(selectedYear.toString());
 
   const [mealActivityData, setMealActivityData] = useState<MealActivityData[]>(
     []
   );
   const [lunchTotal, setLunchTotal] = useState<number | null>(null);
   const [snacksTotal, setSnacksTotal] = useState<number | null>(null);
-  const [regularLunch, setRegularLunch]= useState<number | null>(null);
-  const [specialLunch, setSpecialLunch]= useState<number | null>(null);
-  const [regularSnacks, setRegularSnacks]= useState<number | null>(null);
-  const [specialSnacks, setSpecialSnacks]= useState<number | null>(null);
+  const [regularLunch, setRegularLunch] = useState<number | null>(null);
+  const [specialLunch, setSpecialLunch] = useState<number | null>(null);
+  const [regularSnacks, setRegularSnacks] = useState<number | null>(null);
+  const [specialSnacks, setSpecialSnacks] = useState<number | null>(null);
   const [startDate, setStartDate] = useState(new Date());
   const [days, setDays] = useState<number>(7);
   const [modalOpen, setModalOpen] = useState(false);
@@ -182,8 +181,7 @@ const MealActivityComponent = () => {
         },
         useAuth: true,
       })) as totalmeal[];
-      console.log("lunch",response)
-      setLunchTotal(response[0].count-response[0].special_count);
+      setLunchTotal(response[0].count - response[0].special_count);
       //setRegularLunch(response[1].count);
       setSpecialLunch(response[0].special_count);
     } catch (err: any) {
@@ -264,7 +262,6 @@ const MealActivityComponent = () => {
   };
 
   const totalGuestsPerDay = calculateTotalGuestsPerDay();
-  console.log(totalGuestsPerDay);
 
   useEffect(() => {
     const initializeMealPlan = async () => {
@@ -334,16 +331,15 @@ const MealActivityComponent = () => {
     fetchTotalSnacks();
   };
   const totalGuests = calculateTotalGuestsForToday();
-  console.log(totalGuests);
   const router = useRouter();
-  const [thisMonthPenalty,setThisMonthPenalty]=useState<number| null>(null);
-  const {data:monthlyPenalty}=useOfficeMonthlyPenalties(1);
+  const [thisMonthPenalty, setThisMonthPenalty] = useState<number | null>(null);
+  const { data: monthlyPenalty } = useOfficeMonthlyPenalties(1);
   const h3ClassName = "text-lg font-semibold mb-2";
-  useEffect(()=>{
-    if(monthlyPenalty){
+  useEffect(() => {
+    if (monthlyPenalty) {
       setThisMonthPenalty(monthlyPenalty?.[0]?.count ?? 0);
     }
-  },[monthlyPenalty,thisMonthPenalty])
+  }, [monthlyPenalty, thisMonthPenalty]);
   return (
     <div className="p-4">
       {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
@@ -360,47 +356,15 @@ const MealActivityComponent = () => {
           <p className="text-2xl font-bold">
             {lunchTotal !== null ? (
               lunchTotal
-              
             ) : (
               <span className="loading loading-spinner loading-xs"></span>
             )}
           </p>
         </div>
 
-        {/* Special Meal Count */}
-          {specialLunch!==0 &&(
-             <div className="p-4 bg-blue-200 rounded-md text-center"
-        >
-          <h3 className={`${h3ClassName}`}>Today&apos;s Special Lunch</h3>
-          <p className="text-2xl font-bold">
-            {specialLunch !== null ? (
-              specialLunch
-            ) : (
-              <span className="loading loading-spinner loading-xs"></span>
-            )
-            }
-          </p>
-        </div>
-          
-          
-          )}
-          
-
-        
-        
-
-
-
-
-
-
-
-
-
-
         {/* Todays total snacks */}
         <div
-          className="p-4 bg-green-200 hover:bg-green-300 rounded-md text-center cursor-pointer transition duration-300 ease-in-out"
+          className="p-4 bg-blue-200 hover:bg-blue-300 rounded-md text-center cursor-pointer transition duration-300 ease-in-out"
           onClick={() => {
             localStorage.setItem("MealType", "2");
             router.push("/mealUpdate");
@@ -416,44 +380,47 @@ const MealActivityComponent = () => {
           </p>
         </div>
 
+        {/* Special Meal Count */}
 
-        {specialSnacks!==0 &&(
-             <div className="p-4 bg-green-200 rounded-md text-center"
-        >
+        <div className="p-4 bg-green-200 rounded-md text-center">
           <h3 className={`${h3ClassName}`}>Today&apos;s Special Lunch</h3>
+          <p className="text-2xl font-bold">
+            {specialLunch !== null ? (
+              specialLunch
+            ) : (
+              <span className="loading loading-spinner loading-xs"></span>
+            )}
+          </p>
+        </div>
+        <div className="p-4 bg-green-200 rounded-md text-center">
+          <h3 className={`${h3ClassName}`}>Today&apos;s Special Snacks</h3>
           <p className="text-2xl font-bold">
             {specialSnacks !== null ? (
               specialSnacks
             ) : (
               <span className="loading loading-spinner loading-xs"></span>
-            )
-            }
+            )}
           </p>
         </div>
-      )}
-
-
-
-
-
 
         {/* Instant guest Update */}
         <div className="p-4 bg-violet-200 hover:bg-violet-300 rounded-md text-center transition duration-300 ease-in-out">
-          <InstantGuest onUpdateSuccess={handleBothUpdates} />
+          <InstantGuest onUpdateSuccess={handleBothUpdates} lunchFlag={true} />
+        </div>
+        <div className="p-4 bg-violet-200 hover:bg-violet-300 rounded-md text-center transition duration-300 ease-in-out">
+          <InstantGuest onUpdateSuccess={handleBothUpdates} lunchFlag={false} />
         </div>
         {/* Penalty */}
         <div className="p-4 bg-rose-100 rounded-md text-center">
-        <h3 className={`${h3ClassName}`}>Penalty of This Month</h3>
+          <h3 className={`${h3ClassName}`}>Penalty of This Month</h3>
           <p className="text-2xl font-bold">
-            {thisMonthPenalty!==null ? (thisMonthPenalty):(<span className="loading loading-spinner loading-xs"></span>)}
+            {thisMonthPenalty !== null ? (
+              thisMonthPenalty
+            ) : (
+              <span className="loading loading-spinner loading-xs"></span>
+            )}
           </p>
         </div>
-        <div className="col-span-3"></div>
-        {/* <div className="bg-red-50"></div>
-        <div className="bg-red-50"></div>
-        <div className="bg-red-50"></div>
-        <div className="bg-red-50"></div> */}
-        {/* Print Meal 
         <div className="flex justify-end items-end h-full">
           <button
             onClick={handleOpenPrintModal}
@@ -461,19 +428,18 @@ const MealActivityComponent = () => {
           >
             <FaPrint className="bg-gray-200" />
           </button>
-        </div>*/}
+        </div>
       </div>
 
-      
       {/*Print meal */}
-      <div className="flex justify-end items-end h-full">
-          <button
-            onClick={handleOpenPrintModal}
-            className="bg-blue-200  py-2 px-4 mb-2 rounded-md  flex items-center"
-          >
-            <FaPrint className="bg-gray-200" />
-          </button>
-        </div>
+      {/* <div className="flex justify-end items-end h-full">
+        <button
+          onClick={handleOpenPrintModal}
+          className="bg-blue-200  py-2 px-4 mb-2 rounded-md  flex items-center"
+        >
+          <FaPrint className="bg-gray-200" />
+        </button>
+      </div> */}
 
       <div className="grid grid-cols-2 gap-2">
         <AdminWeeklyMealData />

@@ -91,7 +91,7 @@ export function useToggleDefaultMealStatus(date:string,status:boolean) {
 
   export function usePatchExtraMeal(date:string){
     return useMutation({
-      mutationFn: (count:number) => patchExtraMeal({date,count}),
+      mutationFn: ({ lunch_count, snack_count }: { lunch_count: number; snack_count: number }) => patchExtraMeal({date,lunch_count,snack_count}),
       onSuccess: () => {
         console.log("Extra meal updated successfully");
       },

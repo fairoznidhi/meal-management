@@ -78,7 +78,6 @@ export default function AuthLayout({
   const [adminView, setAdminView] = useState(() => {
     if (typeof window !== "undefined") {
       const storedAdminView = localStorage.getItem("adminView") === "true";
-      console.log("storedAdminView", storedAdminView);
       return storedAdminView;
     }
   });
@@ -100,7 +99,6 @@ export default function AuthLayout({
       if (session) {
         setIsAdmin(session.user?.is_admin || false);
         setSession(session);
-        console.log("session from auth layout", session);
       } else {
         setIsAdmin(false);
       }

@@ -24,17 +24,14 @@ const UserDashboard = () => {
       const penalty =
         (monthlyData?.[0]?.lunch_penalty ?? 0) +
         (monthlyData?.[0]?.snack_penalty ?? 0);
-      console.log("penalty", penalty);
       const total =
         ((monthlyData?.[0]?.total_lunch ?? 0) +
           (monthlyData?.[0]?.total_snack ?? 1)) *
         5;
-      console.log("total", total);
       let waste = penalty / total;
       if (isNaN(waste)) {
         waste = 0;
     }
-      console.log("waste", waste);
       setFoodWaste(waste * 100);
     }
   }, [monthlyData]);

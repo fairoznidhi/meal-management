@@ -12,7 +12,6 @@ const AdminMonthlyMealData = () => {
   const [monthYear, setMonthYear] = useState<string[]>([]);
   const [lunchCount, setLunchCount] = useState<number[]>([]);
   const [snacksCount, setSnacksCount] = useState<number[]>([]);
-  console.log("Meal Summary Graph", MealSummaryGraph);
   useEffect(() => {
     if (MealSummaryGraph) {
       setMonthYear(
