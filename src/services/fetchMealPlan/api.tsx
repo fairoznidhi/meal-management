@@ -39,8 +39,6 @@ export const fetchMealPlan = async (
       },
     });
 
-    // Log and return the response data
-    console.log("Meal Plan Response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching meal plan:", error);

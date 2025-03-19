@@ -64,7 +64,6 @@ const BarChart: React.FC<BarChartProps> = ({ data, color, height}) => {
       },
     },
   };
-  console.log(modifiedData);
   return (
     <div className={`${height}`}>
       <Bar data={modifiedData} options={options}></Bar>

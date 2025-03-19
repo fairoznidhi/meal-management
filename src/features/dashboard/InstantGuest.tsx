@@ -139,7 +139,6 @@ const InstantGuest = ({
   };
 
   const handleInstantGuestUpdate = () => {
-    console.log("Lunch Count",lunchCount,"Snacks Count",snackCount)
     const payload = { lunch_count: lunchCount, snack_count: snackCount };
     mutate(payload, {
       onSuccess: () => {

@@ -34,7 +34,7 @@ const FetchPenaltyComponent = ({ employeeId }: { employeeId: string }) => {
       setPenaltyData(response.data);
 
       // Log the response data to the console
-      console.log("Updated Penalty Data:", response.data);
+      // console.log("Updated Penalty Data:", response.data);
     } catch (error) {
       console.error("Error updating penalty data:", error);
     }

@@ -9,7 +9,6 @@ export type MealPlan={
 const BASE_URL = `${process.env.NEXT_PUBLIC_PROXY_URL}`;
 const axiosInstance = axios.create({ baseURL: BASE_URL });
 
-console.log(BASE_URL);
 
 export const fetchMealPlan = async (start: string, days: string): Promise<MealPlan[]> => {
   try {

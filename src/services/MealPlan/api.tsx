@@ -9,7 +9,6 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(async (config) => {
   const session = await getSession();
   const token = session?.user?.accessToken;
-  console.log("Token:",token);
   
   if (token) {
     config.headers.Authorization = `${token}`;
@@ -18,7 +17,6 @@ axiosInstance.interceptors.request.use(async (config) => {
   if (!config.headers["Content-Type"]) {
     config.headers["Content-Type"] = "application/json";
   }
-  console.log("Headers:",config.headers);
  
 
   return config;
