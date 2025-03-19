@@ -148,11 +148,12 @@ export default function AuthLayout({
           {/* sidebar */}
           <div
             className={`transition-all duration-300 ${
-              isCollapsed ? "w-20 transition duration-300 ease-in-out" : "w-64 transition duration-300 ease-in-out"
+              isCollapsed
+                ? "w-20 transition duration-300 ease-in-out"
+                : "w-64 transition duration-300 ease-in-out"
               // bg-[#005A8F]
-            } bg-aliceBlue fixed h-full z-50 pt-8`
-          }
-          onClick={toggleSidebar}
+            } bg-aliceBlue fixed h-full z-50 pt-8`}
+            onClick={toggleSidebar}
           >
             {/* {isCollapsed ? (
               <div

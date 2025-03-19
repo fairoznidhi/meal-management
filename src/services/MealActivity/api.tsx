@@ -3,7 +3,6 @@ import axios from "axios";
 const BASE_URL = `${process.env.NEXT_PUBLIC_PROXY_URL}`;
 const axiosInstance = axios.create({ baseURL: BASE_URL });
 
-console.log(BASE_URL);
 
 // Fetch meal activity with start date and number of days
 export const getMealActivity = async (start: string, days: number) => {

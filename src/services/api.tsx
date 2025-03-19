@@ -18,8 +18,6 @@ const BASE_URL = `${process.env.NEXT_PUBLIC_PROXY_URL}`;
 const axiosInstance = axios.create({ baseURL: BASE_URL });
 const apiClient = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
-console.log(BASE_URL);
-
 export const getSingleEmployee = async (id: number) => {
   return (
     await axiosInstance.get<UserProfileDataType[]>(`employee?employee_id=${id}`)
@@ -236,4 +234,3 @@ export const fetchPreferences = async (): Promise<Preference[]> => {
     throw error;
   }
 };
-

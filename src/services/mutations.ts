@@ -14,7 +14,6 @@ export function useToggleDefaultMealStatus(date: string, status: boolean) {
   return useMutation({
     mutationFn: () => patchToggleDefaultMealStatus(date, status),
     onSuccess: () => {
-      console.log("Meal preference toggled successfully");
     },
     onError: (error) => {
       console.error("Error toggling meal preference:", error);
@@ -27,7 +26,6 @@ export function usePatchEmployeeProfile() {
     mutationFn: (formData: FormData) => patchEmployeeProfile(formData),
     onSuccess: async () => {
       // await queryClient.invalidateQueries({queryKey:["image"]});
-      console.log("Profile updated successfully");
     },
     onError: (error) => {
       console.error("Error updating profile:", error);
@@ -38,7 +36,6 @@ export function usePatchGroupMealUpdate() {
   return useMutation({
     mutationFn: (data: any[]) => patchGroupMealUpdate(data),
     onSuccess: () => {
-      console.log("Meal Updated Succesfully");
     },
     onError: (error) => {
       console.error("Error updating meal:", error);
@@ -49,7 +46,6 @@ export function usePatchForgetPassword() {
   return useMutation({
     mutationFn: (data: object) => patchForgetPassword(data),
     onSuccess: () => {
-      console.log("Mail sent");
     },
     onError: (error) => {
       console.error("Error mail", error);
@@ -62,7 +58,6 @@ export function usePatchResetPassword() {
     mutationFn: ({ data, token }: { data: object; token: string }) =>
       patchResetPassword(data, token),
     onSuccess: () => {
-      console.log("Password Updated");
     },
     onError: (error) => {
       console.error("Error password", error);
@@ -79,7 +74,6 @@ export function usePatchTotalMealGroup(
   return useMutation({
     mutationFn: () => patchTotalMealGroup({ date, meal_type, days }),
     onSuccess: async () => {
-      console.log("MealGroupUpdated Successfully");
       queryClient.invalidateQueries({
         queryKey: ["totalMealGroup", date, meal_type],
       });
@@ -98,7 +92,6 @@ export function usePatchTotalLunchSnacksCount(
   return useMutation({
     mutationFn: () => patchTotalLunchSnacksCount({ start_date, days }),
     onSuccess: async () => {
-      console.log("Total Meal Count fetched Successfully");
       queryClient.invalidateQueries({
         queryKey: ["totalMealCount", start_date],
       });
@@ -119,7 +112,6 @@ export function usePatchExtraMeal(date: string) {
       snack_count: number;
     }) => patchExtraMeal({ date, lunch_count, snack_count }),
     onSuccess: () => {
-      console.log("Extra meal updated successfully");
     },
     onError: (error) => {
       console.error("Error updating extra meal:", error);

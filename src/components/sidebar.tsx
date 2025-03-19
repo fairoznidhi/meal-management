@@ -50,7 +50,7 @@ const Sidebar = ({
                 className={`flex items-center rounded-md min-h-12 ${
                   isActive
                     ? "bg-vivaBlue text-white" // Active styles
-                    : "hover:bg-white text-midnightBlue" // Default styles
+                    : "hover:bg-blue-100 transition-all duration-300 ease-in-out transform text-midnightBlue" // Default styles
                 } ${isCollapsed ? "" : ""}`}
               >
                 {/* Render icon*/}

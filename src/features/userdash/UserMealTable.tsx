@@ -270,8 +270,8 @@ const UserMealTable = () => {
   const getWeekData = () => {
     const weekData: Row[] = [];
     if (mealActivityData) {
-      console.log("mealactivitydata: ", mealActivityData[0]);
-      console.log("mealPlan: ", mealPlan);
+      // console.log("mealactivitydata: ", mealActivityData[0]);
+      // console.log("mealPlan: ", mealPlan);
 
       mealActivityData[0]?.employee_details?.forEach(
         (employee: EmployeeEachDayMealDetails) => {
@@ -303,7 +303,7 @@ const UserMealTable = () => {
       );
     }
 
-    console.log("weekData: ", weekData);
+    // console.log("weekData: ", weekData);
     return weekData;
   };
 
@@ -359,7 +359,7 @@ const UserMealTable = () => {
 
         return [lunchEntry, snacksEntry];
       }) ?? [];
-    console.log("Formatted Data:", formattedData);
+    // console.log("Formatted Data:", formattedData);
     mutate(formattedData, {
       onSuccess: () => {
         setUpdate(!update);

@@ -14,6 +14,7 @@ class HttpClient {
 
     this.client.interceptors.request.use(
       async (config) => {
+        config.headers.set('If-Modified-Since', 'Thu, 01 Jan 2025 00:00:00 GMT'); // Old date
         return config;
       },
       (error) => {
@@ -23,7 +24,6 @@ class HttpClient {
 
     this.client.interceptors.response.use(
       async (response) => {
-        // console.log("Res Interceptor response: ",response)
         if (response?.status === 401) {
           await signOut();
           notificationToast("Token expired", "error");
