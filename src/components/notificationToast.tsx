@@ -4,6 +4,8 @@ type toastType="info"|"success"|"warning"|"error"
 const notificationToast = (text:string,type:toastType) => {
     const toastOptions:ToastOptions={
         autoClose:3000,
+        closeOnClick: true,
+        closeButton:false,
     }
     switch(type){
         case "info":
