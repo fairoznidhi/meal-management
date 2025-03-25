@@ -1,4 +1,5 @@
 export type extraMeal={
     date?:string;
-    count?:number;
+    lunch_count?:number;
+    snack_count?:number;
 }

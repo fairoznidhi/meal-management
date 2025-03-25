@@ -1,37 +1,26 @@
 "use client";
 import Sidebar from "@/components/sidebar";
 import { useEmployeePhoto, useTokenSingleEmployee } from "@/services/queries";
+import { IoMdArrowDropright } from "react-icons/io";
+import { IoIosArrowForward } from "react-icons/io";
+import { IoIosArrowBack } from "react-icons/io";
 import {
-  UsersIcon,
   CalendarDaysIcon,
-  Squares2X2Icon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
   NewspaperIcon,
+  Squares2X2Icon,
+  UsersIcon,
 } from "@heroicons/react/24/outline";
-import {
-  FaHome,
-  FaUsers,
-  FaClipboardList,
-  FaCalendarAlt,
-  FaUtensils,
-  FaChartBar,
-  FaAtlas,
-  FaAccusoft,
-  FaBacon,
-  FaBreadSlice,
-  FaCalendarWeek,
-  FaClipboardCheck,
-} from "react-icons/fa";
 import { Session } from "next-auth";
 import { getSession, SessionProvider, signOut } from "next-auth/react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import vslogo from "public/Vivasoft_logo_mark.svg";
 import profileImage from "public/profile-image.jpg";
 import { createContext, useEffect, useState } from "react";
-import { MdSpaceDashboard } from "react-icons/md";
+import { TbLayoutSidebarRightExpandFilled } from "react-icons/tb";
+import { IoReorderThreeOutline } from "react-icons/io5";
+
 type profilePictureType = {
   userProfilePicture: string;
   setUserProfilePicture: React.Dispatch<React.SetStateAction<string>>;
@@ -44,6 +33,7 @@ const defaultProfilePicture: profilePictureType = {
   userName: "",
   setUserName: () => {},
 };
+import { TbLayoutSidebarLeftExpandFilled } from "react-icons/tb";
 export const ProfilePictureContext = createContext<profilePictureType>(
   defaultProfilePicture
 );
@@ -78,7 +68,6 @@ export default function AuthLayout({
   const [adminView, setAdminView] = useState(() => {
     if (typeof window !== "undefined") {
       const storedAdminView = localStorage.getItem("adminView") === "true";
-      console.log("storedAdminView", storedAdminView);
       return storedAdminView;
     }
   });
@@ -100,7 +89,6 @@ export default function AuthLayout({
       if (session) {
         setIsAdmin(session.user?.is_admin || false);
         setSession(session);
-        console.log("session from auth layout", session);
       } else {
         setIsAdmin(false);
       }
@@ -160,11 +148,28 @@ export default function AuthLayout({
           {/* sidebar */}
           <div
             className={`transition-all duration-300 ${
-              isCollapsed ? "w-20" : "w-64"
+              isCollapsed
+                ? "w-20 transition duration-300 ease-in-out"
+                : "w-64 transition duration-300 ease-in-out"
               // bg-[#005A8F]
             } bg-aliceBlue fixed h-full z-50 pt-8`}
             onClick={toggleSidebar}
           >
+            {/* {isCollapsed ? (
+              <div
+                className="absolute top-1 left-20 px-1 py-4 rounded-r-md bg-aliceBlue"
+                onClick={toggleSidebar}
+              >
+                <IoIosArrowForward className="cursor-pointer h-6 w-6 text-midnightBlue" />
+              </div>
+            ) : (
+              <div
+                className="absolute top-1 left-64 px-1 py-4 rounded-r-md bg-aliceBlue"
+                onClick={toggleSidebar}
+              >
+                <IoIosArrowBack className="cursor-pointer h-6 w-6 text-midnightBlue" />
+              </div>
+            )} */}
             {/* <button
               onClick={toggleSidebar}
               className="p-2 bg-[#005A8F] hover:bg-[#] w-full  text-[#005A8F] text-center mb-7"
@@ -172,21 +177,6 @@ export default function AuthLayout({
             >
               {isCollapsed ? ">>" : "<<"}
             </button> */}
-            <div className="flex items-center px-4 mb-2">
-              <Image
-                src={vslogo}
-                alt="vlogo"
-                className="w-10 h-10 ms-1 me-1"
-              ></Image>
-              {/*<p className="text-white font-semibold mt-1 text-2xl font-serif">
-                VivaMeal
-              </p>*/}
-              {!isCollapsed && (
-                <p className="text-midnightBlue font-space font-extrabold text-2xl mt-1 pl-2">
-                  VivaMeal
-                </p>
-              )}
-            </div>
             <Sidebar
               items={
                 isAdmin

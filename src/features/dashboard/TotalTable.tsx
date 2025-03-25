@@ -33,7 +33,6 @@ const TotalTable = () => {
 
   // Handle row edits
   const handleEditRow = (updatedRow: Row, rowIndex: number) => {
-    console.log("Updated Row:", updatedRow, "at index:", rowIndex);
   };
 
   return (

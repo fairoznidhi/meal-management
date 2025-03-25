@@ -52,7 +52,6 @@ const MealActivityComponent = () => {
   useEffect(()=>{
     const val=localStorage.getItem("MealType");
     if(val){
-      console.log("Val",val)
       setMealType(parseInt(val));
     }
   },[mealType])
@@ -204,7 +203,6 @@ const MealActivityComponent = () => {
   };
 
   const totalGuestsPerDay = calculateTotalGuestsPerDay();
-  console.log(totalGuestsPerDay);
 
   {
     /*useEffect(() => {
@@ -311,7 +309,6 @@ const MealActivityComponent = () => {
     if (selectedCell) {
       const { employeeId, date} = selectedCell;
       const guestCount = 0;
-      console.log(penaltyScore);
       const updatedData = [
         {
           employee_id: employeeId,
@@ -433,7 +430,6 @@ const MealActivityComponent = () => {
   );
 
   const totalGuests = calculateTotalGuestsForToday();
-  console.log(totalGuests);
   //setTotalGuestsToday(totalGuests);
 
   const { lunchGuests, snackGuests } = calculateTotalGuestsPerDay();

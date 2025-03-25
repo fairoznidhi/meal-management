@@ -4,7 +4,12 @@ import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 import notificationToast from "@/components/notificationToast";
-import { FaCaretSquareLeft, FaCaretSquareRight, FaExclamation, FaTimes } from "react-icons/fa";
+import {
+  FaCaretSquareLeft,
+  FaCaretSquareRight,
+  FaExclamation,
+  FaTimes,
+} from "react-icons/fa";
 import Modal from "@/components/modal";
 
 const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
@@ -22,8 +27,6 @@ interface Row {
   snacks: string;
 }
 
-
-
 const MealPlanTable = () => {
   const [startDate, setStartDate] = useState(
     dayjs().startOf("week").add(1, "day").format("YYYY-MM-DD")
@@ -37,46 +40,51 @@ const MealPlanTable = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false); // Modal state
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
-  const [foodOptions, setFoodOptions] = useState<{ food_Id: number; food: string }[]>([]);
+  const [foodOptions, setFoodOptions] = useState<
+    { food_Id: number; food: string }[]
+  >([]);
   const [addFoodModal, setAddFoodModal] = useState(false);
   const [newFood, setNewFood] = useState("");
- 
+
   const [prefmodalOpen, setprefModalOpen] = useState(false);
 
-  const [selectedPreferences, setSelectedPreferences] = useState<Record<string, { lunch: number[]; snacks: number[] }>>({});
+  const [selectedPreferences, setSelectedPreferences] = useState<
+    Record<string, { lunch: number[]; snacks: number[] }>
+  >({});
 
   const [selectedDate, setSelectedDate] = useState<string>("");
-  const [selectedMealType, setSelectedMealType] = useState<"lunch" | "snacks">("lunch");
+  const [selectedMealType, setSelectedMealType] = useState<"lunch" | "snacks">(
+    "lunch"
+  );
 
   const openprefModal = (date: string, mealType: "lunch" | "snacks") => {
     setSelectedDate(date);
     setSelectedMealType(mealType);
-  
+
     // Load selected preferences for the specific date and mealType
     const selectedMealPreferences = selectedPreferences[date]?.[mealType] || [];
     setSelectedOptions(selectedMealPreferences); // Populate selected options when opening the modal
     fetchFoodOptions();
     setprefModalOpen(true);
   };
-  
-
-
-
 
   const closeprefModal = () => {
     setprefModalOpen(false);
-   
   };
 
   const handleOptionChange = (optionId: number) => {
     setSelectedOptions((prev) =>
-      prev.includes(optionId) ? prev.filter((id) => id !== optionId) : [...prev, optionId]
+      prev.includes(optionId)
+        ? prev.filter((id) => id !== optionId)
+        : [...prev, optionId]
     );
   };
 
-  
- 
-  const handlePreferenceChange = (date: string, mealType: "lunch" | "snacks", foodId: number) => {
+  const handlePreferenceChange = (
+    date: string,
+    mealType: "lunch" | "snacks",
+    foodId: number
+  ) => {
     setSelectedOptions((prev) => {
       const newSelectedOptions = prev.includes(foodId)
         ? prev.filter((id) => id !== foodId)
@@ -93,20 +101,7 @@ const MealPlanTable = () => {
       });
       return newSelectedOptions;
     });
-};
-
-
-
-  
-  
-
-
-
-
-
-
-
-
+  };
 
   /*useEffect(() => {
     const fetchData = async () => {
@@ -162,84 +157,74 @@ const MealPlanTable = () => {
   }, [startDate]);
 */
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true);
+        const start = dayjs(startDate);
+        const end = start.add(6, "day");
+        const dateSequence = [];
+        for (
+          let d = start;
+          d.isBefore(end) || d.isSame(end);
+          d = d.add(1, "day")
+        ) {
+          dateSequence.push(d.format("YYYY-MM-DD"));
+        }
 
-      const start = dayjs(startDate);
-      const end = start.add(6, "day");
-      const dateSequence = [];
-      for (
-        let d = start;
-        d.isBefore(end) || d.isSame(end);
-        d = d.add(1, "day")
-      ) {
-        dateSequence.push(d.format("YYYY-MM-DD"));
-      }
+        const data = (await request({
+          url: `/mealplan`,
+          method: "GET",
+          params: { start: startDate, days: 7 },
+          useAuth: true,
+        })) as Meal[] | null;
 
-      const data = (await request({
-        url: `/mealplan`,
-        method: "GET",
-        params: { start: startDate, days: 7 },
-        useAuth: true,
-      })) as Meal[] | null;
+        const mealDataMap: Record<
+          string,
+          Record<string, { food: string; preference_food: number[] }>
+        > = data?.reduce((acc: any, meal: any) => {
+          acc[meal.date] = meal.menu.reduce((mealAcc: any, item: any) => {
+            mealAcc[item.meal_type] = {
+              food: item.food,
+              preference_food: item.preference_food || [],
+            };
+            return mealAcc;
+          }, {});
+          return acc;
+        }, {}) || {};
 
-      const mealDataMap: Record<
-        string,
-        Record<string, { food: string; preference_food: number[] }>
-      > = data?.reduce((acc: any, meal: any) => {
-        acc[meal.date] = meal.menu.reduce((mealAcc: any, item: any) => {
-          mealAcc[item.meal_type] = {
-            food: item.food,
-            preference_food: item.preference_food || [],
+        const formattedData: Row[] = dateSequence.map((date) => ({
+          date,
+          lunch: mealDataMap[date]?.lunch?.food || "",
+          snacks: mealDataMap[date]?.snacks?.food || "",
+        }));
+
+        // Store preferences separately to maintain state
+        const preferences: Record<
+          string,
+          { lunch: number[]; snacks: number[] }
+        > = {};
+        Object.keys(mealDataMap).forEach((date) => {
+          preferences[date] = {
+            lunch: mealDataMap[date]?.lunch?.preference_food || [],
+            snacks: mealDataMap[date]?.snacks?.preference_food || [],
           };
-          return mealAcc;
-        }, {});
-        return acc;
-      }, {}) || {};
+        });
 
-      const formattedData: Row[] = dateSequence.map((date) => ({
-        date,
-        lunch: mealDataMap[date]?.lunch?.food || "",
-        snacks: mealDataMap[date]?.snacks?.food || "",
-      }));
+        setMealData(formattedData);
+        setEditedData(formattedData);
+        setSelectedPreferences(preferences); // Save preferences
+      } catch (error) {
+        console.error("Error fetching meal plan:", error);
+        notificationToast("Failed to Load Menu", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      // Store preferences separately to maintain state
-      const preferences: Record<string, { lunch: number[]; snacks: number[] }> = {};
-      Object.keys(mealDataMap).forEach((date) => {
-        preferences[date] = {
-          lunch: mealDataMap[date]?.lunch?.preference_food || [],
-          snacks: mealDataMap[date]?.snacks?.preference_food || [],
-        };
-      });
-
-      setMealData(formattedData);
-      setEditedData(formattedData);
-      setSelectedPreferences(preferences); // Save preferences
-
-    } catch (error) {
-      console.error("Error fetching meal plan:", error);
-      notificationToast("Failed to Load Menu", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchData();
-}, [startDate]);
-
-
-
-
-
-
-
-
-
-
-
+    fetchData();
+  }, [startDate]);
 
   const fetchFoodOptions = async () => {
     try {
@@ -248,7 +233,7 @@ useEffect(() => {
         method: "GET",
         useAuth: true,
       })) as { food_Id: number; food: string }[] | null;
-  
+
       if (data) {
         setFoodOptions(data);
       }
@@ -256,10 +241,6 @@ useEffect(() => {
       console.error("Error fetching food options:", error);
     }
   };
-  
-
-
-
 
   const changeWeek = (direction: "prev" | "next") => {
     setStartDate((prevDate) => {
@@ -305,8 +286,6 @@ useEffect(() => {
     }
   };*/
 
-
-
   const handleSave = async () => {
     try {
       // Prepare the meal data for saving
@@ -324,7 +303,7 @@ useEffect(() => {
           preference_food: selectedPreferences[row.date]?.snacks || [],
         },
       ]);
-  
+
       // Send meal data to API
       await request({
         url: "/mealplan",
@@ -332,7 +311,7 @@ useEffect(() => {
         data: mealDataToSave,
         useAuth: true,
       });
-  
+
       setMealData(editedData); // Sync mealData with editedData
       setIsEditing(false); // Exit edit mode
       notificationToast("Successfully Saved Menu", "success");
@@ -341,12 +320,6 @@ useEffect(() => {
       notificationToast("Failed to Save Menu", "error");
     }
   };
-  
-
-
-
-
-
 
   const handleCopyMealsFromPreviousWeek = async () => {
     const previousWeekStart = dayjs(startDate)
@@ -371,8 +344,6 @@ useEffect(() => {
         | { date: string; menu: { meal_type: string; food: string }[] }[]
         | null;
 
-      console.log("📋 Previous Week's Meal Data:", prevWeekMeals); // Debugging
-
       if (!prevWeekMeals || prevWeekMeals.length === 0) {
         alert("No meals found for the previous week.");
         return;
@@ -384,7 +355,7 @@ useEffect(() => {
           date: dayjs(meal.date).add(7, "day").format("YYYY-MM-DD"), // Shift date forward
           meal_type: menuItem.meal_type,
           food: menuItem.food,
-          preference:[]
+          preference: [],
         }))
       );
 
@@ -404,7 +375,7 @@ useEffect(() => {
         "Successfully copied meals from the previous week",
         "success"
       );
-      
+
       // Update local state with new meal data
       //setMealData((prev) => [...prev, ...mealsForCurrentWeek]);
 
@@ -432,12 +403,6 @@ useEffect(() => {
       console.error("❌ Error copying meals:", err);
       alert("Failed to copy meals. Please try again.");
     }
-    
-
-
-
-
-      
   };
 
   const handleAddFood = async () => {
@@ -445,16 +410,19 @@ useEffect(() => {
 
     try {
       // Simulate API PATCH request
-      
+
       await request({
         url: "/preference",
         method: "POST",
-        data: {food:newFood}, // Send as an array of objects
+        data: { food: newFood }, // Send as an array of objects
         useAuth: true,
       });
 
       // Update state to show new food option
-      setFoodOptions((prev) => [...prev, { food: newFood, food_Id: Date.now() }]);
+      setFoodOptions((prev) => [
+        ...prev,
+        { food: newFood, food_Id: Date.now() },
+      ]);
 
       // Close the modal
       setNewFood("");
@@ -464,37 +432,19 @@ useEffect(() => {
     }
   };
 
-
-
- 
-  
-
-
-
-
-
-
-
-
-
-
-
   return (
     <div className="p-4">
-     
-     <div className="bg-stone-50 p-2 mt-2 rounded-lg h-[100vh]">
-       <div className="flex items-center  my-2 relative mt-8">
-                
-      
-                <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
-                  <button
-                    onClick={()=>changeWeek("prev")}
-                    className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
-                  >
-                    <FaCaretSquareLeft />
-                  </button>
-                  <h2 className="p-2 text-base font-bold">
-                   { /*{`Start Date: ${
+      <div className="bg-stone-50 p-2 mt-2 rounded-lg h-[100vh]">
+        <div className="flex items-center  my-2 relative mt-8">
+          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
+            <button
+              onClick={() => changeWeek("prev")}
+              className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
+            >
+              <FaCaretSquareLeft />
+            </button>
+            <h2 className="p-2 text-base font-bold">
+              {/*{`Start Date: ${
                     startDate.toISOString().split("T")[0]
                   }`}*/}
                   {dayjs(startDate).format("DD MMM")}-{dayjs(endDate).format("DD MMM")}</h2>
@@ -581,102 +531,94 @@ useEffect(() => {
 
 
 
-          <div className="flex justify-end mt-4">
-            {!isEditing ? (
-              <div className="flex justify-end gap-x-8">
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2"
-                >
-                  Update Menu
-                </button>
-                <button
-                  onClick={() => setIsCopyModalOpen(true)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 mr-2"
-                >
-                  Copy Menu
-                </button>
-              </div>
-            ) : (
-              <>
-                <button
-                  onClick={handleSave}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 mr-2"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => {
-                    setEditedData(mealData);
-                    setIsEditing(false);
-                  }}
-                  className="bg-gray-500 text-white px-4 py-2"
-                >
-                  Cancel
-                </button>
-              </>
-            )}
+            <div className="flex justify-end mt-4">
+              {!isEditing ? (
+                <div className="flex justify-end gap-x-8">
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2"
+                  >
+                    Update Menu
+                  </button>
+                  <button
+                    onClick={() => setIsCopyModalOpen(true)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 mr-2"
+                  >
+                    Copy Menu
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <button
+                    onClick={handleSave}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 mr-2"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => {
+                      setEditedData(mealData);
+                      setIsEditing(false);
+                    }}
+                    className="bg-gray-500 text-white px-4 py-2"
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
 
-            {/*  copy Modal */}
-            {isCopyModalOpen && (
-              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                  <h2 className="text-xl font-bold mb-4">
-                    Copy Meals from Previous Week
-                  </h2>
-                  <p>
-                    Are you sure you want to copy the meals from the previous
-                    week?
-                  </p>
-                  <div className="mt-4 flex justify-end">
-                    <button
-                      onClick={() => setIsCopyModalOpen(false)}
-                      className="bg-gray-500 text-white px-4 py-2 mr-2"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleCopyMealsFromPreviousWeek();
-                        setIsCopyModalOpen(false);
-                      }}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2"
-                    >
-                      Yes, Copy
-                    </button>
+              {/*  copy Modal */}
+              {isCopyModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                  <div className="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 className="text-xl font-bold mb-4">
+                      Copy Meals from Previous Week
+                    </h2>
+                    <p>
+                      Are you sure you want to copy the meals from the previous
+                      week?
+                    </p>
+                    <div className="mt-4 flex justify-end">
+                      <button
+                        onClick={() => setIsCopyModalOpen(false)}
+                        className="bg-gray-500 text-white px-4 py-2 mr-2"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleCopyMealsFromPreviousWeek();
+                          setIsCopyModalOpen(false);
+                        }}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2"
+                      >
+                        Yes, Copy
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-             
-            )}
-          </div>
-          
-          
+              )}
+            </div>
+          </>
+        )}
 
+        {/* Prefernce/food tag Modal */}
+        {prefmodalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+            <div className="bg-white p-6 rounded-md shadow-lg w-80 relative">
+              {/* Close Button (Top Right) */}
+              <button
+                onClick={closeprefModal}
+                className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
+              >
+                <FaTimes size={20} />
+              </button>
 
-
-
-        </>
-      )}
-       
-
-       {/* Prefernce/food tag Modal */}
-      {prefmodalOpen&& (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-          <div className="bg-white p-6 rounded-md shadow-lg w-80 relative">
-            {/* Close Button (Top Right) */}
-            <button
-              onClick={closeprefModal}
-              className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
-            >
-              <FaTimes size={20} />
-            </button>
-
-            <h2 className="text-lg font-bold mb-4">
-              Select  Food Tags for Counting Special Meals
-            </h2>
-            <div className="flex flex-col gap-3">
-           {/* {foodOptions.map((food) => (
+              <h2 className="text-lg font-bold mb-4">
+                Select Food Tags for Counting Special Meals
+              </h2>
+              <div className="flex flex-col gap-3">
+                {/* {foodOptions.map((food) => (
             <label key={food.food_Id} className="flex items-center space-x-2">
             <input
                type="checkbox"
@@ -688,86 +630,88 @@ useEffect(() => {
             </label>
             ))}
             */}
-             {foodOptions.map((food) => (
-             <label key={food.food_Id} className="flex items-center space-x-2">
-             <input
-              type="checkbox"
-              value={food.food_Id}
-              checked={selectedOptions.includes(food.food_Id)} // Check if the food is selected
-              onChange={() => handlePreferenceChange(selectedDate, selectedMealType, food.food_Id)}
-             />
-             <span>{food.food}</span>
-             </label>
-             ))}
-             
+                {foodOptions.map((food) => (
+                  <label
+                    key={food.food_Id}
+                    className="flex items-center space-x-2"
+                  >
+                    <input
+                      type="checkbox"
+                      value={food.food_Id}
+                      checked={selectedOptions.includes(food.food_Id)} // Check if the food is selected
+                      onChange={() =>
+                        handlePreferenceChange(
+                          selectedDate,
+                          selectedMealType,
+                          food.food_Id
+                        )
+                      }
+                    />
+                    <span>{food.food}</span>
+                  </label>
+                ))}
 
-             {/* "Add New" Option */}
-             <button
-                className="flex justify-start hover:bg-gray-200 py-2 mt-2"
-                onClick={() => {
-                  closeprefModal();
-                  setAddFoodModal(true);
-                }}
-              >
-                + Add New
-              </button>
+                {/* "Add New" Option */}
+                <button
+                  className="flex justify-start hover:bg-gray-200 py-2 mt-2"
+                  onClick={() => {
+                    closeprefModal();
+                    setAddFoodModal(true);
+                  }}
+                >
+                  + Add New
+                </button>
 
-
-
-            <div className="flex justify-end"><button className="p-2 bg-blue-500 hover:bg-blue-600 text-white w-auto m-2" onClick={closeprefModal}>Save</button></div>
-             
+                <div className="flex justify-end">
+                  <button
+                    className="p-2 bg-blue-500 hover:bg-blue-600 text-white w-auto m-2"
+                    onClick={closeprefModal}
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
             </div>
-             
-
-
-
-
-
           </div>
-          
-        </div>
-         )}
+        )}
 
-
-         {/* Add New Food Modal */}
-      {addFoodModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-          <div className="bg-white p-6 rounded-md shadow-lg w-80 relative">
-            {/* Close Button */}
-            <button onClick={() => setAddFoodModal(false)} className="absolute top-2 right-2 text-gray-600 hover:text-red-600">
-              <FaTimes size={20} />
-            </button>
-
-            <h2 className="text-lg font-bold mb-4">Add New Food Tag</h2>
-
-            {/* Input Field */}
-            <input
-              type="text"
-              value={newFood}
-              onChange={(e) => setNewFood(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
-              placeholder="Enter food name"
-            />
-
-            {/* Save Button */}
-            <div className="flex justify-end">
+        {/* Add New Food Modal */}
+        {addFoodModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
+            <div className="bg-white p-6 rounded-md shadow-lg w-80 relative">
+              {/* Close Button */}
               <button
-                className="p-2 bg-blue-500 hover:bg-blue-600 text-white w-auto mt-4"
-                onClick={handleAddFood}
+                onClick={() => setAddFoodModal(false)}
+                className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
               >
-                Save
+                <FaTimes size={20} />
               </button>
+
+              <h2 className="text-lg font-bold mb-4">Add New Food Tag</h2>
+
+              {/* Input Field */}
+              <input
+                type="text"
+                value={newFood}
+                onChange={(e) => setNewFood(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded"
+                placeholder="Enter food name"
+              />
+
+              {/* Save Button */}
+              <div className="flex justify-end">
+                <button
+                  className="p-2 bg-blue-500 hover:bg-blue-600 text-white w-auto mt-4"
+                  onClick={handleAddFood}
+                >
+                  Save
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-
-
-
+        )}
       </div>
-      </div>
-
+    </div>
   );
-  
 };
 export default MealPlanTable;
