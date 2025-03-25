@@ -512,9 +512,9 @@ useEffect(() => {
         <p>Loading...</p>
       ) : (
         <>
-          <table className="table-auto w-full rounded-t-lg mt-16">
+          <table className="table-auto w-full rounded-t-lg mt-10">
             <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
-              <tr className="">
+              <tr className="h-14 rounded-lg">
                 <th className="border p-2">Date</th>
                 <th className="border p-2">Lunch</th>
                 <th className="border p-2">Snacks</th>

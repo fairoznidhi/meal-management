@@ -22,6 +22,8 @@ type Employee = {
   phone_number: string;
   remarks: string;
   preference_food:number[];
+  is_permanent:boolean;
+  is_active:boolean;
 };
 
 type TotalMeal = {
@@ -326,6 +328,10 @@ const EmployeeComponent: React.FC = () => {
         formData.append("photo", newEmployee.photo, newEmployee.photo.name);
       }
       formData.append("preference_food", JSON.stringify([]));
+
+       // Add the new fields here
+    formData.append("is_active", "true"); // Convert boolean to string as FormData always works with strings
+    formData.append("is_permanent", "true");
       notificationToast("Processing", "info");
       const response = (await request({
         url: "/employee",
@@ -363,6 +369,64 @@ const EmployeeComponent: React.FC = () => {
     }
   };
 
+  {/*Guest Adding*/}
+  const addEmployeeAsGuest = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("name", newEmployee.name);
+      formData.append("email", newEmployee.email);
+      formData.append("password", newEmployee.password);
+      formData.append("dept_id", newEmployee.dept_id);
+      formData.append("phone_number", newEmployee.phone_number);
+      formData.append("remarks", newEmployee.remarks);
+  
+      // Add the new fields here with is_permanent set to false for guest
+      formData.append("is_active", "true"); // Assuming we want it active
+      formData.append("is_permanent", "false"); // Guest employee is not permanent
+  
+      if (newEmployee.photo) {
+        formData.append("photo", newEmployee.photo, newEmployee.photo.name);
+      }
+      formData.append("preference_food", JSON.stringify([]));
+      
+      notificationToast("Processing", "info");
+  
+      const response = (await request({
+        url: "/employee",
+        method: "POST",
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        useAuth: true,
+      })) as Employee;
+  
+      setResponseData((prevData) => [
+        ...prevData,
+        {
+          name: newEmployee.name,
+          email: newEmployee.email,
+          dept_id: newEmployee.dept_id,
+          phone_number: newEmployee.phone_number,
+          remarks: newEmployee.remarks,
+          penalties: "N/A",
+          lunch: 0,
+          snacks: 0,
+          preference_food: [],
+        },
+      ]);
+  
+      await createMealPlan();
+      setShowAddModal(false);
+      resetForm();
+      notificationToast("Guest Employee Added Successfully", "success");
+    } catch (err: any) {
+      console.error("Error adding guest employee:", err);
+      notificationToast("Failed to Add Guest Employee", "error");
+    }
+  };
+  
+
   const updateEmployee = async () => {
     try {
       const formData = new FormData();
@@ -372,8 +436,9 @@ const EmployeeComponent: React.FC = () => {
       formData.append("dept_id", updatedEmployee?.dept_id);
       formData.append("phone_number", updatedEmployee?.phone_number);
       formData.append("remarks", updatedEmployee?.remarks);
-      //formData.append("preference_food", JSON.stringify([])); // Send empty array
-
+      formData.append("preference_food", selectedEmployee?.preference_food); // Send empty array
+      formData.append("is_active",selectedEmployee?.is_active);
+      formData.append("is_permanent",selectedEmployee?.is_permanent);
       await request({
         url: `/employee`,
         method: "PATCH",
@@ -752,7 +817,7 @@ const EmployeeComponent: React.FC = () => {
         title="Add New Employee"
         footer={
           <>
-            <button
+            {/*<button
               onClick={() => {
                 setShowAddModal(false);
                 resetForm();
@@ -760,13 +825,21 @@ const EmployeeComponent: React.FC = () => {
               className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 mr-2"
             >
               Cancel
-            </button>
+            </button>*/}
             <button
               onClick={addEmployee}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 me-3"
             >
               Add
             </button>
+      
+      {/* Add the "Add as Guest" button */}
+      <button
+        onClick={addEmployeeAsGuest}
+        className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+      >
+        Add as Guest
+      </button>
             {/*<button onClick={()=>{setShowDeptModal(true);setShowAddModal(false);}} className="ms-2 px-4 py-2 bg-blue-400 rounded hover:bg-blue-600">
               Create New Dept.
             </button>*/}

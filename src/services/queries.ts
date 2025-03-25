@@ -1,7 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { getEmployeePhoto, getExtraMeal, getMealSummaryGraph, getRangeMealPlan, getSingleEmployee, getSingleEmployeeMealActivity, getTokenSingleEmployee, getUserMonthlyData, getOfficeDailyPenalties, getOfficeMonthlyPenalties } from "./api";
-import { fetchPreferences } from "@/services/api";
-import { Preference } from "./types"; 
+import { fetchPreferences, fetchDepartments, fetchEmployees, fetchMealDataAndPenalties, addEmployee, updateEmployee, deleteEmployee} from "@/services/api";
+import { Preference, Dept, Employee, MealsResponse } from "./types"; 
+
+
 export function useSingleEmployee(id: number) {
     return useQuery({
       queryKey: ["employee", { id }],
@@ -75,3 +77,6 @@ export const useFetchPreferences = () => {
     queryFn: fetchPreferences, // Fetching function
   });
 };
+
+
+
