@@ -50,6 +50,7 @@ const ChangePassword = () => {
     data.append("password", formData.newPassword);
     if (session) {
       data.append("employee_id", session?.user?.employee_id);
+      
     }
     mutate(data, {
       onSettled: () => {

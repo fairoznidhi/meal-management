@@ -23,6 +23,11 @@ export type UserProfileDataType = {
   is_admin?: boolean;
   photo?: string | File | Blob;
   preference_food: number[];
+  is_permanent:boolean;
+  is_active: boolean;
+  designation: string;
+  roll: string;
+  
 };
 
 

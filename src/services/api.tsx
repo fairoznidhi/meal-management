@@ -10,11 +10,10 @@ import { RangeMenuDetails } from "@/model/rangeMealPlan";
 import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
 import { EmployeeMealDetails } from "@/model/userMealActivity";
 import axios from "axios";
-import { UserProfileDataType } from "./types";
-import { Preference, Dept, Employee, MealsResponse } from "./types";
+import { Preference, Dept, Employee, MealsResponse, UserProfileDataType } from "./types";
 import { getSession } from "next-auth/react";
 import { baseRequest } from "./HttpClientAPI";
-import { Preference, UserProfileDataType } from "./types";
+
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_PROXY_URL}`;
 const axiosInstance = axios.create({ baseURL: BASE_URL });
@@ -37,6 +36,7 @@ export const getTokenSingleEmployee = async () => {
       },
     }
   );
+  console.log(response.data);
   return [response.data];
 };
 
@@ -68,32 +68,8 @@ export const getRangeMealPlan = async (date: string, days: string) => {
   return res as RangeMenuDetails[];
 };
 
-export const getEmployeePhoto = async () => {
-  const res = await apiClient({
-    url: "/employee/photo",
-    method: "GET",
-    useAuth: true,
-    responseType: "blob",
-  });
 
-  return res as Blob;
-};
 
-export const patchToggleDefaultMealStatus = async (
-  date: string,
-  status: boolean
-) => {
-  const res = await apiClient({
-    url: "/employee/default-status",
-    data: {
-      date: `${date}`,
-      status: !status,
-    },
-    method: "PATCH",
-    useAuth: true,
-  });
-  return res;
-};
 export const getEmployeePhoto=async()=>{
     const res=await apiClient({
         url: "/employee/photo",
@@ -273,22 +249,7 @@ export const fetchPreferences = async (): Promise<Preference[]> => {
   }
 };
 
-    try {
-      // Fetch the data from the API
-      const res = await apiClient({
-        url: "/preference",
-        method: "GET",
-        useAuth: true,
-      });
-  
-      // If res contains a `data` field with the preferences, assert the type
-      return res as Preference[];
-    } catch (error) {
-      console.error("Error fetching preferences:", error);
-      throw error;
-    }
-  };
-
+   
   // Fetch Departments
 export const fetchDepartments = async (): Promise<Dept[]> => {
     const response = await apiClient({
@@ -356,3 +317,14 @@ export const fetchDepartments = async (): Promise<Dept[]> => {
       useAuth: true,
     });
   };
+
+  export const getGuests = async () => {
+    const res = await apiClient({
+      url: "/employee/guest-list",
+      method: "GET",
+      useAuth: true, // assuming this tells the client to attach auth headers
+    });
+  
+    return res as UserProfileDataType[];
+  };
+  

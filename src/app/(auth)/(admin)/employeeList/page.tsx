@@ -24,6 +24,8 @@ type Employee = {
   preference_food:number[];
   is_permanent:boolean;
   is_active:boolean;
+  designation:string;
+  roll:string;
 };
 
 type TotalMeal = {
@@ -108,6 +110,8 @@ const EmployeeComponent: React.FC = () => {
     remarks: string;
     photo: File | null;
     preference_food:number[];
+    designation:string;
+    roll:string;
   }>({
     name: "",
     email: "",
@@ -117,6 +121,8 @@ const EmployeeComponent: React.FC = () => {
     remarks: "",
     photo: null,
    preference_food:[],
+   designation:"",
+   roll:"",
   });
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -148,7 +154,9 @@ const EmployeeComponent: React.FC = () => {
       phone_number: "",
       remarks: "",
       photo: null,
-      preference_food:[]
+      preference_food:[],
+      designation:"",
+      roll:""
     });
   };
 
@@ -332,6 +340,8 @@ const EmployeeComponent: React.FC = () => {
        // Add the new fields here
     formData.append("is_active", "true"); // Convert boolean to string as FormData always works with strings
     formData.append("is_permanent", "true");
+    formData.append("designation",newEmployee.designation);
+    formData.append("roll",newEmployee.roll);
       notificationToast("Processing", "info");
       const response = (await request({
         url: "/employee",
@@ -388,6 +398,8 @@ const EmployeeComponent: React.FC = () => {
         formData.append("photo", newEmployee.photo, newEmployee.photo.name);
       }
       formData.append("preference_food", JSON.stringify([]));
+      formData.append("designation",newEmployee.designation);
+      formData.append("roll",newEmployee.roll);
       
       notificationToast("Processing", "info");
   
@@ -401,7 +413,7 @@ const EmployeeComponent: React.FC = () => {
         useAuth: true,
       })) as Employee;
   
-      setResponseData((prevData) => [
+      {/*setResponseData((prevData) => [
         ...prevData,
         {
           name: newEmployee.name,
@@ -415,7 +427,7 @@ const EmployeeComponent: React.FC = () => {
           preference_food: [],
         },
       ]);
-  
+      */}  
       await createMealPlan();
       setShowAddModal(false);
       resetForm();
@@ -830,7 +842,7 @@ const EmployeeComponent: React.FC = () => {
               onClick={addEmployee}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 me-3"
             >
-              Add
+              Add as Employee
             </button>
       
       {/* Add the "Add as Guest" button */}
@@ -913,7 +925,7 @@ const EmployeeComponent: React.FC = () => {
                 onClick={() => setShowPassword(!showPassword)} // Toggle state
                 className="absolute inset-y-0 right-8 flex items-center text-gray-500"
               >
-                {showPassword ? <FaEye size={14} /> : <FaEyeSlash size={14} />}
+                {showPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
               </button>
             </div>
           </div>
@@ -1003,6 +1015,39 @@ const EmployeeComponent: React.FC = () => {
               className="border px-4 py-2 w-full rounded"
             />
           </div>
+          
+          <div>
+            <label className="block mb-2 relative">
+              <span>Designation:</span>
+              <span className="absolute top-0 left-18 text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={newEmployee.designation}
+              onChange={(e) =>
+                setNewEmployee({ ...newEmployee, designation: e.target.value })
+              }
+              className="border px-4 py-2 w-full rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 relative">
+              <span>Employee Id:</span>
+              <span className="absolute top-0 left-18 text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={newEmployee.roll}
+              onChange={(e) =>
+                setNewEmployee({ ...newEmployee, roll: e.target.value })
+              }
+              className="border px-4 py-2 w-full rounded"
+            />
+          </div>
+
+
+
 
           {/*  <div>
             <label className="block mb-2">Photo:</label>

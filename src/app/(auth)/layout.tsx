@@ -49,6 +49,7 @@ export default function AuthLayout({
     { name: "Menu", route: "/menuPlan", icon: NewspaperIcon },
     { name: "Employee List", route: "/employeeList", icon: UsersIcon },
     { name: "Meal History", route: "/MealHistory", icon: ClockIcon },
+    { name: "Guest List", route: "/guestList", icon: UsersIcon }
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: Squares2X2Icon },

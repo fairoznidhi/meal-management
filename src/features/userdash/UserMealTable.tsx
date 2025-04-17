@@ -420,7 +420,7 @@ const UserMealTable = () => {
                     : ""
                 }
                 ${!prevWeekDataAvailable ? "hover:text-gray-300" : ""}`}
-              disabled={editTable || !prevWeekDataAvailable}
+              disabled={ editTable||!prevWeekDataAvailable}
             >
               <FaCaretSquareLeft />
             </button>
@@ -437,7 +437,7 @@ const UserMealTable = () => {
                     : ""
                 }
                 ${!nextWeekDataAvailable ? "hover:text-gray-300" : ""}`}
-              disabled={editTable || !nextWeekDataAvailable}
+              disabled={ editTable||!nextWeekDataAvailable}
             >
               <FaCaretSquareRight />
             </button>

@@ -231,6 +231,7 @@ const ProfilePage = () => {
         dept_name: profile?.dept_name ?? "",
         remarks: profile?.remarks?.trim() ? profile.remarks : "No preference",
         preference_food: profile?.preference_food ?? [],
+       
       });
 
       setActualData({
@@ -240,6 +241,7 @@ const ProfilePage = () => {
         dept_name: profile?.dept_name ?? "",
         remarks: profile?.remarks?.trim() ? profile.remarks : "No preference",
         preference_food: profile?.preference_food ?? [],
+        
       });
 
       setUserName(profile?.name ?? "");
@@ -288,11 +290,12 @@ const ProfilePage = () => {
 
     if (session) {
       data.append("employee_id", session?.user?.employee_id);
+      
     }
 
     //data.append("preference_food", JSON.stringify(formData?.preference_food ?? []));
     data.append("preference_food", (formData?.preference_food ?? []).join(","));
-
+    
 
     mutate(data, {
       onSettled: () => {
