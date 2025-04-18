@@ -191,7 +191,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useEmployeePhoto, useTokenSingleEmployee, useFetchPreferences } from "@/services/queries";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
-import { UserProfileDataType, Preference } from "@/services/types";
+import { UserProfileDataType, UserEditDataType, Preference } from "@/services/types";
 import { getSession } from "next-auth/react";
 import { usePatchEmployeeProfile } from "@/services/mutations";
 import ChangePassword from "@/features/changePassword/ChangePassword";
@@ -205,8 +205,8 @@ const ProfilePage = () => {
   const { mutate } = usePatchEmployeeProfile();
   const { data: preferences = [] } = useFetchPreferences(); // Fetching preferences
 
-  const [formData, setFormData] = useState<UserProfileDataType | null>(null);
-  const [actualData, setActualData] = useState<UserProfileDataType | null>(null);
+  const [formData, setFormData] = useState<UserEditDataType | null>(null);
+  const [actualData, setActualData] = useState<UserEditDataType | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isEditProfile, setIsEditProfile] = useState(false);
 
@@ -231,6 +231,11 @@ const ProfilePage = () => {
         dept_name: profile?.dept_name ?? "",
         remarks: profile?.remarks?.trim() ? profile.remarks : "No preference",
         preference_food: profile?.preference_food ?? [],
+        //designation: profile?.designation??"",
+        //is_active:profile?.is_active??"",
+        //is_permanent:profile?.is_permanent??"",
+        //roll:profile?.roll??""
+       
       });
 
       setActualData({
@@ -240,6 +245,11 @@ const ProfilePage = () => {
         dept_name: profile?.dept_name ?? "",
         remarks: profile?.remarks?.trim() ? profile.remarks : "No preference",
         preference_food: profile?.preference_food ?? [],
+        //designation: profile?.designation??"",
+        //is_active:profile?.is_active??"",
+        //is_permanent:profile?.is_permanent??"",
+        //roll:profile?.roll??""
+        
       });
 
       setUserName(profile?.name ?? "");
@@ -288,11 +298,12 @@ const ProfilePage = () => {
 
     if (session) {
       data.append("employee_id", session?.user?.employee_id);
+      
     }
 
     //data.append("preference_food", JSON.stringify(formData?.preference_food ?? []));
     data.append("preference_food", (formData?.preference_food ?? []).join(","));
-
+    
 
     mutate(data, {
       onSettled: () => {

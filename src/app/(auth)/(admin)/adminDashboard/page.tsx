@@ -66,7 +66,7 @@ const AdminDashboard = () => {
   }, [monthlyPenalty, thisMonthPenalty]);
   return (
     <div className="p-4">
-      {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div>*/}
+      {/*<div className="absolute justify-between mb-7"><TotalBox></TotalBox></div> */}
       <div className="grid grid-cols-12 gap-2 mb-2">
         <div className="grid grid-cols-7 col-span-11 gap-2">
           {/* Todays total lunch */}
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
             </p>
           </div>
 
-          {/* Instant guest Update */}
+          {/* Instant guest Update */} 
           <div className="p-4 bg-violet-200 hover:bg-violet-300 rounded-md text-center transition duration-300 ease-in-out">
             <InstantGuest
               onUpdateSuccess={() => {
@@ -179,7 +179,7 @@ const AdminDashboard = () => {
         <OfficeDailyPenaltyGraphAdmin />
       </div>
       <div>
-        {/* Render PrintLunchModal and pass necessary props */}
+        {/* Render PrintLunchModal and pass necessary props */} 
         <PrintModal
           isOpen={isPrintModalOpen}
           onClose={() => {
@@ -192,3 +192,5 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
+

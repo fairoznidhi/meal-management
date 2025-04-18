@@ -10,9 +10,10 @@ import { RangeMenuDetails } from "@/model/rangeMealPlan";
 import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
 import { EmployeeMealDetails } from "@/model/userMealActivity";
 import axios from "axios";
+import { Preference, Dept, Employee, MealsResponse, UserProfileDataType } from "./types";
 import { getSession } from "next-auth/react";
 import { baseRequest } from "./HttpClientAPI";
-import { Preference, UserProfileDataType } from "./types";
+
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_PROXY_URL}`;
 const axiosInstance = axios.create({ baseURL: BASE_URL });
@@ -35,6 +36,7 @@ export const getTokenSingleEmployee = async () => {
       },
     }
   );
+  console.log(response.data);
   return [response.data];
 };
 
@@ -66,32 +68,44 @@ export const getRangeMealPlan = async (date: string, days: string) => {
   return res as RangeMenuDetails[];
 };
 
-export const getEmployeePhoto = async () => {
-  const res = await apiClient({
-    url: "/employee/photo",
-    method: "GET",
-    useAuth: true,
-    responseType: "blob",
-  });
 
-  return res as Blob;
-};
 
-export const patchToggleDefaultMealStatus = async (
-  date: string,
-  status: boolean
-) => {
-  const res = await apiClient({
-    url: "/employee/default-status",
-    data: {
-      date: `${date}`,
-      status: !status,
-    },
-    method: "PATCH",
-    useAuth: true,
-  });
-  return res;
-};
+export const getEmployeePhoto=async()=>{
+    const res=await apiClient({
+        url: "/employee/photo",
+        method: "GET",
+        useAuth: true,
+        responseType: "blob",
+    })
+    
+    return res as Blob;
+}
+
+/*export const patchToggleDefaultMealStatus=async(date:string)=>{
+    const res=await apiClient({
+        url: "/employee/default-status",
+        params:{
+            date: `${date}`
+        },
+        method: "PATCH",
+        useAuth: true,
+    })
+    return res;
+}*/
+
+
+export const patchToggleDefaultMealStatus=async(date:string,status:boolean)=>{
+    const res=await apiClient({
+        url: "/employee/default-status",
+        data:{
+            date: `${date}`,
+            status: !status,
+        },
+        method: "PATCH",
+        useAuth: true,
+    })
+    return res;
+}
 
 export const patchEmployeeProfile = async (formData: FormData) => {
   const res = await apiClient({
@@ -234,3 +248,83 @@ export const fetchPreferences = async (): Promise<Preference[]> => {
     throw error;
   }
 };
+
+   
+  // Fetch Departments
+export const fetchDepartments = async (): Promise<Dept[]> => {
+    const response = await apiClient({
+      url: "/dept",
+      method: "GET",
+      useAuth: true,
+    });
+    return response as Dept[];
+  };
+  
+  // Fetch Employees
+  export const fetchEmployees = async (): Promise<Employee[]> => {
+    const response = await apiClient({
+      url: "/employee",
+      method: "GET",
+      useAuth: true,
+    });
+    return response as Employee[];
+  };
+  
+  // Fetch Meal Data and Penalties
+  export const fetchMealDataAndPenalties = async (
+    firstDate: string,
+    daysInMonth: number
+  ): Promise<MealsResponse[]> => {
+    const response = await apiClient({
+      url: "/meal_activity/meal-summary",
+      method: "PATCH",
+      data: { start_date: firstDate, days: daysInMonth },
+      useAuth: true,
+    });
+    return response as MealsResponse[];
+  };
+  
+  // Add Employee
+  export const addEmployee = async (newEmployee: FormData): Promise<Employee> => {
+    const response = await apiClient({
+      url: "/employee",
+      method: "POST",
+      data: newEmployee,
+      headers: { "Content-Type": "multipart/form-data" },
+      useAuth: true,
+    });
+    return response as Employee;
+  };
+  
+  // Update Employee
+  export const updateEmployee = async (formData: FormData): Promise<Employee> => {
+    const response = await apiClient({
+      url: "/employee",
+      method: "PATCH",
+      data: formData,
+      headers: { "Content-Type": "multipart/form-data" },
+      useAuth: true,
+    });
+    return response as Employee;
+  };
+  
+  // Delete Employee
+  export const deleteEmployee = async (employeeId: number): Promise<void> => {
+    await apiClient({
+      url: "/employee",
+      method: "DELETE",
+      params: { employee_id: employeeId },
+      useAuth: true,
+    });
+  };
+
+  export const getGuests = async () => {
+    const res = await apiClient({
+      url: "/employee/guest-list",
+      method: "GET",
+      useAuth: true, // assuming this tells the client to attach auth headers
+    });
+  
+    return res as UserProfileDataType[];
+  };
+  

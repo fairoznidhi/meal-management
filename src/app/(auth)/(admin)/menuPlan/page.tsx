@@ -447,86 +447,89 @@ const MealPlanTable = () => {
               {/*{`Start Date: ${
                     startDate.toISOString().split("T")[0]
                   }`}*/}
-              {dayjs(startDate).format("DD MMM")}-
-              {dayjs(endDate).format("DD MMM")}
-            </h2>
-            <button
-              onClick={() => changeWeek("next")}
-              className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
-            >
-              <FaCaretSquareRight />
-            </button>
-          </div>
-        </div>
+                  {dayjs(startDate).format("DD MMM")}-{dayjs(endDate).format("DD MMM")}</h2>
+                  <button
+                    onClick={()=>changeWeek("next")}
+                    className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
+                  >
+                    <FaCaretSquareRight />
+                  </button>
+                </div>
+      </div>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <>
-            <table className="table-auto w-full rounded-t-lg mt-16">
-              <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
-                <tr className="">
-                  <th className="border p-2">Date</th>
-                  <th className="border p-2">Lunch</th>
-                  <th className="border p-2">Snacks</th>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <table className="table-auto w-full rounded-t-lg mt-10">
+            <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
+              <tr className="h-14 rounded-lg">
+                <th className="border p-2">Date</th>
+                <th className="border p-2">Lunch</th>
+                <th className="border p-2">Snacks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mealData.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="text-center p-4">
+                    No meal data available for this week.
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {mealData.length === 0 ? (
-                  <tr>
-                    <td colSpan={3} className="text-center p-4">
-                      No meal data available for this week.
+              ) : (
+                mealData.map((row) => (
+                  <tr key={row.date} className="border text-center">
+                    <td className="border p-2">
+                      {dayjs(row.date).format("ddd, DD MMM")}
                     </td>
-                  </tr>
-                ) : (
-                  mealData.map((row) => (
-                    <tr key={row.date} className="border text-center">
-                      <td className="border p-2">
-                        {dayjs(row.date).format("ddd, DD MMM")}
+                    {["lunch", "snacks"].map((mealType) => (
+                      <td key={mealType} className="border p-2">
+                        {isEditing ? (
+                          <div className="flex items-center justify-between">
+                          <input
+                            type="text"
+                            value={
+                              editedData.find((r) => r.date === row.date)?.[
+                                mealType as keyof Row
+                              ] || ""
+                            }
+                            onChange={(e) =>
+                              handleEditChange(
+                                row.date,
+                                mealType as keyof Row,
+                                e.target.value
+                              )
+                            }
+                            className="border p-1 w-full"
+                          />
+                          {/* Edit button */}
+                        <button
+                        onClick={() => openprefModal(row.date,mealType as "lunch"|"snacks")}
+                        className="ml-2 text-blue-500 hover:text-blue-700"
+                      >
+                        <FaExclamation />
+                      </button>
+                      </div>
+                        ) : (
+                          row[mealType as keyof Row] || "—"
+                        )}
                       </td>
-                      {["lunch", "snacks"].map((mealType) => (
-                        <td key={mealType} className="border p-2">
-                          {isEditing ? (
-                            <div className="flex items-center justify-between">
-                              <input
-                                type="text"
-                                value={
-                                  editedData.find((r) => r.date === row.date)?.[
-                                    mealType as keyof Row
-                                  ] || ""
-                                }
-                                onChange={(e) =>
-                                  handleEditChange(
-                                    row.date,
-                                    mealType as keyof Row,
-                                    e.target.value
-                                  )
-                                }
-                                className="border p-1 w-full"
-                              />
-                              {/* Edit button */}
-                              <button
-                                onClick={() =>
-                                  openprefModal(
-                                    row.date,
-                                    mealType as "lunch" | "snacks"
-                                  )
-                                }
-                                className="ml-2 text-blue-500 hover:text-blue-700"
-                              >
-                                <FaExclamation />
-                              </button>
-                            </div>
-                          ) : (
-                            row[mealType as keyof Row] || "—"
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+           
+
+
+
+
+
+
+
 
             <div className="flex justify-end mt-4">
               {!isEditing ? (

@@ -8,6 +8,7 @@ import {
   patchToggleDefaultMealStatus,
   patchTotalLunchSnacksCount,
   patchTotalMealGroup,
+  updateEmployee
 } from "./api";
 
 export function useToggleDefaultMealStatus(date: string, status: boolean) {
@@ -118,3 +119,26 @@ export function usePatchExtraMeal(date: string) {
     },
   });
 }
+
+export function useToggleEmployeeStatus() {
+  return useMutation({
+    mutationFn: ({
+      employeeId,
+      isActive,
+    }: {
+      employeeId: number;  // Change the type of employeeId to number
+      isActive: boolean; 
+    }) => {
+      const formData = new FormData();
+      formData.append("employee_id", employeeId.toString()); // Ensure employeeId is converted to string for formData
+      formData.append("is_active", isActive.toString());
+      return updateEmployee(formData); // Call the updateEmployee function
+    },
+    onSuccess: (data) => {
+      console.log("Employee status updated:", data);
+    },
+    onError: (error) => {
+      console.error("Error updating employee status:", error);
+    },
+  });
+};
