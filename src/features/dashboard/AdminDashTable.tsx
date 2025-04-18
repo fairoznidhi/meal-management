@@ -54,7 +54,7 @@ const AdminDashTable = () => {
         <thead>
           <tr>
             <th className="border border-gray-300 px-4 py-2 bg-gray-100 text-center">Name</th>
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(
+            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(//global variable
               (day) => (
                 <th key={day} className="border border-gray-300 px-4 py-2 bg-gray-100 text-center">
                   {day}
