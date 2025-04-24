@@ -10,8 +10,9 @@ const GuestsTablePage = () => {
   
   const { data, isLoading, isError } = useGuests();
   
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div><span className="loading loading-dots loading-lg"></span></div>;
   if (isError) return <div>Something went wrong while fetching guests.</div>;
+  
 
   return (
     <div className="p-4">
@@ -24,10 +25,19 @@ const GuestsTablePage = () => {
           </tr>
         </thead>
         <tbody>
-          {data?.map((guest) => (
-            <GuestRow key={guest.employee_id} guest={guest} />
-          ))}
-        </tbody>
+            {data && data.length > 0 ? (
+             data.map((guest) => (
+             <GuestRow key={guest.employee_id} guest={guest} />
+            ))
+         ) : (
+         <tr>
+         <td colSpan={2} className="border px-4 py-4 text-center text-gray-500">
+             Guest list is empty.
+         </td>
+         </tr>
+          )}
+         </tbody>
+
       </table>
     </div>
   );

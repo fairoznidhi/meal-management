@@ -32,6 +32,7 @@ export default withAuth(
             "/userDashboard",
             "/UserMealHistory",
             "/UserMealUpdate",
+            "/trial",
           ].includes(pathname);
         } else {
           return [
@@ -59,6 +60,7 @@ export const config = {
     "/userDashboard",
     "/UserMealHistory",
     "/UserMealUpdate",
+    "/trial",
     "/",
   ],
 };
