@@ -84,6 +84,156 @@ const UserMealTable = () => {
     };
     checkSession();
   }, []);
+
+
+  const renderMobileCards = () => {
+    return (
+      <div className="flex flex-col space-y-4 w-[70vw]">
+        {data?.map((row, index) => (
+          <div
+            key={index}
+            className={`rounded-lg shadow-md p-4 ${
+              row.isHoliday ? "bg-red-50" : "bg-white"
+            }`}
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-bold text-lg">
+                {format(new Date(row.date), "dd MMM (EEE)")}
+              </h3>
+              {row.isHoliday && (
+                <span className="text-red-500 font-semibold">Holiday</span>
+              )}
+            </div>
+            <div className="text-sm space-y-1">
+              <div>
+                <strong>Lunch:</strong> {row.lunch}
+              </div>
+              <div className="flex justify-between items-center">
+                <span>
+                  <strong>Status:</strong>{" "}
+                  {row.lunchStatus === 1 ? "Yes" : "No"}
+                </span>
+                {isRowEditable(row.date, "lunch") && (
+                  <input
+                    type="checkbox"
+                     className={`toggle border-white bg-white hover:bg-white ${
+                row.lunchStatus === 1
+                  ? "[--tglbg:#00aa68]" : "[--tglbg:#d73545]"
+                 
+              } `}
+                    checked={row.lunchStatus === 1}
+                    onChange={() =>
+                      toggleRowStatus(index, row, "lunchStatus")
+                    }
+                  />
+                )}
+              </div>
+              <div className="flex justify-between items-center">
+                <span>
+                  <strong>Guests:</strong> {row.lunchGuest}
+                </span>
+                {isRowEditable(row.date, "lunch") && (
+                  <div className="flex items-center space-x-1">
+                    <button
+                      className="px-2 bg-gray-100 rounded"
+                      onClick={() =>
+                        toggleRowStatus(
+                          index,
+                          row,
+                          "lunchGuest",
+                          Math.max(0, row.lunchGuest - 1)
+                        )
+                      }
+                    >
+                      -
+                    </button>
+                    <button
+                      className="px-2 bg-gray-100 rounded"
+                      onClick={() =>
+                        toggleRowStatus(
+                          index,
+                          row,
+                          "lunchGuest",
+                          row.lunchGuest + 1
+                        )
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div>
+                <strong>Snacks:</strong> {row.snacks}
+              </div>
+              <div className="flex justify-between items-center">
+                <span>
+                  <strong>Status:</strong>{" "}
+                  {row.snacksStatus === 1 ? "Yes" : "No"}
+                </span>
+                {isRowEditable(row.date, "snacks") && (
+                  <input
+                    type="checkbox"
+                    className={`toggle border-white bg-white hover:bg-white ${
+                      row.snacksStatus === 1
+                        ? "[--tglbg:#00aa68]" : "[--tglbg:#d73545]"
+                       
+                    } `}
+                    checked={row.snacksStatus === 1}
+                    onChange={() =>
+                      toggleRowStatus(index, row, "snacksStatus")
+                    }
+                  />
+                )}
+              </div>
+              <div className="flex justify-between items-center">
+                <span>
+                  <strong>Guests:</strong> {row.snacksGuest}
+                </span>
+                {isRowEditable(row.date, "snacks") && (
+                  <div className="flex items-center space-x-1">
+                    <button
+                      className="px-2 bg-gray-100 rounded"
+                      onClick={() =>
+                        toggleRowStatus(
+                          index,
+                          row,
+                          "snacksGuest",
+                          Math.max(0, row.snacksGuest - 1)
+                        )
+                      }
+                    >
+                      -
+                    </button>
+                    <button
+                      className="px-2 bg-gray-100 rounded"
+                      onClick={() =>
+                        toggleRowStatus(
+                          index,
+                          row,
+                          "snacksGuest",
+                          row.snacksGuest + 1
+                        )
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+  
+
+
+
+
+
+
   const columns: Column[] = [
     {
       key: "date",
@@ -399,18 +549,19 @@ const UserMealTable = () => {
           setUpdate,
         }}
       >
-        <div className="flex justify-between mb-4">
+        <div className="flex flex-wrap justify-between mb-4">
           {/* Stats */}
           <UserStats />
           {/* Global Meal Toggle */}
-          <UserSettings />
+          <div className="lg:my-0 my-5 lg:translate-x-0 translate-x-3">
+          <UserSettings /></div>
         </div>
 
         {/* Week Navigation */}
        <div className="bg-stone-50 p-2 mt-2 rounded-lg">
-       <div className={`flex items-end mb-2 relative pt-1 px-1`}>
-          <h1 className="pl-2 text-3xl font-extrabold">Meal Entry</h1>
-          <div className="flex items-center absolute left-1/2 transform -translate-x-1/2 ">
+       <div className={`flex flex-wrap items-end mb-2 relative pt-1 px-1`}>
+          <h1 className="pl-2 text-3xl font-extrabold lg:mb-0 mb-10">Meal Entry</h1>
+          <div className="flex items-center absolute left-1/2 transform lg:-translate-x-1/2 -translate-x-40">
             <button
               onClick={handlePreviousWeek}
               className={`px-4 text-gray-300 text-4xl rounded hover:text-gray-400 
@@ -442,7 +593,7 @@ const UserMealTable = () => {
               <FaCaretSquareRight />
             </button>
           </div>
-          <div className="min-w-64 text-end flex flex-row justify-end ml-auto">
+          <div className="min-w-64 text-end flex flex-row justify-end ml-auto lg:mb-0 mb-20 lg:-translate-x-0 -translate-x-5">
             {!editTable ? (
               <button
                 className="px-4 py-2 border bg-blue-500 text-white rounded hover:bg-blue-600"
@@ -473,12 +624,17 @@ const UserMealTable = () => {
         </div>
 
         {/* Table */}
+        <div className="hidden md:block">
         <Table
           columns={columns}
           data={data ?? []}
           // onEditRow={handleEditRow}
           {...(editTable ? { onEditRow: handleEditRow } : {})}
         />
+        </div>
+
+        <div className="block md:hidden">{renderMobileCards()}</div>
+
        </div>
         {/* Alert Notification */}
       </MealStatusContext.Provider>

@@ -11,6 +11,7 @@ import {
   NewspaperIcon,
   Squares2X2Icon,
   UsersIcon,
+  UserGroupIcon
 } from "@heroicons/react/24/outline";
 import { Session } from "next-auth";
 import { getSession, SessionProvider, signOut } from "next-auth/react";
@@ -49,7 +50,7 @@ export default function AuthLayout({
     { name: "Menu", route: "/menuPlan", icon: NewspaperIcon },
     { name: "Employee List", route: "/employeeList", icon: UsersIcon },
     { name: "Meal History", route: "/MealHistory", icon: ClockIcon },
-    { name: "Guest List", route: "/guestList", icon: UsersIcon }
+    { name: "Guest List", route: "/guestList", icon: UserGroupIcon }
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: Squares2X2Icon },
