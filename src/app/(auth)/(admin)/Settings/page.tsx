@@ -5,6 +5,7 @@ import Calendar from "@/components/HoildayCalendar";
 import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 import notificationToast from "@/components/notificationToast";
 import { FaCalendar, FaList, FaTrash } from "react-icons/fa";
+import DepartmentSettings from "@/features/settings/department/DepartmentSettings";
 
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
@@ -101,7 +102,7 @@ const SettingsComponent = () => {
     <div className="flex flex-col justify-center items-center bg-gray-100">
       <p className="font-bold text-3xl absolute top-4 left-20 ms-40">Settings</p>
 
-      <div className="flex flex-col w-full h-[40vh] rounded shadow-md">
+      <div className="flex flex-col w-full h-[200px] rounded shadow-md">
         <p className="text-2xl font-bold mt-5 mb-5 ms-10">Holidays</p>
 
         <button
@@ -119,6 +120,11 @@ const SettingsComponent = () => {
           <span className="me-2 mt-1"><FaCalendar /></span>
           See Holiday List
         </button>
+      </div>
+
+      <div className="flex flex-col w-full h-[200px] rounded shadow-md">
+        <p className="text-2xl font-bold mt-5 mb-5 ms-10">Department</p>
+        <DepartmentSettings/>
       </div>
 
       {isCalendarOpen && (
@@ -209,6 +215,7 @@ const SettingsComponent = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };
