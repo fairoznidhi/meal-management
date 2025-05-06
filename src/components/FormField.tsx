@@ -234,7 +234,7 @@ const FormField: React.FC<FormFieldProps> = ({
       <label htmlFor={id} className="block w-full mb-2 font-medium text-sm text-gray-500 capitalize">
         {labelShow(label)}
       </label>
-
+      
       {/* Editable Mode */}
       {isEditable ? (
         label === "preference_food" && options ? (
@@ -284,6 +284,7 @@ const FormField: React.FC<FormFieldProps> = ({
             value={value as string}
             onChange={(e) => onChange && onChange(e.target.value)}
             className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-200"
+           
           >
             {options.map((option) => (
               <option key={option.food_id} value={option.food_id}>
@@ -298,7 +299,12 @@ const FormField: React.FC<FormFieldProps> = ({
             type={type}
             value={value as unknown as string}
             onChange={(e) => onChange && onChange(e.target.value)}
-            className="bg-gray-200 rounded-md px-4 py-2 flex-1 border border-gray-200"
+            //className="bg-gray-200 rounded-md px-4 py-2 flex-1 border border-gray-200"
+            disabled={label === "email" || label === "dept_name"}
+            className={`bg-gray-200 rounded-md px-4 py-2 flex-1 border border-gray-200 ${
+            label === "email" || label === "dept_name" ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            
           />
         )
       ) : (

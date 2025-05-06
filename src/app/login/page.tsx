@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/button";
+import  Button  from "@/components/button/Button";
 import Input from "@/components/input/Input";
 import notificationToast from "@/components/notificationToast";
 import ForgetPassword from "@/features/forgetPassword/ForgetPassword";
@@ -49,6 +49,7 @@ const LoginPage = () => {
         throw new Error("Unknown error occurred");
       }
     }
+    console.log()
   };
   const [loading, setLoading] = useState(false);
   return (

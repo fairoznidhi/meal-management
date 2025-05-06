@@ -101,6 +101,8 @@ const EmployeeComponent: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(now.getUTCFullYear()); // Default: Current year
   const [showPassword, setShowPassword] = useState(false);
   const [loading,setLoading]=useState(true);
+  const [emailError, setEmailError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [newEmployee, setNewEmployee] = useState<{
     name: string;
     email: string;
@@ -379,64 +381,6 @@ const EmployeeComponent: React.FC = () => {
     }
   };
 
-  {/*Guest Adding*/}
-  const addEmployeeAsGuest = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("name", newEmployee.name);
-      formData.append("email", newEmployee.email);
-      formData.append("password", newEmployee.password);
-      formData.append("dept_id", newEmployee.dept_id);
-      formData.append("phone_number", newEmployee.phone_number);
-      formData.append("remarks", newEmployee.remarks);
-  
-      // Add the new fields here with is_permanent set to false for guest
-      formData.append("is_active", "true"); // Assuming we want it active
-      formData.append("is_permanent", "false"); // Guest employee is not permanent
-  
-      if (newEmployee.photo) {
-        formData.append("photo", newEmployee.photo, newEmployee.photo.name);
-      }
-      formData.append("preference_food", JSON.stringify([]));
-      formData.append("designation",newEmployee.designation);
-      formData.append("roll",newEmployee.roll);
-      
-      notificationToast("Processing", "info");
-  
-      const response = (await request({
-        url: "/employee",
-        method: "POST",
-        data: formData,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        useAuth: true,
-      })) as Employee;
-  
-      {/*setResponseData((prevData) => [
-        ...prevData,
-        {
-          name: newEmployee.name,
-          email: newEmployee.email,
-          dept_id: newEmployee.dept_id,
-          phone_number: newEmployee.phone_number,
-          remarks: newEmployee.remarks,
-          penalties: "N/A",
-          lunch: 0,
-          snacks: 0,
-          preference_food: [],
-        },
-      ]);
-      */}  
-      await createMealPlan();
-      setShowAddModal(false);
-      resetForm();
-      notificationToast("Guest Employee Added Successfully", "success");
-    } catch (err: any) {
-      console.error("Error adding guest employee:", err);
-      notificationToast("Failed to Add Guest Employee", "error");
-    }
-  };
   
 
   const updateEmployee = async () => {
@@ -449,8 +393,8 @@ const EmployeeComponent: React.FC = () => {
       formData.append("phone_number", updatedEmployee?.phone_number);
       formData.append("remarks", updatedEmployee?.remarks);
       formData.append("preference_food", selectedEmployee?.preference_food); // Send empty array
-      formData.append("is_active",selectedEmployee?.is_active);
-      formData.append("is_permanent",selectedEmployee?.is_permanent);
+      formData.append("is_active","true");
+      formData.append("is_permanent","true");
       await request({
         url: `/employee`,
         method: "PATCH",
@@ -568,6 +512,65 @@ const EmployeeComponent: React.FC = () => {
       setSelectedDept(selectedValue);
     }
   };
+
+  const handleEmailChange = (e:any) => {
+    const value = e.target.value;
+    setNewEmployee({ ...newEmployee, email: value });
+
+    // Validate email format: any characters before @yopmail.com
+    const emailRegex = /^[^\s@]+@yopmail\.com$/;
+    if (!emailRegex.test(value)) {
+      setEmailError("Please enter a valid email like em@gmail.com");
+    } else {
+      setEmailError("");
+    }
+  };
+  
+  const handlePhoneChange = (e:any) => {
+    const value = e.target.value;
+    setNewEmployee({ ...newEmployee, phone_number: value });
+    const phoneRegex = /^01\d{9}$/;
+    if (!phoneRegex.test(value)) {
+      setPhoneError("Phone number must be 11 digits");
+    } else {
+      setPhoneError("");
+    }
+  };
+
+
+  const validateFields = () => {
+    let valid = true;
+  
+    const emailRegex = /^[^\s@]+@yopmail\.com$/;
+    if (!emailRegex.test(newEmployee.email)) {
+      setEmailError("Please enter a valid email like emp@gmail.com");
+      valid = false;
+    } else {
+      setEmailError("");
+    }
+  
+    const phoneRegex = /^01\d{9}$/;
+    if (!phoneRegex.test(newEmployee.phone_number)) {
+      setPhoneError("Phone number must be valid");
+      valid = false;
+    } else {
+      setPhoneError("");
+    }
+  
+    return valid;
+  };
+  
+  
+  
+  const handleAddEmployee = () => {
+    if (validateFields()) {
+      addEmployee();
+    }
+  };
+  
+
+
+
 
   return (
     <div className="p-4">
@@ -839,22 +842,14 @@ const EmployeeComponent: React.FC = () => {
               Cancel
             </button>*/}
             <button
-              onClick={addEmployee}
+              onClick={handleAddEmployee}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 me-3"
             >
-              Add as Employee
+              Add Employee
             </button>
       
       {/* Add the "Add as Guest" button */}
-      <button
-        onClick={addEmployeeAsGuest}
-        className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-      >
-        Add as Guest
-      </button>
-            {/*<button onClick={()=>{setShowDeptModal(true);setShowAddModal(false);}} className="ms-2 px-4 py-2 bg-blue-400 rounded hover:bg-blue-600">
-              Create New Dept.
-            </button>*/}
+  
           </>
         }
       >
@@ -885,19 +880,22 @@ const EmployeeComponent: React.FC = () => {
           </div>
 
           <div>
-            <label className="block mb-2 relative">
-              <span>Email:</span>
-              <span className="absolute top-0 left-12 text-red-500">*</span>
-            </label>
-            <input
-              type="email"
-              value={newEmployee.email}
-              onChange={(e) =>
-                setNewEmployee({ ...newEmployee, email: e.target.value })
-              }
-              className="border px-4 py-2 w-full rounded"
-            />
-          </div>
+                <label className="block mb-2 relative">
+                  <span>Email:</span>
+                  <span className="absolute top-0 left-12 text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  placeholder="ex: emp@gmail.com"
+                  value={newEmployee.email}
+                  onChange={//(e) =>
+                    //setNewEmployee({ ...newEmployee, email: e.target.value })
+                    handleEmailChange
+                  }
+                  className="border px-4 py-2 w-full rounded"
+                />
+                {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+              </div>
           <div>
             <label className="block mb-2 relative">
               <span>Password:</span>
@@ -1002,19 +1000,22 @@ const EmployeeComponent: React.FC = () => {
           </div>
 
           <div>
-            <label className="block mb-2 relative">
-              <span>Phone No.:</span>
-              <span className="absolute top-0 left-18 text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={newEmployee.phone_number}
-              onChange={(e) =>
-                setNewEmployee({ ...newEmployee, phone_number: e.target.value })
-              }
-              className="border px-4 py-2 w-full rounded"
-            />
-          </div>
+                <label className="block mb-2 relative">
+                  <span>Phone No.:</span>
+                  <span className="absolute top-0 left-18 text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="ex: 01xxxxxxxxx"
+                  value={newEmployee.phone_number}
+                  onChange={//(e) =>
+                    //setNewEmployee({ ...newEmployee, phone_number: e.target.value })
+                    handlePhoneChange
+                  }
+                  className="border px-4 py-2 w-full rounded"
+                />
+                {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
+              </div>
           
           <div>
             <label className="block mb-2 relative">
@@ -1029,6 +1030,7 @@ const EmployeeComponent: React.FC = () => {
               }
               className="border px-4 py-2 w-full rounded"
             />
+            {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
           </div>
 
           <div>
