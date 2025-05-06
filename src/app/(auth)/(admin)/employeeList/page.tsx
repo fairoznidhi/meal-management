@@ -478,11 +478,7 @@ const EmployeeComponent: React.FC = () => {
         </span>
       ),
     },
-    {
-      key: "remarks",
-      label: "Remarks",
-      render: (value) => value || "N/A",
-    },
+
     {
       key: "penalties",
       label: "Penalties",
