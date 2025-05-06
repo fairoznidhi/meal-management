@@ -38,6 +38,8 @@ type Employee = {
 };
 
 const GuestsTablePage = () => {
+
+  const queryClient = useQueryClient();
   
   const { data, isLoading, isError } = useGuests();
   
@@ -124,7 +126,7 @@ const GuestsTablePage = () => {
 
       const addEmployeeAsGuest = async () => {
         try {
-          const queryClient = useQueryClient();
+         
           const formData = new FormData();
           formData.append("name", newEmployee.name);
           formData.append("email", newEmployee.email);
