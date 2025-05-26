@@ -326,4 +326,14 @@ export const fetchDepartments = async (): Promise<Dept[]> => {
   
     return res as UserProfileDataType[];
   };
+
+  export const getLateNotification = async (meal_type:number) => {
+  const res = await apiClient({
+    url: "meal_activity/meal-late",
+    method: "POST",
+    useAuth: true,
+    params: { meal_type: meal_type }
+  });
+  return res;
+};
   

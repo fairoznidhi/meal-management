@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  getLateNotification,
   patchEmployeeProfile,
   patchExtraMeal,
   patchForgetPassword,
@@ -143,3 +144,15 @@ export function useToggleEmployeeStatus() {
     },
   });
 };
+
+export function useGetLateNotification() {
+  return useMutation({
+    mutationFn: (meal_type:number) =>
+      getLateNotification(meal_type),
+    onSuccess: () => {
+    },
+    onError: (error) => {
+      console.error("Error Notification", error);
+    },
+  });
+}
