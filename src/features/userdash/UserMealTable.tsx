@@ -22,8 +22,10 @@ type MealStatusContextType = {
   setLunchStatus: React.Dispatch<React.SetStateAction<boolean>>;
   snacksStatus: boolean;
   setSnacksStatus: React.Dispatch<React.SetStateAction<boolean>>;
-  mealStatusToggle: boolean;
-  setMealStatusToggle: React.Dispatch<React.SetStateAction<boolean>>;
+  mealStatusToggleLunch: boolean;
+  setMealStatusToggleLunch: React.Dispatch<React.SetStateAction<boolean>>;
+  mealStatusToggleSnacks: boolean;
+  setMealStatusToggleSnacks: React.Dispatch<React.SetStateAction<boolean>>;
   update: boolean;
   setUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -33,8 +35,10 @@ const defaultValue: MealStatusContextType = {
   setLunchStatus: () => {},
   snacksStatus: false,
   setSnacksStatus: () => {},
-  mealStatusToggle: false,
-  setMealStatusToggle: () => {},
+  mealStatusToggleLunch: false,
+  setMealStatusToggleLunch: () => {},
+  mealStatusToggleSnacks: false,
+  setMealStatusToggleSnacks: () => {},
   update: false,
   setUpdate: () => {},
 };
@@ -45,7 +49,8 @@ export const MealStatusContext =
 const UserMealTable = () => {
   const [lunchStatus, setLunchStatus] = useState(false);
   const [snacksStatus, setSnacksStatus] = useState(false);
-  const [mealStatusToggle, setMealStatusToggle] = useState(false);
+  const [mealStatusToggleLunch, setMealStatusToggleLunch] = useState(false);
+  const [mealStatusToggleSnacks, setMealStatusToggleSnacks] = useState(false);
   const [update, setUpdate] = useState(false);
   const [currentDate, setCurrentDate] = useState(
     format(new Date(), "yyyy-MM-dd")
@@ -464,7 +469,7 @@ const UserMealTable = () => {
   }, [currentDate, mealActivityData]);
   useEffect(() => {
     mealActivityRefetch();
-  }, [mealStatusToggle]);
+  }, [mealStatusToggleLunch,mealStatusToggleSnacks]);
   const handlePreviousWeek = () => {
     const newDate = format(addDays(currentDate, -7), "yyyy-MM-dd");
     setCurrentDate(newDate);
@@ -539,8 +544,10 @@ const UserMealTable = () => {
     <div className="">
       <MealStatusContext.Provider
         value={{
-          mealStatusToggle,
-          setMealStatusToggle,
+          mealStatusToggleLunch,
+          setMealStatusToggleLunch,
+          mealStatusToggleSnacks,
+          setMealStatusToggleSnacks,
           lunchStatus,
           setLunchStatus,
           snacksStatus,

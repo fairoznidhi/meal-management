@@ -10,10 +10,11 @@ import {
   patchTotalMealGroup,
   updateEmployee
 } from "./api";
+import { defaultStatus } from "@/model/employee";
 
-export function useToggleDefaultMealStatus(date: string, status: boolean) {
+export function useToggleDefaultMealStatus() {
   return useMutation({
-    mutationFn: () => patchToggleDefaultMealStatus(date, status),
+    mutationFn: (data:defaultStatus) => patchToggleDefaultMealStatus(data),
     onSuccess: () => {
     },
     onError: (error) => {

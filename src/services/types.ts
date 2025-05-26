@@ -19,7 +19,8 @@ export type UserProfileDataType = {
   phone_number?: string;
   dept_name?: string;
   remarks?: string;
-  default_status?: boolean;
+  default_status_lunch?: boolean;
+  default_status_snacks?: boolean;
   is_admin?: boolean;
   photo?: string | File | Blob;
   preference_food: number[];

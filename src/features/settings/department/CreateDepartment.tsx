@@ -2,14 +2,18 @@
 import Modal from "@/components/modal";
 import notificationToast from "@/components/notificationToast";
 import { usePatchCreateDepartment } from "@/services/Department/mutations";
+import { useDepartmentList } from "@/services/Department/queries";
 import { useState } from "react";
 
 const CreateDepartment = () => {
   const subSectionClassName = "ml-24 capitalize text-l mb-4";
   const { mutate: createDept } = usePatchCreateDepartment();
   const [showDeptCreateModal, setShowDeptCreateModal] = useState(false);
+  const { data: departmentList = [] } = useDepartmentList();
+  const allDeptName = departmentList.map((dept) =>
+    dept.dept_name.toLowerCase()
+  );
   const initialDeptState = {
-    dept_id: "",
     dept_name: "",
     weekend: [] as string[],
   };
@@ -26,10 +30,19 @@ const CreateDepartment = () => {
   const [newDept, setNewDept] = useState(initialDeptState);
 
   const handleAddDepartment = () => {
-    const payload = {
-      ...newDept,
-      dept_id: Number(newDept.dept_id),
-    };
+    if (newDept.dept_name.length == 0) {
+      notificationToast("Department name cannot be empty!", "error");
+      return;
+    }
+    if (allDeptName.includes(newDept.dept_name.toLowerCase())) {
+      notificationToast("This department already exists!", "error");
+      return;
+    }
+    let payload = { ...newDept };
+    payload.dept_name =
+      payload.dept_name.charAt(0).toUpperCase() +
+      payload.dept_name.slice(1).toLowerCase();
+
     createDept(payload, {
       onSuccess: () => {
         notificationToast("Department added successfully", "success");
@@ -96,18 +109,7 @@ const CreateDepartment = () => {
           </>
         }
       >
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-2">Department ID:</label>
-            <input
-              type="text"
-              value={newDept.dept_id}
-              onChange={(e) =>
-                setNewDept({ ...newDept, dept_id: e.target.value })
-              }
-              className="border px-4 py-2 w-full rounded"
-            />
-          </div>
+        <div className="grid grid-cols-1 gap-4">
           <div>
             <label className="block mb-2">Department Name:</label>
             <input
@@ -116,6 +118,7 @@ const CreateDepartment = () => {
               onChange={(e) =>
                 setNewDept({ ...newDept, dept_name: e.target.value })
               }
+              required
               className="border px-4 py-2 w-full rounded"
             />
           </div>
