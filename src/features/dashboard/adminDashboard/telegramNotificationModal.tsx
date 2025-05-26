@@ -13,8 +13,10 @@ const TelegramNotificationModal: React.FC<NotificationModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { mutate } = useGetLateNotification()
+  const { mutate } = useGetLateNotification();
   const modalRef = useRef<HTMLDivElement>(null);
+  const [loadingType, setLoadingType] = useState<1 | 2 | null>(null); // 1 = lunch, 2 = snacks
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -35,40 +37,23 @@ const TelegramNotificationModal: React.FC<NotificationModalProps> = ({
   }, [isOpen]);
 
   if (!isOpen) return null;
-  const handleLunchNotification = () => {
-    mutate(
-      1,
-      {
-        onSuccess: () => {
-          notificationToast(
-            "Late lunch notification sent!",
-            "success"
-          );
-        },
-        onError: (error) => {
-          console.error("Error Sending Notification", error);
-          notificationToast("Failed to send notification!", "error");
-        },
-      }
-    );
-  };
-  const handleSnacksNotification = () => {
-    console.log("Snacks noti sent")
-    mutate(
-      2,
-      {
-        onSuccess: () => {
-          notificationToast(
-            "Late snacks notification sent!",
-            "success"
-          );
-        },
-        onError: (error) => {
-          console.error("Error Sending Notification", error);
-          notificationToast("Failed to send notification!", "error");
-        },
-      }
-    );
+
+  const handleNotification = (mealType: 1 | 2) => {
+    setLoadingType(mealType);
+    mutate(mealType, {
+      onSuccess: () => {
+        notificationToast(
+          `Late ${mealType === 1 ? "lunch" : "snacks"} notification sent!`,
+          "success"
+        );
+        setLoadingType(null);
+      },
+      onError: (error) => {
+        console.error("Error Sending Notification", error);
+        notificationToast("Failed to send notification!", "error");
+        setLoadingType(null);
+      },
+    });
   };
 
   return (
@@ -80,16 +65,18 @@ const TelegramNotificationModal: React.FC<NotificationModalProps> = ({
 
         <div className="flex flex-col gap-4">
           <button
-            className="bg-blue-400 text-black p-4 rounded hover:bg-blue-500 transition duration-300 ease-in-out"
-            onClick={handleLunchNotification}
+            className="bg-blue-400 text-black p-4 rounded hover:bg-blue-500 transition duration-300 ease-in-out disabled:opacity-50"
+            onClick={() => handleNotification(1)}
+            disabled={loadingType === 1}
           >
-            Send Late Lunch Notification
+            {loadingType === 1 ? "Sending..." : "Send Late Lunch Notification"}
           </button>
           <button
-            className="bg-green-500 text-black p-4 rounded hover:bg-green-600 transition duration-300 ease-in-out"
-            onClick={handleSnacksNotification}
+            className="bg-green-500 text-black p-4 rounded hover:bg-green-600 transition duration-300 ease-in-out disabled:opacity-50"
+            onClick={() => handleNotification(2)}
+            disabled={loadingType === 2}
           >
-            Send Late Snacks Notification
+            {loadingType === 2 ? "Sending..." : "Send Late Snacks Notification"}
           </button>
         </div>
 
