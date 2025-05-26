@@ -10,6 +10,7 @@ import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
 import dayjs from "dayjs";
 import { formatDate } from "date-fns";
 import { FaPrint } from "react-icons/fa";
+import { usePrint } from "@/app/hooks/usePrint";
 
 const getMonthBoundaries = () => {
   const now = dayjs();
@@ -38,7 +39,14 @@ const MealHistory = () => {
 
   const daysInRange = calculateDaysInRange(startDate, endDate); 
 
-  const printRef = useRef<HTMLDivElement>(null);
+  //const printRef = useRef<HTMLDivElement>(null);
+  //const { handlePrint } = usePrint();
+
+ const printRef = useRef<HTMLDivElement>(null);
+ const { handlePrint } = usePrint();
+
+
+
   const formattedStartDate = dayjs(startDate).format("YYYY-MM-DD");
   const formattedEndDate = dayjs(endDate).format("YYYY-MM-DD");
 
@@ -126,31 +134,7 @@ const MealHistory = () => {
   }, [startDate, endDate, daysInRange]);
 
 
-  const handlePrint = () => {
-    if (printRef.current) {
-      const printContents = printRef.current.innerHTML;
-      const printWindow = window.open("", "_blank");
-      printWindow?.document.write(`
-        <html>
-          <head>
-            <title>Print Table</title>
-            <style>
-              body { font-family: Arial, sans-serif; padding: 20px; }
-              table { width: 100%; border-collapse: collapse; }
-              th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
-            </style>
-          </head>
-          <body>
-            ${printContents}
-          </body>
-        </html>
-      `);
-      printWindow?.document.close();
-      printWindow?.focus();
-      printWindow?.print();
-      printWindow?.close();
-    }
-  };
+  
   
 
 
@@ -199,7 +183,7 @@ const MealHistory = () => {
               className="border rounded px-2 py-1"
             />
             <button
-             onClick={() => handlePrint()}
+             onClick={() => handlePrint(printRef.current)}
              className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out"
             >
             <FaPrint className="text-midnightBlue text-xl" />

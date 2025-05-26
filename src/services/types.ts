@@ -41,6 +41,7 @@ export type UserEditDataType={
   is_admin?: boolean;
   photo?: string | File | Blob;
   preference_food: number[];
+  designation?: string;
 }
 
 

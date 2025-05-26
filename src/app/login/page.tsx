@@ -49,7 +49,7 @@ const LoginPage = () => {
         throw new Error("Unknown error occurred");
       }
     }
-    console.log()
+    
   };
   const [loading, setLoading] = useState(false);
   return (

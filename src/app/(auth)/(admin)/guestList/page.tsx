@@ -326,7 +326,7 @@ const GuestsTablePage = () => {
                   }
                   className="border px-4 py-2 w-full rounded"
                 />
-                {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+                
               </div>
               <div>
                 <label className="block mb-2 relative">
