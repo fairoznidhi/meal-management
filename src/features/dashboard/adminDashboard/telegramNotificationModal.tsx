@@ -14,7 +14,6 @@ const TelegramNotificationModal: React.FC<NotificationModalProps> = ({
   onClose,
 }) => {
   const { mutate } = useGetLateNotification()
-  const [mealType,setMealType]=useState(0)
   const modalRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
