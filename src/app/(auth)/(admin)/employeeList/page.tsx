@@ -369,9 +369,8 @@ const EmployeeComponent: React.FC = () => {
       }
       formData.append("preference_food", JSON.stringify([]));
 
-       // Add the new fields here
-    formData.append("is_active", "true"); // Convert boolean to string as FormData always works with strings
-    formData.append("is_permanent", "true");
+    formData.append("is_active", "true"); 
+    //formData.append("is_permanent", "true");
     formData.append("designation",newEmployee.designation);
     formData.append("roll",newEmployee.roll);
       notificationToast("Processing", "info");
@@ -422,10 +421,10 @@ const EmployeeComponent: React.FC = () => {
       formData.append("email", updatedEmployee?.email);
       formData.append("dept_id", updatedEmployee?.dept_id);
       formData.append("phone_number", updatedEmployee?.phone_number);
-      formData.append("remarks", updatedEmployee?.remarks);
-      formData.append("preference_food", selectedEmployee?.preference_food); // Send empty array
+      //formData.append("remarks", updatedEmployee?.remarks);
+      //formData.append("preference_food", selectedEmployee?.preference_food); // Send empty array
       formData.append("is_active",updatedEmployee?.is_active);
-      formData.append("is_permanent","true");
+      //formData.append("is_permanent","true");
       await request({
         url: `/employee`,
         method: "PATCH",
@@ -522,12 +521,20 @@ const EmployeeComponent: React.FC = () => {
       key: "snacks",
       label: "Snacks",
     },
-   // {
-     // key:"is_active",
-     // label:"Active Status",
-     // render: (row: Row) => row.is_active ? "Active" : "Inactive"
-      
-    //},
+    {
+      key:"is_active",
+      label:"Active Status",
+       render: (value) => (
+      <div className="flex items-center justify-center gap-2">
+        <span
+          className={`h-3 w-3 rounded-full ${
+            value ? "bg-green-500" : "bg-red-500"
+          }`}
+        />
+        <span>{value ? "Active" : "Inactive"}</span>
+      </div>
+    ),
+    },
     /*{
       key: "preference_food",
       label: "Food Preferences",
@@ -832,7 +839,7 @@ const EmployeeComponent: React.FC = () => {
         )}
       </div>
 
-      {/* Active Status 
+     
      <div>
   <strong>Active Status:</strong>
   {isEditing ? (
@@ -845,20 +852,20 @@ const EmployeeComponent: React.FC = () => {
       onChange={(e) =>
         setUpdatedEmployee({
           ...updatedEmployee,
-          is_active: e.target.value === "true",
+          is_active: e.target.value==="true",
         } as Row)
       }
       className="border px-4 py-2 w-full rounded"
     >
-      <option value="true">Active</option>
-      <option value="false">Inactive</option>
+      <option value="1">Active</option>
+      <option value="0">Inactive</option>
     </select>
   ) : selectedEmployee.is_active ? (
     "Active"
   ) : (
     "Inactive"
   )}
-</div>*/}
+</div>
 
     </div>
   </Modal>
