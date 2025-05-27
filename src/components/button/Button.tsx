@@ -7,6 +7,7 @@ const Button = ({
   fillButton = true,
   className,
   disable = false,
+  custom=false,
   ...restProps
 }: ButtonType) => {
   const buttonStyle = [""];
@@ -14,9 +15,9 @@ const Button = ({
   return (
     <button
       className={`btn ${className} ${
-        fillButton === true
+        custom===true ?"":(fillButton === true
           ? "bg-lightBlue hover:bg-darkBlue text-white"
-          : "bg-transparent hover:bg-transparent border-lightBlue hover:border-darkBlue"
+          : "bg-transparent hover:bg-transparent border-lightBlue hover:border-darkBlue")
       }
     ${size === "sm" ? "px-2" : "px-4"} ${buttonStyle}`}
     disabled={disable}

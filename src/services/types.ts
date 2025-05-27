@@ -54,12 +54,19 @@ export type Preference = {
 export type Employee = {
   employee_id: string;
   name: string;
-  email: string;
-  password: string;
-  dept_id: string;
-  phone_number: string;
-  remarks: string;
-  preference_food: number[];
+  email?: string;
+  phone_number?: string;
+  password?: string;
+  dept_name?: string;
+  remarks?: string;
+  preference_food?: number[];
+  default_status_lunch?:boolean;
+  default_status_snacks?:boolean;
+  is_admin?: boolean;
+  is_permanent?: boolean;
+  is_active?: boolean;
+  designation?: string;
+  roll?: string;
 };
 
 export type Dept = {

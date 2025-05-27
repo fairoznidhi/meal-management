@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import TelegramNotificationModal from "@/features/dashboard/adminDashboard/telegramNotificationModal";
+import { Button } from "@/components/button";
 
 const AdminDashboard = () => {
   const today = format(new Date(), "yyyy-MM-dd");
@@ -22,7 +23,8 @@ const AdminDashboard = () => {
   const [specialLunch, setSpecialLunch] = useState<number | null>(null);
   const [specialSnacks, setSpecialSnacks] = useState<number | null>(null);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState<boolean>(false);
-  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState<boolean>(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] =
+    useState<boolean>(false);
   const [TotalMealFetch, setTotalMealFetch] = useState(true);
   const { mutate: lunchMealCount } = usePatchTotalMealGroup(today, 1, 1);
   const { mutate: snacksMealCount } = usePatchTotalMealGroup(today, 2, 1);
@@ -164,25 +166,25 @@ const AdminDashboard = () => {
         <div className="flex flex-col  justify-end items-end h-full w-full rounded-md">
           {/* Telegram Notification */}
           <div className="mb-2">
-            <button
-              onClick={() => {
-                setIsNotificationModalOpen(true);
-              }}
-              className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out"
-            >
-              <BsBellFill className="text-midnightBlue text-xl" />
-            </button>
+            <Button
+              label={<BsBellFill className="text-midnightBlue text-xl" />}
+              size="sm"
+              custom={true}
+              fillButton={false}
+              className="bg-blue-200 hover:bg-blue-300 p-3 px-3 rounded-md transition duration-300 ease-in-out"
+              onClick={() => setIsNotificationModalOpen(true)}
+            />
           </div>
           {/*Print meal */}
           <div className="">
-            <button
-              onClick={() => {
-                setIsPrintModalOpen(true);
-              }}
-              className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out"
-            >
-              <FaPrint className="text-midnightBlue text-xl" />
-            </button>
+            <Button
+              label={<FaPrint className="text-midnightBlue text-xl" />}
+              size="sm"
+              custom={true}
+              fillButton={false}
+              className="bg-blue-200 hover:bg-blue-300 p-3 px-3 rounded-md transition duration-300 ease-in-out"
+              onClick={() => setIsPrintModalOpen(true)}
+            />
           </div>
         </div>
       </div>
@@ -205,8 +207,8 @@ const AdminDashboard = () => {
       </div>
       <div>
         <TelegramNotificationModal
-        isOpen={isNotificationModalOpen}
-        onClose={() => {
+          isOpen={isNotificationModalOpen}
+          onClose={() => {
             setIsNotificationModalOpen(false);
           }}
         />
