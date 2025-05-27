@@ -14,6 +14,7 @@ import DepartmentList from "@/features/settings/department/DepartmentList";
 import EmployeeFormField from "@/components/EmployeeFormField";
 import { usePrint } from "@/app/hooks/usePrint";
 import { Button } from "@/components/button";
+import Select from "@/components/Select";
 
 
 
@@ -747,24 +748,7 @@ const EmployeeComponent: React.FC = () => {
           </>
         ) : (
           <>
-           {/* <button
-              onClick={() => {
-                setIsEditing(false);
-                setUpdatedEmployee(null);
-              }}
-              className="px-4 py-2 bg-gray-300 text-black rounded me-3"
-            >
-              Cancel
-            </button>
-
-            <button
-              onClick={async () => {
-                await updateEmployee();
-              }}
-              className="px-4 py-2 bg-green-500 text-white rounded"
-            >
-              Save Changes
-            </button>*/}
+          
 
             <div className="flex space-x-3">
   {/* Cancel Edit Button */}
@@ -853,59 +837,62 @@ const EmployeeComponent: React.FC = () => {
         )}
       </div>
 
-      {/* Department */}
-      <div>
-        <strong>Department:</strong>
-        {isEditing ? (
-          <select
-            value={updatedEmployee?.dept_id || ""}
-            onChange={(e) =>
-              setUpdatedEmployee({
-                ...updatedEmployee,
-                dept_id: e.target.value,
-              } as Row)
-            }
-            className="border px-4 py-2 w-full rounded"
-          >
-            <option value="" disabled>Select a department</option>
-            {departments.map((dept) => (
-              <option key={dept.dept_id} value={dept.dept_id}>
-                {dept.dept_name}
-              </option>
-            ))}
-          </select>
-        ) : (
-          selectedEmployee.dept_name || "N/A"
-        )}
-      </div>
+      
 
-     
-     <div>
+
+      <div>
+  <strong>Department:</strong>
+  {isEditing ? (
+    <Select
+      value={updatedEmployee?.dept_id || ""}
+      onChange={(e) =>
+        setUpdatedEmployee({
+          ...updatedEmployee,
+          dept_id: e.target.value,
+        } as Row)
+      }
+      options={departments.map((dept) => ({
+        label: dept.dept_name,
+        value: dept.dept_id,
+      }))}
+      disabledOption="Select a department"
+    />
+  ) : (
+    selectedEmployee.dept_name || "N/A"
+  )}
+</div>
+
+
+
+  <div>
   <strong>Active Status:</strong>
   {isEditing ? (
-    <select
+    <Select
       value={
         updatedEmployee?.is_active !== undefined
-          ? updatedEmployee.is_active.toString() 
-          : selectedEmployee.is_active.toString() 
+          ? updatedEmployee.is_active.toString()
+          : selectedEmployee.is_active.toString()
       }
       onChange={(e) =>
         setUpdatedEmployee({
           ...updatedEmployee,
-          is_active: e.target.value==="true",
+          is_active: e.target.value === "true",
         } as Row)
       }
-      className="border px-4 py-2 w-full rounded"
-    >
-      <option value="1">Active</option>
-      <option value="0">Inactive</option>
-    </select>
+      options={[
+        { label: "Active", value: "true" },
+        { label: "Inactive", value: "false" },
+      ]}
+    />
   ) : selectedEmployee.is_active ? (
     "Active"
   ) : (
     "Inactive"
   )}
 </div>
+
+
+   
 
     </div>
   </Modal>
