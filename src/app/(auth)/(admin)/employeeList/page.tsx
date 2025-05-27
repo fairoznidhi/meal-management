@@ -13,7 +13,7 @@ import EmployeeDetails from "@/components/employeeUpdateModal";
 import DepartmentList from "@/features/settings/department/DepartmentList";
 import EmployeeFormField from "@/components/EmployeeFormField";
 import { usePrint } from "@/app/hooks/usePrint";
-
+import { Button } from "@/components/button";
 
 
 
@@ -645,19 +645,30 @@ const EmployeeComponent: React.FC = () => {
         </div>
 
         <div className="flex gap-4">
-        <button
-          onClick={() => handleAddEmployeeClick()}
-          className="bg-vivaBlue text-white px-4 py-2 rounded"
-        >
-          Add Employee
-        </button>
-        <button
+          <Button
+           label="Add Employee"
+           onClick={handleAddEmployeeClick}
+          className="rounded"
+          size="md" 
+          />
+
+          
+        
+        {/*<button
          onClick={() => handlePrint(printRef.current)}
          
          className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out"
          >
         <FaPrint className="text-midnightBlue text-xl" />
-        </button>
+        </button>*/}
+        <Button
+          label="Print"
+          onClick={() => handlePrint(printRef.current)}
+          className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out flex items-center gap-2"
+          
+        >
+       
+        </Button>
           <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         </div>
         
@@ -702,34 +713,41 @@ const EmployeeComponent: React.FC = () => {
       <>
         {!isEditing ? (
           <>
-            <button
-              onClick={() => {
-                setIsEditing(true);
-                setUpdatedEmployee(selectedEmployee); 
-                const matchedDept = departments.find(
-      (dept) => dept.dept_name === selectedEmployee.dept_name
-    );
+           
+            <div className="flex space-x-3">
+  {/* Update Button */}
+  <Button
+    label="Update"
+    onClick={() => {
+      setIsEditing(true);
 
-               setUpdatedEmployee({
-              ...selectedEmployee,
-              dept_id: matchedDept?.dept_id || "",
-              });
-              }}
-              className="px-4 py-2 bg-yellow-500 text-white rounded me-3"
-            >
-              Update
-            </button>
+  
+      const matchedDept = departments.find(
+        (dept) => dept.dept_name === selectedEmployee.dept_name
+      );
 
-            <button
-              onClick={() => deleteEmployee(selectedEmployee.employee_id)}
-              className="px-4 py-2 bg-red-500 text-white rounded"
-            >
-              Delete
-            </button>
+  
+      setUpdatedEmployee({
+        ...selectedEmployee,
+        dept_id: matchedDept?.dept_id || "",
+      });
+    }}
+    className="bg-yellow-500 text-white rounded"
+  />
+
+  {/* Delete Button */}
+  <Button
+    label="Delete"
+    onClick={() => deleteEmployee(selectedEmployee.employee_id)}
+    className="bg-red-500 text-white rounded"
+  />
+</div>
+
+
           </>
         ) : (
           <>
-            <button
+           {/* <button
               onClick={() => {
                 setIsEditing(false);
                 setUpdatedEmployee(null);
@@ -746,7 +764,29 @@ const EmployeeComponent: React.FC = () => {
               className="px-4 py-2 bg-green-500 text-white rounded"
             >
               Save Changes
-            </button>
+            </button>*/}
+
+            <div className="flex space-x-3">
+  {/* Cancel Edit Button */}
+  <Button
+    label="Cancel"
+    onClick={() => {
+      setIsEditing(false);
+      setUpdatedEmployee(null);
+    }}
+    className="bg-gray-300 text-black rounded"
+  />
+
+  {/* Save Changes Button */}
+  <Button
+    label="Save Changes"
+    onClick={async () => {
+      await updateEmployee();
+    }}
+    className="bg-green-500 text-white rounded"
+  />
+</div>
+
           </>
         )}
       </>
@@ -894,12 +934,12 @@ const EmployeeComponent: React.FC = () => {
         footer={
           <>
             
-            <button
-              onClick={handleAddEmployee}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 me-3"
-            >
-              Add Employee
-            </button>
+            <Button
+  label="Add Employee"
+  onClick={handleAddEmployee}
+  className="bg-blue-500 text-white rounded hover:bg-blue-600 me-3"
+/>
+
       
       
   
@@ -909,153 +949,7 @@ const EmployeeComponent: React.FC = () => {
         <div className="grid grid-cols-2 gap-4">
           
 
-          {/*<div>
-            <label className="block mb-2 relative">
-              <span>Name:</span>
-              <span className="absolute top-0 left-12 text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={newEmployee.name}
-              onChange={(e) =>
-                setNewEmployee({ ...newEmployee, name: e.target.value })
-              }
-              className="border px-4 py-2 w-full rounded"
-            />
-          </div>
-
-          <div>
-                <label className="block mb-2 relative">
-                  <span>Email:</span>
-                  <span className="absolute top-0 left-12 text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  placeholder="ex: emp@gmail.com"
-                  value={newEmployee.email}
-                  onChange={//(e) =>
-                    //setNewEmployee({ ...newEmployee, email: e.target.value })
-                    handleEmailChange
-                  }
-                  className="border px-4 py-2 w-full rounded"
-                />
-                {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
-              </div>
-          <div>
-            <label className="block mb-2 relative">
-              <span>Password:</span>
-              <span className="absolute top-0 left-18 text-red-500">*</span>
-            </label>
-           
-
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"} 
-                value={newEmployee.password}
-                onChange={(e) =>
-                  setNewEmployee({ ...newEmployee, password: e.target.value })
-                }
-                className="border px-4 py-2 w-full rounded" 
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)} 
-                className="absolute inset-y-0 right-8 flex items-center text-gray-500"
-              >
-                {showPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
-              </button>
-            </div>
-          </div>
-
          
-
-          <div>
-            <label className="block mb-2 relative">
-              <span>Dept. :</span>
-              <span className="absolute top-0 left-12 text-red-500">*</span>
-            </label>
-
-            <select
-              value={newEmployee.dept_id}
-              onChange={(e) => {
-                if (e.target.value === "add new") {
-                  setShowDeptModal(true);
-                  setShowAddModal(false);
-                  setNewEmployee({ ...newEmployee, dept_id: "" }); // Reset selection
-                } else {
-                  setNewEmployee({ ...newEmployee, dept_id: e.target.value });
-                }
-              }}
-              className={`border px-4 py-2 w-full rounded bg-gray-100 ${
-                newEmployee.dept_id ? "text-black" : "text-gray-400"
-              }`}
-            >
-              <option value="" disabled className="text-gray-400">
-                Select Department
-              </option>
-              {departments.map((dept) => (
-                <option
-                  key={dept.dept_id}
-                  value={dept.dept_id}
-                  className="text-black"
-                >
-                  {dept.dept_name}
-                </option>
-              ))}
-              <option value="add new" className="text-black">
-                +
-              </option>
-            </select>
-          </div>
-
-          <div>
-                <label className="block mb-2 relative">
-                  <span>Phone No.:</span>
-                  <span className="absolute top-0 left-18 text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="ex: 01xxxxxxxxx"
-                  value={newEmployee.phone_number}
-                  onChange={//(e) =>
-                    //setNewEmployee({ ...newEmployee, phone_number: e.target.value })
-                    handlePhoneChange
-                  }
-                  className="border px-4 py-2 w-full rounded"
-                />
-                {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
-              </div>
-          
-          <div>
-            <label className="block mb-2 relative">
-              <span>Designation:</span>
-              <span className="absolute top-0 left-18 text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={newEmployee.designation}
-              onChange={(e) =>
-                setNewEmployee({ ...newEmployee, designation: e.target.value })
-              }
-              className="border px-4 py-2 w-full rounded"
-            />
-            {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
-          </div>
-
-          <div>
-            <label className="block mb-2 relative">
-              <span>Employee Id:</span>
-              <span className="absolute top-0 left-18 text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={newEmployee.roll}
-              onChange={(e) =>
-                setNewEmployee({ ...newEmployee, roll: e.target.value })
-              }
-              className="border px-4 py-2 w-full rounded"
-            />
-          </div>*/}
 
           <EmployeeFormField
   label="Name"

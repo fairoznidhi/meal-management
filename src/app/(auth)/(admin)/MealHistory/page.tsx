@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import { formatDate } from "date-fns";
 import { FaPrint } from "react-icons/fa";
 import { usePrint } from "@/app/hooks/usePrint";
+import { Button } from "@/components/button";
 
 const getMonthBoundaries = () => {
   const now = dayjs();
@@ -39,8 +40,7 @@ const MealHistory = () => {
 
   const daysInRange = calculateDaysInRange(startDate, endDate); 
 
-  //const printRef = useRef<HTMLDivElement>(null);
-  //const { handlePrint } = usePrint();
+  
 
  const printRef = useRef<HTMLDivElement>(null);
  const { handlePrint } = usePrint();
@@ -182,12 +182,21 @@ const MealHistory = () => {
               onChange={(e) => setEndDate(new Date(e.target.value))}
               className="border rounded px-2 py-1"
             />
-            <button
+            {/*<button
              onClick={() => handlePrint(printRef.current)}
              className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out"
             >
             <FaPrint className="text-midnightBlue text-xl" />
-          </button>
+          </button>*/}
+           <Button
+           label="Print"
+           onClick={() => handlePrint(printRef.current)}
+          className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out flex items-center gap-2"
+  
+>
+</Button>
+
+
           </div>
         
         </div>
