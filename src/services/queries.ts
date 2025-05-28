@@ -78,5 +78,12 @@ export const useFetchPreferences = () => {
   });
 };
 
+export function useFetchEmployees(){
+  return useQuery({
+    queryKey: ['allEmployee'], 
+    queryFn: () => fetchEmployees()
+  });
+}
+
 
 

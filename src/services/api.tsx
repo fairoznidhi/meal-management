@@ -13,6 +13,7 @@ import axios from "axios";
 import { Preference, Dept, Employee, MealsResponse, UserProfileDataType } from "./types";
 import { getSession } from "next-auth/react";
 import { baseRequest } from "./HttpClientAPI";
+import { defaultStatus } from "@/model/employee";
 
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_PROXY_URL}`;
@@ -94,13 +95,11 @@ export const getEmployeePhoto=async()=>{
 }*/
 
 
-export const patchToggleDefaultMealStatus=async(date:string,status:boolean)=>{
+export const patchToggleDefaultMealStatus=async(data:defaultStatus)=>{
+  console.log("Default status data",data)
     const res=await apiClient({
         url: "/employee/default-status",
-        data:{
-            date: `${date}`,
-            status: !status,
-        },
+        data:data,
         method: "PATCH",
         useAuth: true,
     })
@@ -327,6 +326,17 @@ export const fetchDepartments = async (): Promise<Dept[]> => {
   
     return res as UserProfileDataType[];
   };
+
+  export const getLateNotification = async (meal_type:number) => {
+  const res = await apiClient({
+    url: "meal_activity/meal-late",
+    method: "POST",
+    useAuth: true,
+    params: { meal_type: meal_type }
+  });
+  return res;
+};
+  
   
 
   export const addEmployeeAsGuestAPI = async (formData: FormData): Promise<Employee> => {

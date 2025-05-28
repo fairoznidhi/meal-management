@@ -1,26 +1,23 @@
 "use client";
 import Sidebar from "@/components/sidebar";
 import { useEmployeePhoto, useTokenSingleEmployee } from "@/services/queries";
-import { IoMdArrowDropright } from "react-icons/io";
-import { IoIosArrowForward } from "react-icons/io";
-import { IoIosArrowBack } from "react-icons/io";
 import {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
   NewspaperIcon,
   Squares2X2Icon,
+  UserGroupIcon,
   UsersIcon,
-  UserGroupIcon
+  Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
+
 import { Session } from "next-auth";
 import { getSession, SessionProvider, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import profileImage from "public/profile-image.jpg";
 import { createContext, useEffect, useState } from "react";
-import { TbLayoutSidebarRightExpandFilled } from "react-icons/tb";
-import { IoReorderThreeOutline } from "react-icons/io5";
 
 type profilePictureType = {
   userProfilePicture: string;
@@ -34,7 +31,6 @@ const defaultProfilePicture: profilePictureType = {
   userName: "",
   setUserName: () => {},
 };
-import { TbLayoutSidebarLeftExpandFilled } from "react-icons/tb";
 export const ProfilePictureContext = createContext<profilePictureType>(
   defaultProfilePicture
 );
@@ -50,7 +46,7 @@ export default function AuthLayout({
     { name: "Menu", route: "/menuPlan", icon: NewspaperIcon },
     { name: "Employee List", route: "/employeeList", icon: UsersIcon },
     { name: "Meal History", route: "/MealHistory", icon: ClockIcon },
-    
+    { name: "Settings", route: "/Settings", icon: Cog6ToothIcon },
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: Squares2X2Icon },
@@ -249,13 +245,13 @@ export default function AuthLayout({
                       </Link>
                     </li>
 
-                    {isAdmin && (
+                    {/* {isAdmin && (
                       <li>
                         <Link href="/Settings" className="justify-between">
                           Settings
                         </Link>
                       </li>
-                    )}
+                    )} */}
 
                     <li>
                       <a onClick={() => signOut({ callbackUrl: "/login" })}>

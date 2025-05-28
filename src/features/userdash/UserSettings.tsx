@@ -7,8 +7,14 @@ import { addDays, format } from "date-fns";
 import { useContext, useEffect, useState } from "react";
 
 const UserSettings = () => {
-  const { mealStatusToggle, setMealStatusToggle, update, setUpdate } =
-    useContext(MealStatusContext);
+  const {
+    mealStatusToggleLunch,
+    setMealStatusToggleLunch,
+    mealStatusToggleSnacks,
+    setMealStatusToggleSnacks,
+    update,
+    setUpdate,
+  } = useContext(MealStatusContext);
   const { data: profileList } = useTokenSingleEmployee();
   const date = new Date();
   const currentHour = date.getHours();
@@ -17,81 +23,83 @@ const UserSettings = () => {
   useEffect(() => {
     if (profileList) {
       const profile = profileList[0];
-      setMealStatusToggle(profile?.default_status ?? false);
+      setMealStatusToggleLunch(profile?.default_status_lunch ?? false);
+      setMealStatusToggleSnacks(profile?.default_status_snacks ?? false);
     }
   }, [profileList]);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const handleSettings = () => {
-    setSettingsOpen(!settingsOpen);
+  const { mutate, isPending } = useToggleDefaultMealStatus();
+  const handleMealStatusLunch = () => {
+    mutate(
+      { date: formattedDate, meal_type: 1, status: !mealStatusToggleLunch },
+      {
+        onSuccess: () => {
+          setMealStatusToggleLunch(!mealStatusToggleLunch);
+          setUpdate(!update);
+          notificationToast(
+            "Default status Lunch updated successfully!",
+            "success"
+          );
+        },
+        onError: (error) => {
+          console.error("Error updating default status Lunch:", error);
+          notificationToast("Failed to update default status Lunch!", "error");
+        },
+      }
+    );
   };
-  const {mutate,isPending} = useToggleDefaultMealStatus(formattedDate,mealStatusToggle);
-  const handleMealStatus = () => {
-    mutate(undefined, {
-      onSuccess: () => {
-        setMealStatusToggle(!mealStatusToggle);
-        setUpdate(!update);
-        notificationToast("Default status updated successfully!","success");
-      },
-      onError: (error) => {
-        console.error("Error updating default status:", error);
-        notificationToast("Failed to update default status!","error");
-      },
-    });
+  const handleMealStatusSnacks = () => {
+    mutate(
+      { date: formattedDate, meal_type: 2, status: !mealStatusToggleSnacks },
+      {
+        onSuccess: () => {
+          setMealStatusToggleSnacks(!mealStatusToggleSnacks);
+          setUpdate(!update);
+          notificationToast(
+            "Default status Snacks updated successfully!",
+            "success"
+          );
+        },
+        onError: (error) => {
+          console.error("Error updating default status Lunch:", error);
+          notificationToast("Failed to update default status Lunch!", "error");
+        },
+      }
+    );
   };
-  // const handleMealStatus = () => {
-  //   setMealStatusToggle((prev) => !prev); 
-  //   mutate(undefined, {
-  //     onSuccess: () => {
-  //       setUpdate((prev) => !prev);
-  //       notificationToast("Default status updated successfully!", "success");
-  //     },
-  //     onError: (error) => {
-  //       console.error("Error updating default status:", error);
-  //       setMealStatusToggle((prev) => !prev); 
-  //       notificationToast("Failed to update default status!", "error");
-  //     },
-  //   });
-  // };
   return (
-    <div className="flex items-center">
-      <label className="mr-2 font-semibold">Default Status</label>
+    <div className="card bg-base-50 shadow rounded-box grid flex-grow place-items-center p-4 px-6 mr-2">
+  <h2 className="text-lg font-bold text-gray-800 mb-4 text-center">
+    Default Meal Status
+  </h2>
+
+  <div className="flex items-center justify-between divide-x divide-gray-300">
+    {/* Lunch */}
+    <div className="flex items-center justify-between w-1/2 pr-4">
+      <span className="text-gray-700 font-medium">Lunch</span>
       <input
         type="checkbox"
         className={`toggle border-white bg-white hover:bg-white ${
-          mealStatusToggle ? " [--tglbg:#00aa68] " : "[--tglbg:#d73545]"
+          mealStatusToggleLunch ? "[--tglbg:#00aa68]" : "[--tglbg:#d73545]"
         }`}
-        checked={mealStatusToggle}
-        onChange={handleMealStatus}
+        checked={mealStatusToggleLunch}
+        onChange={handleMealStatusLunch}
       />
     </div>
-    // <div className="flex">
-    //   <details className="dropdown dropdown-end">
-    //     <summary
-    //       role="button"
-    //       className="flex items-center gap-x-1"
-    //       onClick={handleSettings}
-    //     >
-    //       <div
-    //         className={`text-3xl ${
-    //           settingsOpen ? "text-red-600 rotate-90" : "text-primary rotate-45"
-    //         } transition-all duration-300`}
-    //       >
-    //         {settingsOpen ? <RxCross2 /> : <IoMdSettings />}
-    //       </div>
-    //     </summary>
-    //     <div className="dropdown-content bg-neutral-50 menu rounded-box z-[1] w-52 p-4 mr-2 shadow">
-    //   <div className="flex items-center">
-    //   <label className="mr-2 font-semibold">Default Status</label>
-    //   <input
-    //     type="checkbox"
-    //     className={`toggle border-white bg-white hover:bg-white ${mealStatusToggle?' [--tglbg:#00aa68] ':'[--tglbg:#d73545]'}`}
-    //     checked={mealStatusToggle}
-    //     onChange={handleMealStatus}
-    //   />
-    // </div>
-    //     </div>
-    //   </details>
-    // </div>
+
+    {/* Snacks */}
+    <div className="flex items-center justify-between w-1/2 pl-4">
+      <span className="text-gray-700 font-medium pr-2">Snacks</span>
+      <input
+        type="checkbox"
+        className={`toggle border-white bg-white hover:bg-white ${
+          mealStatusToggleSnacks ? "[--tglbg:#00aa68]" : "[--tglbg:#d73545]"
+        }`}
+        checked={mealStatusToggleSnacks}
+        onChange={handleMealStatusSnacks}
+      />
+    </div>
+  </div>
+</div>
   );
 };
 

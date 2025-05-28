@@ -10,7 +10,8 @@ const UserStats = () => {
     setLunchStatus,
     snacksStatus,
     setSnacksStatus,
-    mealStatusToggle,
+    mealStatusToggleLunch,
+    mealStatusToggleSnacks,
     update,
   } = useContext(MealStatusContext);
   const date = new Date();
@@ -43,19 +44,8 @@ const UserStats = () => {
       setLunchStatus(lunch);
       setSnacksStatus(snacks);
     }
-  }, [mealStatusToggle, update]);
+  }, [mealStatusToggleLunch,mealStatusToggleSnacks, update]);
   return (
-    // <div className="stats shadow">
-    //   <div className="stat place-items-center">
-    //     <div className="stat-title">{`Today's Lunch`}</div>
-    //     <div className={`stat-value ${lunchStatus ? 'text-green-600':'text-red-600'}`}>{lunchStatus ? 'ON' : 'OFF'}</div>
-    //   </div>
-
-    //   <div className="stat place-items-center">
-    //     <div className="stat-title">{`Today's Snacks`}</div>
-    //     <div className={`stat-value ${snacksStatus ? 'text-green-600':'text-red-600'}`}>{snacksStatus ? 'ON' : 'OFF'}</div>
-    //   </div>
-    // </div>
     <div className="flex">
       <div className="card bg-base-50 shadow rounded-box grid flex-grow place-items-center p-4 px-6 mr-2">
         <div className="stat-title text-zinc-500">{`Today's Lunch`}</div>

@@ -4,6 +4,7 @@ import AdminWeeklyMealData from "@/features/dashboard/adminWeeklyMealData";
 import InstantGuest from "@/features/dashboard/InstantGuest";
 import PrintModal from "@/features/dashboard/printHTML";
 import { FaPrint } from "react-icons/fa6";
+import { BsBellFill } from "react-icons/bs";
 import OfficeDailyPenaltyGraphAdmin from "@/features/dashboard/adminDashboard/graphs/officeDailyPenaltyGraphAdmin";
 import { totalMealGroup } from "@/model/totalMealGroup";
 import { usePatchTotalMealGroup } from "@/services/mutations";
@@ -11,6 +12,8 @@ import { useOfficeMonthlyPenalties } from "@/services/queries";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import TelegramNotificationModal from "@/features/dashboard/adminDashboard/telegramNotificationModal";
+import { Button } from "@/components/button";
 
 const AdminDashboard = () => {
   const today = format(new Date(), "yyyy-MM-dd");
@@ -20,6 +23,8 @@ const AdminDashboard = () => {
   const [specialLunch, setSpecialLunch] = useState<number | null>(null);
   const [specialSnacks, setSpecialSnacks] = useState<number | null>(null);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState<boolean>(false);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] =
+    useState<boolean>(false);
   const [TotalMealFetch, setTotalMealFetch] = useState(true);
   const { mutate: lunchMealCount } = usePatchTotalMealGroup(today, 1, 1);
   const { mutate: snacksMealCount } = usePatchTotalMealGroup(today, 2, 1);
@@ -128,7 +133,7 @@ const AdminDashboard = () => {
             </p>
           </div>
 
-          {/* Instant guest Update */} 
+          {/* Instant guest Update */}
           <div className="p-4 bg-violet-200 hover:bg-violet-300 rounded-md text-center transition duration-300 ease-in-out">
             <InstantGuest
               onUpdateSuccess={() => {
@@ -158,16 +163,29 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/*Print meal */}
-        <div className="flex justify-end items-end h-full w-full rounded-md">
-          <button
-            onClick={() => {
-              setIsPrintModalOpen(true);
-            }}
-            className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out"
-          >
-            <FaPrint className="text-midnightBlue text-xl" />
-          </button>
+        <div className="flex flex-col  justify-end items-end h-full w-full rounded-md">
+          {/* Telegram Notification */}
+          <div className="mb-2">
+            <Button
+              label={<BsBellFill className="text-midnightBlue text-xl" />}
+              size="sm"
+              custom={true}
+              fillButton={false}
+              className="bg-blue-200 hover:bg-blue-300 p-3 px-3 rounded-md transition duration-300 ease-in-out"
+              onClick={() => setIsNotificationModalOpen(true)}
+            />
+          </div>
+          {/*Print meal */}
+          <div className="">
+            <Button
+              label={<FaPrint className="text-midnightBlue text-xl" />}
+              size="sm"
+              custom={true}
+              fillButton={false}
+              className="bg-blue-200 hover:bg-blue-300 p-3 px-3 rounded-md transition duration-300 ease-in-out"
+              onClick={() => setIsPrintModalOpen(true)}
+            />
+          </div>
         </div>
       </div>
 
@@ -179,11 +197,19 @@ const AdminDashboard = () => {
         <OfficeDailyPenaltyGraphAdmin />
       </div>
       <div>
-        {/* Render PrintLunchModal and pass necessary props */} 
+        {/* Render PrintLunchModal and pass necessary props */}
         <PrintModal
           isOpen={isPrintModalOpen}
           onClose={() => {
             setIsPrintModalOpen(false);
+          }}
+        />
+      </div>
+      <div>
+        <TelegramNotificationModal
+          isOpen={isNotificationModalOpen}
+          onClose={() => {
+            setIsNotificationModalOpen(false);
           }}
         />
       </div>
@@ -192,5 +218,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
-

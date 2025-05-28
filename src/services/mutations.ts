@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  getLateNotification,
   patchEmployeeProfile,
   patchExtraMeal,
   patchForgetPassword,
@@ -13,10 +14,11 @@ import {
   addEmployeeAsGuestAPI,
   createMealPlan
 } from "./api";
+import { defaultStatus } from "@/model/employee";
 
-export function useToggleDefaultMealStatus(date: string, status: boolean) {
+export function useToggleDefaultMealStatus() {
   return useMutation({
-    mutationFn: () => patchToggleDefaultMealStatus(date, status),
+    mutationFn: (data:defaultStatus) => patchToggleDefaultMealStatus(data),
     onSuccess: () => {
     },
     onError: (error) => {
@@ -146,6 +148,17 @@ export function useToggleEmployeeStatus() {
   });
 };
 
+export function useGetLateNotification() {
+  return useMutation({
+    mutationFn: (meal_type:number) =>
+      getLateNotification(meal_type),
+    onSuccess: () => {
+    },
+    onError: (error) => {
+      console.error("Error Notification", error);
+    },
+  });
+}
 export const useDeleteEmployee = () => {
   const queryClient = useQueryClient();
 

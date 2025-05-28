@@ -431,8 +431,8 @@ const MealActivityComponent = () => {
     employee.employee_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalGuests = calculateTotalGuestsForToday();
-  //setTotalGuestsToday(totalGuests);
+  // const totalGuests = calculateTotalGuestsForToday();
+  // //setTotalGuestsToday(totalGuests);
 
   const { lunchGuests, snackGuests } = calculateTotalGuestsPerDay();
   const todayDate = new Date().toISOString().split("T")[0]; // Format today's date as YYYY-MM-DD
@@ -488,7 +488,10 @@ const MealActivityComponent = () => {
             <table className="table-auto w-full rounded-t-lg">
               <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
                 <tr>
-                  <th className="p-2 py-5 text-left pl-8 w-[10px] whitespace-nowrap">
+                <th className="p-2 py-5 text-left pl-4 w-[10px] whitespace-nowrap">
+                    Serial No.
+                  </th>
+                  <th className="p-2 text-left px-8 w-[10px] whitespace-nowrap">
                     Employee Name
                   </th>
                   {dates.map((date, index) => (
@@ -509,7 +512,7 @@ const MealActivityComponent = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredData.map((employee) => {
+                {filteredData.map((employee,index) => {
                   const dateStatusMap: Record<
                     string,
                     { status: boolean; holiday: boolean; penalty: boolean }
@@ -530,7 +533,10 @@ const MealActivityComponent = () => {
                       key={employee.employee_id}
                       className="hover:bg-gray-100"
                     >
-                      <td className="border border-gray-200 p-2 pl-8 overflow-x-auto text-left w-[10px] whitespace-nowrap">
+                      <td className="border border-gray-200 p-2 overflow-x-auto text-center w-[10px] whitespace-nowrap">
+                        {index+1}
+                      </td>
+                      <td className="border border-gray-200 p-2 px-6 overflow-x-auto text-left w-[10px] whitespace-nowrap">
                         {employee.employee_name}
                       </td>
                       {dates.map((date, index) => {

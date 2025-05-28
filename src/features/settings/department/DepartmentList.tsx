@@ -9,11 +9,18 @@ import { useDepartmentList } from "@/services/Department/queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import EditDepartment from "./EditDepartment";
-
-const DepartmentList = () => {
-  const subSectionClassName = "ml-24 capitalize text-l mb-4";
+import { AxiosError } from "axios";
+interface DepartmentListProps {
+  subSectionClassName: string;
+}
+const DepartmentList: React.FC<DepartmentListProps> = ({
+  subSectionClassName,
+}) => {
   const [showDeptListModal, setShowDeptListModal] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
+  const [deptToDelete, setDeptToDelete] = useState<department | null>(null);
+
   const initialDeptState: department = {
     dept_id: 0,
     dept_name: "",
@@ -23,39 +30,66 @@ const DepartmentList = () => {
 
   const { data: departmentList = [] } = useDepartmentList();
   const queryClient = useQueryClient();
+
+  const handleEdit = (row: Row) => {
+    setSelectedDept(row as department);
+    setEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (dept: department) => {
+    setDeptToDelete(dept);
+    setConfirmDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deptToDelete) return;
+
+    try {
+      await deleteDepartment(deptToDelete.dept_id);
+      notificationToast("Department deleted successfully!", "success");
+      queryClient.invalidateQueries({ queryKey: ["DepartmentList"] });
+    } catch (err) {
+      const error = err as AxiosError;
+      const rawMessage =
+        typeof error?.response?.data === "string"
+          ? error.response?.data
+          : (error?.response?.data as any)?.message ||
+            error.message ||
+            "Failed to delete department!";
+      const message =
+        typeof rawMessage === "string"
+          ? rawMessage.charAt(0).toUpperCase() + rawMessage.slice(1)
+          : "Something went wrong";
+
+      notificationToast(message, "error");
+    } finally {
+      setConfirmDeleteModalOpen(false);
+      setDeptToDelete(null);
+    }
+  };
+
   const columns: Column[] = [
-    {
-      key: "dept_id",
-      label: "ID",
-    },
-    {
-      key: "dept_name",
-      label: "Name",
-    },
+    { key: "dept_id", label: "ID" },
+    { key: "dept_name", label: "Name" },
     {
       key: "weekend",
       label: "Weekend",
-      render: (value: any) => value.join(", "),
+      render: (value: string[]) => value.join(", "),
     },
     {
       key: "actions",
       label: "Actions",
-      render: (_value, row, rowIndex) => (
+      render: (_value, row) => (
         <div className="flex justify-center gap-2">
           <button
-            onClick={() => handleEdit(row, rowIndex)}
+            onClick={() => handleEdit(row)}
             className="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500"
           >
             Edit
           </button>
           <button
-            onClick={() => handleDelete(row.dept_id)}
-            disabled={true}
-            className={`${
-              true
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-red-500 hover:bg-red-600"
-            } text-white px-2 py-1 rounded`}
+            onClick={() => handleDeleteClick(row as department)}
+            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
           >
             Delete
           </button>
@@ -64,47 +98,60 @@ const DepartmentList = () => {
     },
   ];
 
-  const handleEdit = (row: Row, rowIndex: number) => {
-    console.log("Edit row", row);
-    setSelectedDept(row as department);
-    setEditModalOpen(true);
-  };
-
-  const handleDelete = async (deptId: number) => {
-    console.log("Delete dept id:", deptId);
-    try {
-      await deleteDepartment(deptId);
-      notificationToast("Department Deleted", "success");
-      queryClient.invalidateQueries({ queryKey: ["DepartmentList"] });
-    } catch (err) {
-      console.error("Error deleting department:", err);
-      notificationToast("Error deleting department", "error");
-    }
-  };
-
   return (
-    <div>
+    <div className="">
       <button
         className={`${subSectionClassName}`}
         onClick={() => setShowDeptListModal(true)}
       >
         Department List
       </button>
+
+      {/* Department Table Modal */}
       <Modal
         isOpen={showDeptListModal}
-        onClose={() => {
-          setShowDeptListModal(false);
-        }}
+        onClose={() => setShowDeptListModal(false)}
         title="Department List"
       >
         <Table columns={columns} data={departmentList} />
       </Modal>
+
+      {/* Edit Modal */}
       {selectedDept && (
         <EditDepartment
           isOpen={editModalOpen}
           onClose={() => setEditModalOpen(false)}
           department={selectedDept}
         />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {confirmDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white p-6 rounded-lg shadow-md w-96">
+            <h3 className="text-lg font-semibold mb-4">
+              Are you sure you want to delete the department{" "}
+              <span className="font-bold text-red-600">
+                {deptToDelete?.dept_name}
+              </span>
+              ?
+            </h3>
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                onClick={() => setConfirmDeleteModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                onClick={confirmDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
