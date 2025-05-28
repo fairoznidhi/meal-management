@@ -10,13 +10,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import EditDepartment from "./EditDepartment";
 import { AxiosError } from "axios";
-
-const DepartmentList = () => {
+interface DepartmentListProps {
+  subSectionClassName: string;
+}
+const DepartmentList:React.FC<DepartmentListProps> = ({subSectionClassName}) => {
   const [showDeptListModal, setShowDeptListModal] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
   const [deptToDelete, setDeptToDelete] = useState<department | null>(null);
-  const subSectionClassName = "ml-20 capitalize text-l mb-4";
 
   const initialDeptState: department = {
     dept_id: 0,
@@ -96,7 +97,7 @@ const DepartmentList = () => {
   ];
 
   return (
-    <div className="p-4">
+    <div className="">
       <button
         className={`${subSectionClassName}`}
         onClick={() => setShowDeptListModal(true)}

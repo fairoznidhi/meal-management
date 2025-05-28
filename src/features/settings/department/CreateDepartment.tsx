@@ -4,9 +4,10 @@ import notificationToast from "@/components/notificationToast";
 import { usePatchCreateDepartment } from "@/services/Department/mutations";
 import { useDepartmentList } from "@/services/Department/queries";
 import { useState } from "react";
-
-const CreateDepartment = () => {
-  const subSectionClassName = "ml-24 capitalize text-l mb-4";
+interface CreateDepartmentProps {
+  subSectionClassName: string;
+}
+const CreateDepartment:React.FC<CreateDepartmentProps> = ({subSectionClassName}) => {
   const { mutate: createDept } = usePatchCreateDepartment();
   const [showDeptCreateModal, setShowDeptCreateModal] = useState(false);
   const { data: departmentList = [] } = useDepartmentList();
