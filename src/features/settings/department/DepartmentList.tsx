@@ -13,7 +13,9 @@ import { AxiosError } from "axios";
 interface DepartmentListProps {
   subSectionClassName: string;
 }
-const DepartmentList:React.FC<DepartmentListProps> = ({subSectionClassName}) => {
+const DepartmentList: React.FC<DepartmentListProps> = ({
+  subSectionClassName,
+}) => {
   const [showDeptListModal, setShowDeptListModal] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);

@@ -4,7 +4,13 @@ import React, { useState, useEffect, useRef } from "react";
 import Calendar from "@/components/HoildayCalendar";
 import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 import notificationToast from "@/components/notificationToast";
-import { FaCalendar, FaList, FaTrash,FaPlusCircle ,FaBuilding } from "react-icons/fa";
+import {
+  FaCalendar,
+  FaList,
+  FaTrash,
+  FaPlusCircle,
+  FaBuilding,
+} from "react-icons/fa";
 import DepartmentSettings from "@/features/settings/department/DepartmentSettings";
 import CreateDepartment from "@/features/settings/department/CreateDepartment";
 import DepartmentList from "@/features/settings/department/DepartmentList";
@@ -110,11 +116,11 @@ const SettingsComponent = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-8">
       <div className="bg-white shadow-md rounded-lg p-6">
-        <p className="text-2xl font-semibold mb-4 text-gray-800">Holidays</p>
+        <p className="text-2xl font-bold mb-4 text-gray-800">Holidays</p>
 
         <button
           onClick={() => setIsCalendarOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded font-medium w-full mb-2 transition duration-300 ease-in-out"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded font-medium w-full mb-2 transition duration-300 ease-in-out text-gray-600"
         >
           <FaList />
           Set Holidays
@@ -122,7 +128,7 @@ const SettingsComponent = () => {
 
         <button
           onClick={() => setIsHolidayListOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded font-medium w-full transition duration-300 ease-in-out"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded font-medium w-full transition duration-300 ease-in-out text-gray-600"
         >
           <FaCalendar />
           See Holiday List
@@ -130,14 +136,14 @@ const SettingsComponent = () => {
       </div>
 
       <div className="bg-white shadow-md rounded-lg p-6">
-        <p className="text-2xl font-semibold mb-4 text-gray-800">Department</p>
-        <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded font-medium mb-2 transition duration-300 ease-in-out">
-          <FaPlusCircle/>
-          <CreateDepartment subSectionClassName={``}/>
+        <p className="text-2xl font-bold mb-4 text-gray-800">Department</p>
+        <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded font-medium mb-2 transition duration-300 ease-in-out text-gray-600">
+          <FaPlusCircle />
+          <CreateDepartment subSectionClassName={``} />
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded font-medium transition duration-300 ease-in-out">
-          <FaBuilding/>
-          <DepartmentList subSectionClassName={``}/>
+        <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded font-medium transition duration-300 ease-in-out text-gray-600">
+          <FaBuilding />
+          <DepartmentList subSectionClassName={``} />
         </div>
       </div>
 

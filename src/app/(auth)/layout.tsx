@@ -9,8 +9,7 @@ import {
   Squares2X2Icon,
   UserGroupIcon,
   UsersIcon,
-  Cog6ToothIcon
-  
+  Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 
 import { Session } from "next-auth";
@@ -47,8 +46,7 @@ export default function AuthLayout({
     { name: "Menu", route: "/menuPlan", icon: NewspaperIcon },
     { name: "Employee List", route: "/employeeList", icon: UsersIcon },
     { name: "Meal History", route: "/MealHistory", icon: ClockIcon },
-    { name: "Guest List", route: "/guestList", icon: UserGroupIcon },
-    { name: "Settings", route: "/Settings", icon: Cog6ToothIcon }
+    { name: "Settings", route: "/Settings", icon: Cog6ToothIcon },
   ];
   const sidebarItemsUser = [
     { name: "Dashboard", route: "/userDashboard", icon: Squares2X2Icon },
@@ -247,13 +245,13 @@ export default function AuthLayout({
                       </Link>
                     </li>
 
-                    {isAdmin && (
+                    {/* {isAdmin && (
                       <li>
                         <Link href="/Settings" className="justify-between">
                           Settings
                         </Link>
                       </li>
-                    )}
+                    )} */}
 
                     <li>
                       <a onClick={() => signOut({ callbackUrl: "/login" })}>
