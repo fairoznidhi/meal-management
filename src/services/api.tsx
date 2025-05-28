@@ -337,3 +337,25 @@ export const fetchDepartments = async (): Promise<Dept[]> => {
   return res;
 };
   
+  
+
+  export const addEmployeeAsGuestAPI = async (formData: FormData): Promise<Employee> => {
+    const res= await apiClient({
+      url: "/employee",
+      method: "POST",
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      useAuth: true,
+    });
+    return res as Employee;
+  };
+
+  export const createMealPlan = async() => {
+    const res = await apiClient({
+      url: "/meal_activity",
+      method: "POST",
+      useAuth: true,
+    })
+  };

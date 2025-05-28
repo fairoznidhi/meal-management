@@ -9,7 +9,10 @@ import {
   patchToggleDefaultMealStatus,
   patchTotalLunchSnacksCount,
   patchTotalMealGroup,
-  updateEmployee
+  updateEmployee,
+  deleteEmployee,
+  addEmployeeAsGuestAPI,
+  createMealPlan
 } from "./api";
 import { defaultStatus } from "@/model/employee";
 
@@ -128,19 +131,19 @@ export function useToggleEmployeeStatus() {
       employeeId,
       isActive,
     }: {
-      employeeId: number;  // Change the type of employeeId to number
+      employeeId: number;  
       isActive: boolean; 
     }) => {
       const formData = new FormData();
-      formData.append("employee_id", employeeId.toString()); // Ensure employeeId is converted to string for formData
+      formData.append("employee_id", employeeId.toString()); 
       formData.append("is_active", isActive.toString());
-      return updateEmployee(formData); // Call the updateEmployee function
+      return updateEmployee(formData); 
     },
     onSuccess: (data) => {
-      console.log("Employee status updated:", data);
+      //console.log("Employee status updated:", data);
     },
     onError: (error) => {
-      console.error("Error updating employee status:", error);
+      //console.error("Error updating employee status:", error);
     },
   });
 };
@@ -156,3 +159,18 @@ export function useGetLateNotification() {
     },
   });
 }
+export const useDeleteEmployee = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (employeeId: number) => deleteEmployee(employeeId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["guests"] });
+    },
+    onError: (error) => {
+     
+    },
+  });
+};
+
+

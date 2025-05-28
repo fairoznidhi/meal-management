@@ -186,15 +186,17 @@ const MealActivityComponent = () => {
         // Accumulate lunch guest count
         if (lunchMeal) {
           const guestCount = lunchMeal.meal_status[0]?.guest_count || 0;
+          const lunchCount = lunchMeal.meal_status[0].status?1:0
           lunchGuests[detail.date] =
-            (lunchGuests[detail.date] || 0) + guestCount;
+            (lunchGuests[detail.date] || 0) + guestCount+lunchCount;
         }
 
         // Accumulate snack guest count
         if (snackMeal) {
           const guestCount = snackMeal.meal_status[0]?.guest_count || 0;
+          const snacksCount =snackMeal.meal_status[0]?.status?1:0;
           snackGuests[detail.date] =
-            (snackGuests[detail.date] || 0) + guestCount;
+            (snackGuests[detail.date] || 0) + guestCount + snacksCount;
         }
       });
     });
@@ -496,8 +498,14 @@ const MealActivityComponent = () => {
                     <th key={index} className="p-2">
                       <div>{dayjs(date).format("ddd, DD MMM")}</div>
                       <div className="text-xs text-gray-600">
-                        {/* Guests: {totalGuestsPerDay.lunchGuests[date] || 0} */}
-                        Count: {mealType==1?0:0}
+                        {mealType===1&&(
+                          <p>Total: {totalGuestsPerDay.lunchGuests[date] || 0}</p>
+                        )}
+                        {mealType===2&&(
+                          <p>Total: {totalGuestsPerDay.snackGuests[date] || 0}</p>
+                        )}
+                        
+
                       </div>
                     </th>
                   ))}

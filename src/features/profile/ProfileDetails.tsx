@@ -59,7 +59,7 @@ import FormField from "@/components/FormField";
 type ProfileDetailsProps<FormDataType> = {
   formData: FormDataType;
   isEditable?: boolean;
-  onChange?: (field: keyof FormDataType, value: string | number[]) => void;
+  onChange?: (field: keyof FormDataType, value: string | string[] |number[]) => void;
   preferences?: { food: string; food_id: number }[]; // Use food name & ID
 };
 

@@ -1,5 +1,6 @@
 "use client";
-{/*import React, { createContext, useContext, useEffect, useState } from "react";
+{
+  /*import React, { createContext, useContext, useEffect, useState } from "react";
 import { useEmployeePhoto, useTokenSingleEmployee } from "@/services/queries";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
@@ -182,16 +183,22 @@ const ProfilePage = () => {
 export default ProfilePage;
 
 
-*/}
-
-
-
+*/
+}
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useEmployeePhoto, useTokenSingleEmployee, useFetchPreferences } from "@/services/queries";
+import {
+  useEmployeePhoto,
+  useTokenSingleEmployee,
+  useFetchPreferences,
+} from "@/services/queries";
 import ProfileDetails from "@/features/profile/ProfileDetails";
 import ProfileDisplay from "@/features/profile/ProfileDisplay";
-import { UserProfileDataType, UserEditDataType, Preference } from "@/services/types";
+import {
+  UserProfileDataType,
+  UserEditDataType,
+  Preference,
+} from "@/services/types";
 import { getSession } from "next-auth/react";
 import { usePatchEmployeeProfile } from "@/services/mutations";
 import ChangePassword from "@/features/changePassword/ChangePassword";
@@ -229,13 +236,12 @@ const ProfilePage = () => {
         email: profile?.email ?? "",
         phone_number: profile?.phone_number ?? "",
         dept_name: profile?.dept_name ?? "",
-        remarks: profile?.remarks?.trim() ? profile.remarks : "No preference",
+        //remarks: profile?.remarks?.trim() ? profile.remarks : "No preference",
         preference_food: profile?.preference_food ?? [],
         //designation: profile?.designation??"",
         //is_active:profile?.is_active??"",
         //is_permanent:profile?.is_permanent??"",
         //roll:profile?.roll??""
-       
       });
 
       setActualData({
@@ -243,13 +249,12 @@ const ProfilePage = () => {
         email: profile?.email ?? "",
         phone_number: profile?.phone_number ?? "",
         dept_name: profile?.dept_name ?? "",
-        remarks: profile?.remarks?.trim() ? profile.remarks : "No preference",
+        //remarks: profile?.remarks?.trim() ? profile.remarks : "No preference",
         preference_food: profile?.preference_food ?? [],
         //designation: profile?.designation??"",
         //is_active:profile?.is_active??"",
         //is_permanent:profile?.is_permanent??"",
         //roll:profile?.roll??""
-        
       });
 
       setUserName(profile?.name ?? "");
@@ -261,22 +266,22 @@ const ProfilePage = () => {
     setFormData(actualData);
   };
 
-  const handleInputChange = (field: keyof UserProfileDataType, value: string | string[] | number[]) => {
-    if (field === 'preference_food') {
-      // Ensure that only an array of food IDs (numbers) is passed for preference_food
+  const handleInputChange = (
+    field: keyof UserEditDataType,
+    value: string | string[] | number[]
+  ) => {
+    if (field === "preference_food") {
       setFormData((prev) => ({
         ...prev!,
-        [field]: value as number[],  // Type cast to number[] explicitly
+        [field]: value as number[],
       }));
     } else {
-      // For other fields, handle as normal
       setFormData((prev) => ({
         ...prev!,
         [field]: value,
       }));
     }
   };
-  
 
   const handleEmployeeUpdate = () => {
     const data = new FormData();
@@ -289,21 +294,24 @@ const ProfilePage = () => {
 
     data.append("phone_number", formData?.phone_number ?? "");
 
-    if (formData?.phone_number?.length !== 11 || !/^\d+$/.test(formData.phone_number)) {
+    if (
+      formData?.phone_number?.length !== 11 ||
+      !/^\d+$/.test(formData.phone_number)
+    ) {
       alert("Phone number must be exactly 11 digits and contain only numbers");
       return;
     }
 
-    data.append("remarks", formData?.remarks ?? "");
+    // data.append("remarks", formData?.remarks ?? "");
 
     if (session) {
       data.append("employee_id", session?.user?.employee_id);
-      
     }
 
     //data.append("preference_food", JSON.stringify(formData?.preference_food ?? []));
     data.append("preference_food", (formData?.preference_food ?? []).join(","));
-    
+
+    data.append("designation", formData?.designation ?? "");
 
     mutate(data, {
       onSettled: () => {
@@ -323,7 +331,9 @@ const ProfilePage = () => {
       <div className="flex flex-row justify-between items-center mt-8 mb-8">
         <div className="flex items-center">
           {formData && <ProfileDisplay />}
-          {formData && <h1 className="px-6 text-xl font-semibold">{formData.name}</h1>}
+          {formData && (
+            <h1 className="px-6 text-xl font-semibold">{formData.name}</h1>
+          )}
         </div>
         {isEditProfile ? (
           <div>
