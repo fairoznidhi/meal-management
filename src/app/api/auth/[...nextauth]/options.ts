@@ -19,13 +19,17 @@ export const authOptions:NextAuthOptions = {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ email, password }),
             }).then((res) => res.json());
+
             //jwt decode
             const decoded = jwtDecode<CustomUserJwtPayload>(accessToken);
             if (accessToken) {
               return {...decoded,accessToken};
             }
             return accessToken;
-          }catch{
+          }catch(error)
+          { 
+            //console.log(error);
+            
             return;
           }
 
