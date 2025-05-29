@@ -5,11 +5,10 @@ import {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
+  Cog6ToothIcon,
   NewspaperIcon,
   Squares2X2Icon,
-  UserGroupIcon,
   UsersIcon,
-  Cog6ToothIcon,
 } from "@heroicons/react/24/outline";
 
 import { Session } from "next-auth";
@@ -56,7 +55,6 @@ export default function AuthLayout({
       icon: ClipboardDocumentCheckIcon,
     },
     { name: "Meal History", route: "/UserMealHistory", icon: ClockIcon },
-    // { name: "Meal History", route: "/UserMealHistory", icon: ClockIcon },
   ];
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -69,12 +67,6 @@ export default function AuthLayout({
       return storedAdminView;
     }
   });
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const storedAdminView = localStorage.getItem("adminView") === "true";
-  //     setAdminView(storedAdminView);
-  //   }
-  // }, []);
   useEffect(() => {
     if (profileList) {
       const profile = profileList[0];
@@ -127,22 +119,6 @@ export default function AuthLayout({
         }}
       >
         <div className="flex h-screen">
-          {/* Sidebar
-              <div className={`transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"} bg-gray-800 text-white fixed top-0 left-0 h-full`}>
-                  <button
-                  onClick={toggleSidebar}
-                  className="p-2 bg-gray-700 hover:bg-gray-700 w-full text-center"
-                  >
-                  {isCollapsed ? ">>" : "<<"}
-                  </button>
-                  <div className="flex flex-col">
-                  <div className="flex-grow"><Sidebar items={isAdmin ? sidebarItemsAdmin : sidebarItemsUser} isCollapsed={isCollapsed} /></div>
-                  <div className="flex justify-center items-end my-8 absolute bottom-0 left-0 right-0">
-                      {!isCollapsed && 
-                      <button onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</button>}
-                  </div>
-                  </div>
-              </div>*/}
           {/* sidebar */}
           <div
             className={`transition-all duration-300 ${
@@ -153,28 +129,6 @@ export default function AuthLayout({
             } bg-aliceBlue fixed h-full z-50 pt-8`}
             onClick={toggleSidebar}
           >
-            {/* {isCollapsed ? (
-              <div
-                className="absolute top-1 left-20 px-1 py-4 rounded-r-md bg-aliceBlue"
-                onClick={toggleSidebar}
-              >
-                <IoIosArrowForward className="cursor-pointer h-6 w-6 text-midnightBlue" />
-              </div>
-            ) : (
-              <div
-                className="absolute top-1 left-64 px-1 py-4 rounded-r-md bg-aliceBlue"
-                onClick={toggleSidebar}
-              >
-                <IoIosArrowBack className="cursor-pointer h-6 w-6 text-midnightBlue" />
-              </div>
-            )} */}
-            {/* <button
-              onClick={toggleSidebar}
-              className="p-2 bg-[#005A8F] hover:bg-[#] w-full  text-[#005A8F] text-center mb-7"
-              
-            >
-              {isCollapsed ? ">>" : "<<"}
-            </button> */}
             <Sidebar
               items={
                 isAdmin
@@ -244,15 +198,6 @@ export default function AuthLayout({
                         Profile
                       </Link>
                     </li>
-
-                    {/* {isAdmin && (
-                      <li>
-                        <Link href="/Settings" className="justify-between">
-                          Settings
-                        </Link>
-                      </li>
-                    )} */}
-
                     <li>
                       <a onClick={() => signOut({ callbackUrl: "/login" })}>
                         Logout

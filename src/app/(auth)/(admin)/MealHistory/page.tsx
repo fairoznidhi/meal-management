@@ -1,51 +1,44 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import { usePrint } from "@/app/hooks/usePrint";
+import { Button } from "@/components/button";
+import Table, { Column } from "@/components/Table";
+import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
 import {
   usePatchTotalLunchSnacksCount,
   usePatchTotalMealGroup,
 } from "@/services/mutations";
-import Table, { Column } from "@/components/Table";
-import { TotalMeal, totalMealGroup } from "@/model/totalMealGroup";
 import dayjs from "dayjs";
-import { formatDate } from "date-fns";
-import { FaPrint } from "react-icons/fa";
-import { usePrint } from "@/app/hooks/usePrint";
-import { Button } from "@/components/button";
+import { useEffect, useRef, useState } from "react";
+import { FaPrint } from "react-icons/fa6";
 
 const getMonthBoundaries = () => {
   const now = dayjs();
-  const startOfMonth = now.startOf("month").toDate(); 
-  const endOfMonth = now.endOf("month").toDate(); 
+  const startOfMonth = now.startOf("month").toDate();
+  const endOfMonth = now.endOf("month").toDate();
   return { startOfMonth, endOfMonth };
 };
-
 
 const calculateDaysInRange = (startDate: Date, endDate: Date) => {
   const start = dayjs(startDate);
   const end = dayjs(endDate);
 
-  
-  return end.diff(start, "day") + 1; 
+  return end.diff(start, "day") + 1;
 };
 
 const MealHistory = () => {
-  const { startOfMonth, endOfMonth } = getMonthBoundaries(); 
+  const { startOfMonth, endOfMonth } = getMonthBoundaries();
 
-  const [startDate, setStartDate] = useState(startOfMonth); 
-  const [endDate, setEndDate] = useState(endOfMonth); 
-  const [totalMeal, setTotalMeal] = useState<any[]>([]); 
+  const [startDate, setStartDate] = useState(startOfMonth);
+  const [endDate, setEndDate] = useState(endOfMonth);
+  const [totalMeal, setTotalMeal] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const daysInRange = calculateDaysInRange(startDate, endDate); 
+  const daysInRange = calculateDaysInRange(startDate, endDate);
 
-  
-
- const printRef = useRef<HTMLDivElement>(null);
- const { handlePrint } = usePrint();
-
-
+  const printRef = useRef<HTMLDivElement>(null);
+  const { handlePrint } = usePrint();
 
   const formattedStartDate = dayjs(startDate).format("YYYY-MM-DD");
   const formattedEndDate = dayjs(endDate).format("YYYY-MM-DD");
@@ -133,12 +126,6 @@ const MealHistory = () => {
       });
   }, [startDate, endDate, daysInRange]);
 
-
-  
-  
-
-
-
   const columns: Column[] = [
     {
       key: "date",
@@ -167,7 +154,6 @@ const MealHistory = () => {
         <div className="flex justify-between items-end mt-2 px-4">
           <h2 className="text-3xl font-extrabold mb-4">Meal History</h2>
           <div className="mb-4 flex gap-4">
-          
             <p className="font-semibold mt-2">Start Date</p>
             <input
               type="date"
@@ -182,23 +168,13 @@ const MealHistory = () => {
               onChange={(e) => setEndDate(new Date(e.target.value))}
               className="border rounded px-2 py-1"
             />
-            {/*<button
-             onClick={() => handlePrint(printRef.current)}
-             className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out"
-            >
-            <FaPrint className="text-midnightBlue text-xl" />
-          </button>*/}
-           <Button
-           label="Print"
-           onClick={() => handlePrint(printRef.current)}
-          className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out flex items-center gap-2"
-  
->
-</Button>
-
-
+            <Button
+              label={<FaPrint />}
+              utilityButton={true}
+              size="none"
+              onClick={() => handlePrint(printRef.current)}
+            ></Button>
           </div>
-        
         </div>
 
         {/* Table Display */}
@@ -206,12 +182,12 @@ const MealHistory = () => {
         {error && <p className="text-red-500">{error}</p>}
 
         <div ref={printRef}>
-        {!loading && !error && totalMeal.length > 0 ? (
-          <Table columns={columns} data={totalMeal} />
-        ) : (
-          !loading &&
-          !error && <p>No meal records found for the selected date range.</p>
-        )}
+          {!loading && !error && totalMeal.length > 0 ? (
+            <Table columns={columns} data={totalMeal} />
+          ) : (
+            !loading &&
+            !error && <p>No meal records found for the selected date range.</p>
+          )}
         </div>
       </div>
     </div>

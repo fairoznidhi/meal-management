@@ -93,8 +93,8 @@ const LoginPage = () => {
               <ForgetPassword></ForgetPassword>
               <Button
                 label={loading ? "Logging in..." : "Log In"}
-                size="md"
-                className="w-full"
+                login={true}
+                size="full"
                 disable={loading}
               ></Button>
             </form>
