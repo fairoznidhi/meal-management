@@ -560,14 +560,14 @@ const EmployeeComponent: React.FC = () => {
     setNewEmployee({ ...newEmployee, email: value });
 
     // Validate email format: any characters before @yopmail.com
-    const emailRegex = /^[^\s@]+@yopmail\.com$/;
+    ///const emailRegex = /^[^\s@]+@yopmail\.com$/;
     {/*if (!emailRegex.test(value)) {
       setEmailError("Please enter a valid email like em@gmail.com");
     }
     else {
       setEmailError("");
     }*/}
-    setEmailError(emailRegex.test(value) ? "" : "Please enter a valid email like em@yopmail.com");
+    //setEmailError(emailRegex.test(value) ? "" : "Please enter a valid email like em@yopmail.com");
     
   };
   
@@ -584,11 +584,11 @@ const EmployeeComponent: React.FC = () => {
   const validateFields = () => {
     let valid = true;
   
-    const emailRegex = /^[^\s@]+@yopmail\.com$/;
+   {/* const emailRegex = /^[^\s@]+@yopmail\.com$/;
     if (!emailRegex.test(newEmployee.email)) {
       setEmailError("Please enter a valid email like emp@gmail.com");
       valid = false;
-    }  
+    } */} 
   
     const phoneRegex = /^01\d{9}$/;
     if (!phoneRegex.test(newEmployee.phone_number)) {
@@ -954,7 +954,7 @@ const EmployeeComponent: React.FC = () => {
   value={newEmployee.email}
   onChange={handleEmailChange}
   //error={emailError}
-  required
+  //required
 />
 {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
 
@@ -1007,7 +1007,7 @@ const EmployeeComponent: React.FC = () => {
   placeholder=""
   value={newEmployee.designation}
   onChange={(e) => setNewEmployee({ ...newEmployee, designation: e.target.value })}
-  required
+  //required
 />
 
 <EmployeeFormField
@@ -1016,7 +1016,7 @@ const EmployeeComponent: React.FC = () => {
   placeholder=""
   value={newEmployee.roll}
   onChange={(e) => setNewEmployee({ ...newEmployee, roll: e.target.value })}
-  required
+ // required
 />
 
 
