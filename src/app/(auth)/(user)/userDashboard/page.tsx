@@ -31,24 +31,37 @@ const UserDashboard = () => {
       let waste = penalty / total;
       if (isNaN(waste)) {
         waste = 0;
-    }
+      }
       setFoodWaste(waste * 100);
     }
   }, [monthlyData]);
   useEffect(() => {
     if (monthlyData) {
       setMonthGraphLabel(
-        monthlyData?.map((monthMeal) => {
-          const monthAbbreviation = monthMeal?.month?.substring(0, 3);
-          const yearAbbreviation = monthMeal?.year?.toString();
-          return `${monthAbbreviation} ${yearAbbreviation}`;
-        }).reverse()
+        monthlyData
+          ?.map((monthMeal) => {
+            const monthAbbreviation = monthMeal?.month?.substring(0, 3);
+            const yearAbbreviation = monthMeal?.year?.toString();
+            return `${monthAbbreviation} ${yearAbbreviation}`;
+          })
+          .reverse()
       );
-      setMonthLunchCount(monthlyData?.map((monthMeal) => monthMeal?.total_lunch ?? 0).reverse());
-      setMonthSnackCount(monthlyData?.map((monthMeal) => monthMeal?.total_snack?? 0).reverse());
-      setMonthPenaltyCount(monthlyData?.map((monthMeal) => ((monthMeal?.lunch_penalty?? 0)+(monthMeal?.snack_penalty?? 0))).reverse());
+      setMonthLunchCount(
+        monthlyData?.map((monthMeal) => monthMeal?.total_lunch ?? 0).reverse()
+      );
+      setMonthSnackCount(
+        monthlyData?.map((monthMeal) => monthMeal?.total_snack ?? 0).reverse()
+      );
+      setMonthPenaltyCount(
+        monthlyData
+          ?.map(
+            (monthMeal) =>
+              (monthMeal?.lunch_penalty ?? 0) + (monthMeal?.snack_penalty ?? 0)
+          )
+          .reverse()
+      );
     }
-  }, [monthSpan,monthlyData]);
+  }, [monthSpan, monthlyData]);
   return (
     <div className="p-4">
       <div className="grid grid-cols-10 gap-4">
@@ -77,19 +90,31 @@ const UserDashboard = () => {
           </div>
           {/*graph*/}
           <div>
-          <UserMonthlyMealSummary
-            label={monthGraphLabel}
-            lunch={monthLunchCount}
-            snack={monthSnackCount}
-            penalty={monthPenaltyCount}
-            count={monthSpan}
-            setCount={setMonthSpan}
-          />
+            <UserMonthlyMealSummary
+              label={monthGraphLabel}
+              lunch={monthLunchCount}
+              snack={monthSnackCount}
+              penalty={monthPenaltyCount}
+              count={monthSpan}
+              setCount={setMonthSpan}
+            />
           </div>
         </div>
         <div className="col-span-2 bg-gray-100 h-full rounded-lg py-8">
           <h3 className="text-center font-semibold">Food Wastage</h3>
-          <GaugeComponent type="radial" value={foodWaste} />
+          <GaugeComponent
+            type="radial"
+            value={foodWaste}
+            labels={{
+              valueLabel: {
+                style: {
+                  fill: "#656668",
+                  fontSize: 36,
+                  fontWeight: "extrabold",
+                },
+              },
+            }}
+          />
         </div>
       </div>
     </div>

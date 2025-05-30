@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/button";
 import Modal from "@/components/modal";
 import notificationToast from "@/components/notificationToast";
 import {
@@ -82,20 +83,18 @@ const EditDepartment: React.FC<EditDepartmentProps> = ({
       onClose={onClose}
       title="Edit Department"
       footer={
-        <>
-          <button
+        <div className="flex gap-2">
+          <Button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded mr-2"
-          >
-            Cancel
-          </button>
-          <button
+            cancelButton={true}
+            label="Cancel"
+          />
+          <Button
             onClick={handleUpdate}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
-          >
-            Update
-          </button>
-        </>
+            successButton={true}
+            label="Update"
+          />
+        </div>
       }
     >
       <div className="grid grid-cols-1 gap-4">

@@ -195,41 +195,42 @@ const SettingsComponent = () => {
                     </li>
                   ))}
                 </ul>
-                <div className="flex gap-x-8">
+                <div className="flex gap-x-2 mt-8 justify-end">
                   {!isDeleting && (
-                    <button
+                    <Button
                       onClick={() => setIsHolidayListOpen(false)}
-                      className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md w-[100px]"
-                    >
-                      Close
-                    </button>
+                      cancelButton={true}
+                      label="Close"
+                    />
                   )}
-                  <div className="mt-4 flex justify-between gap-x-8">
+                  <div className="flex justify-between gap-x-2">
                     {!isDeleting ? (
-                      <button
+                      <Button
                         onClick={() => setIsDeleting(true)}
-                        className="bg-red-500 text-white px-4 py-2 rounded-md flex items-center gap-2"
-                      >
-                        <FaTrash /> Delete Holidays
-                      </button>
+                        deleteButton={true}
+                        label={
+                          <span className="flex items-center gap-2">
+                            <FaTrash />
+                            Delete Holidays
+                          </span>
+                        }
+                      />
                     ) : (
                       <>
-                        <button
-                          onClick={handleDeleteHolidays}
-                          className="bg-red-600 text-white px-4 py-2 rounded-md"
-                          disabled={deleteSelection.size !== 1}
-                        >
-                          Confirm Delete
-                        </button>
-                        <button
+                        <Button
                           onClick={() => {
                             setIsDeleting(false);
                             setDeleteSelection(new Set());
                           }}
-                          className="bg-gray-300 px-4 py-2 rounded-md"
-                        >
-                          Cancel
-                        </button>
+                          cancelButton={true}
+                          label="Cancel"
+                        />
+                        <Button
+                          onClick={handleDeleteHolidays}
+                          className="bg-red-600 text-white px-4 py-2 rounded-md"
+                          disable={deleteSelection.size !== 1}
+                          label="Confirm Delete"
+                        />
                       </>
                     )}
                   </div>

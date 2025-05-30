@@ -6,7 +6,7 @@ const Button = ({
   size,
   fillButton = true,
   utilityButton = false,
-  settingsButton=false,
+  settingsButton = false,
   updateButton = false,
   deleteButton = false,
   cancelButton = false,
@@ -25,6 +25,8 @@ const Button = ({
       className={`shadow-none outline-none ${className} ${
         custom === true
           ? "btn"
+          : disable
+          ? "opacity-50 cursor-not-allowed"
           : utilityButton === true
           ? "btn bg-blue-200 hover:bg-blue-300 px-3 rounded-md text-midnightBlue text-xl"
           : shapeButton == true
@@ -54,8 +56,7 @@ const Button = ({
         ? "px-6"
         : size === "xlg"
         ? "px-8"
-        :
-        size === "full"
+        : size === "full"
         ? "w-full"
         : size === "none"
         ? ""

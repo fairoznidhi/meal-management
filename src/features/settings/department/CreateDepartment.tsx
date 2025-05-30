@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/button";
 import Modal from "@/components/modal";
 import notificationToast from "@/components/notificationToast";
 import { usePatchCreateDepartment } from "@/services/Department/mutations";
@@ -91,23 +92,22 @@ const CreateDepartment:React.FC<CreateDepartmentProps> = ({subSectionClassName})
         }}
         title="Add New Department"
         footer={
-          <>
-            <button
+          <div className="flex gap-2">
+            <Button
               onClick={() => {
                 setShowDeptCreateModal(false);
                 resetDepartmentForm();
               }}
-              className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 mr-2"
-            >
-              Cancel
-            </button>
-            <button
+              label="Cancel"
+              cancelButton={true}
+            />
+            <Button
               onClick={handleAddDepartment}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Add
-            </button>
-          </>
+              label="Add"
+              successButton={true}
+              size="xlg"
+            />
+          </div>
         }
       >
         <div className="grid grid-cols-1 gap-4">
