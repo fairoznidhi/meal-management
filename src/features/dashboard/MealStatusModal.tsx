@@ -281,6 +281,7 @@ export default MealStatusModal;
 
 
 
+import { Button } from "@/components/button";
 import React, { useState, useEffect } from "react";
 
 interface MealStatusModalProps {
@@ -440,19 +441,17 @@ const MealStatusModal: React.FC<MealStatusModalProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end">
-          <button
+        <div className="flex justify-end gap-x-2">
+          <Button
             onClick={onClose}
-            className="bg-gray-300 text-black p-2 rounded-md mr-2"
-          >
-            Cancel
-          </button>
-          <button
+            cancelButton={true}
+            label="Cancel"
+          />
+          <Button
             onClick={handleSave}
-            className="bg-blue-500 text-white p-2 rounded-md"
-          >
-            Save
-          </button>
+            successButton={true}
+            label="Save"
+          />
         </div>
       </div>
     </div>

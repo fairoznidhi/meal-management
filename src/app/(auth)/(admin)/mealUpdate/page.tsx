@@ -8,6 +8,7 @@ import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
 import InstantGuest from "@/features/dashboard/InstantGuest";
 import { FaCaretSquareLeft, FaCaretSquareRight } from "react-icons/fa";
 import dayjs from "dayjs";
+import { Button } from "@/components/button";
 
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 
@@ -15,7 +16,6 @@ interface MealStatus {
   status: boolean;
   guest_count: number;
   penalty: boolean;
-
 }
 
 interface Meal {
@@ -45,16 +45,18 @@ const MealActivityComponent = () => {
   const [lunchTotal, setLunchTotal] = useState<number | null>(null);
   const [snacksTotal, setSnacksTotal] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState(new Date()); 
-  const [endDate, setEndDate]= useState(dayjs(startDate).add(6,"day").format("YYYY-MM-DD"));// Use Date object for easy manipulation
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(
+    dayjs(startDate).add(6, "day").format("YYYY-MM-DD")
+  ); // Use Date object for easy manipulation
   const [days, setDays] = useState<number>(7);
   const [mealType, setMealType] = useState<number>(1); // 1 for lunch, 2 for snack
-  useEffect(()=>{
-    const val=localStorage.getItem("MealType");
-    if(val){
+  useEffect(() => {
+    const val = localStorage.getItem("MealType");
+    if (val) {
       setMealType(parseInt(val));
     }
-  },[mealType])
+  }, [mealType]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
   const [lunchGuestsToday, setLunchGuestsToday] = useState<number>(0);
@@ -186,15 +188,15 @@ const MealActivityComponent = () => {
         // Accumulate lunch guest count
         if (lunchMeal) {
           const guestCount = lunchMeal.meal_status[0]?.guest_count || 0;
-          const lunchCount = lunchMeal.meal_status[0].status?1:0
+          const lunchCount = lunchMeal.meal_status[0].status ? 1 : 0;
           lunchGuests[detail.date] =
-            (lunchGuests[detail.date] || 0) + guestCount+lunchCount;
+            (lunchGuests[detail.date] || 0) + guestCount + lunchCount;
         }
 
         // Accumulate snack guest count
         if (snackMeal) {
           const guestCount = snackMeal.meal_status[0]?.guest_count || 0;
-          const snacksCount =snackMeal.meal_status[0]?.status?1:0;
+          const snacksCount = snackMeal.meal_status[0]?.status ? 1 : 0;
           snackGuests[detail.date] =
             (snackGuests[detail.date] || 0) + guestCount + snacksCount;
         }
@@ -266,8 +268,7 @@ const MealActivityComponent = () => {
     employeeName: string,
     date: string,
     currentStatus: boolean | null,
-    currentPenalty: boolean,
-  
+    currentPenalty: boolean
   ) => {
     setSelectedCell({
       employeeId,
@@ -307,9 +308,13 @@ const MealActivityComponent = () => {
     return { lunchGuests, snackGuests };
   };
 
-  const handleUpdateStatus = async (status: boolean, penalty: boolean, penaltyScore: number) => {
+  const handleUpdateStatus = async (
+    status: boolean,
+    penalty: boolean,
+    penaltyScore: number
+  ) => {
     if (selectedCell) {
-      const { employeeId, date} = selectedCell;
+      const { employeeId, date } = selectedCell;
       const guestCount = 0;
       const updatedData = [
         {
@@ -319,7 +324,7 @@ const MealActivityComponent = () => {
           status: status,
           guest_count: guestCount,
           penalty,
-          penalty_score:penaltyScore
+          penalty_score: penaltyScore,
         },
       ];
 
@@ -345,8 +350,8 @@ const MealActivityComponent = () => {
   const handleMealTypeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const val=Number(event.target.value);
-    localStorage.setItem("MealType",val.toString())
+    const val = Number(event.target.value);
+    localStorage.setItem("MealType", val.toString());
     setMealType(Number(event.target.value));
   };
 
@@ -397,8 +402,8 @@ const MealActivityComponent = () => {
       }
 
       // Set endDate to 6 days after new start date
-    const newEndDate = dayjs(newDate).add(6, "day").format("YYYY-MM-DD");
-    setEndDate(newEndDate); // Update endDate state
+      const newEndDate = dayjs(newDate).add(6, "day").format("YYYY-MM-DD");
+      setEndDate(newEndDate); // Update endDate state
 
       return newDate;
     });
@@ -416,8 +421,8 @@ const MealActivityComponent = () => {
         return oneMonthAfterToday; // Set to the one month after today if it exceeds
       }
       // Set endDate to 6 days after new start date
-    const newEndDate = dayjs(newDate).add(6, "day").format("YYYY-MM-DD");
-    setEndDate(newEndDate); // Update endDate state
+      const newEndDate = dayjs(newDate).add(6, "day").format("YYYY-MM-DD");
+      setEndDate(newEndDate); // Update endDate state
       return newDate;
     });
   };
@@ -456,23 +461,25 @@ const MealActivityComponent = () => {
           </div>
 
           <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
-            <button
+            <Button
               onClick={handlePreviousWeek}
-              className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
-            >
-              <FaCaretSquareLeft />
-            </button>
+              shapeButton={true}
+              size="md"
+              label={<FaCaretSquareLeft />}
+            />
             <h2 className="p-2 text-base font-bold">
-             { /*{`Start Date: ${
+              {/*{`Start Date: ${
               startDate.toISOString().split("T")[0]
             }`}*/}
-            {dayjs(startDate).format("DD MMM")}-{dayjs(endDate).format("DD MMM")}</h2>
-            <button
+              {dayjs(startDate).format("DD MMM")}-
+              {dayjs(endDate).format("DD MMM")}
+            </h2>
+            <Button
               onClick={handleNextWeek}
-              className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
-            >
-              <FaCaretSquareRight />
-            </button>
+              shapeButton={true}
+              size="md"
+              label={<FaCaretSquareRight />}
+            />
           </div>
 
           <div className="ml-auto">
@@ -488,7 +495,7 @@ const MealActivityComponent = () => {
             <table className="table-auto w-full rounded-t-lg">
               <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
                 <tr>
-                <th className="p-2 py-5 text-left pl-4 w-[10px] whitespace-nowrap">
+                  <th className="p-2 py-5 text-left pl-4 w-[10px] whitespace-nowrap">
                     Serial No.
                   </th>
                   <th className="p-2 text-left px-8 w-[10px] whitespace-nowrap">
@@ -498,21 +505,23 @@ const MealActivityComponent = () => {
                     <th key={index} className="p-2">
                       <div>{dayjs(date).format("ddd, DD MMM")}</div>
                       <div className="text-xs text-gray-600">
-                        {mealType===1&&(
-                          <p>Total: {totalGuestsPerDay.lunchGuests[date] || 0}</p>
+                        {mealType === 1 && (
+                          <p>
+                            Total: {totalGuestsPerDay.lunchGuests[date] || 0}
+                          </p>
                         )}
-                        {mealType===2&&(
-                          <p>Total: {totalGuestsPerDay.snackGuests[date] || 0}</p>
+                        {mealType === 2 && (
+                          <p>
+                            Total: {totalGuestsPerDay.snackGuests[date] || 0}
+                          </p>
                         )}
-                        
-
                       </div>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {filteredData.map((employee,index) => {
+                {filteredData.map((employee, index) => {
                   const dateStatusMap: Record<
                     string,
                     { status: boolean; holiday: boolean; penalty: boolean }
@@ -534,7 +543,7 @@ const MealActivityComponent = () => {
                       className="hover:bg-gray-100"
                     >
                       <td className="border border-gray-200 p-2 overflow-x-auto text-center w-[10px] whitespace-nowrap">
-                        {index+1}
+                        {index + 1}
                       </td>
                       <td className="border border-gray-200 p-2 px-6 overflow-x-auto text-left w-[10px] whitespace-nowrap">
                         {employee.employee_name}
@@ -544,7 +553,6 @@ const MealActivityComponent = () => {
                           status: null,
                           holiday: false,
                           penalty: false,
-
                         };
 
                         let cellStyle =
@@ -574,8 +582,7 @@ const MealActivityComponent = () => {
                                 employee.employee_name,
                                 date,
                                 cellData.status,
-                                cellData.penalty,
-                  
+                                cellData.penalty
                               )
                             }
                           >

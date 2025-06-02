@@ -11,6 +11,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import Modal from "@/components/modal";
+import { Button } from "@/components/button";
 
 const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
@@ -433,138 +434,132 @@ const MealPlanTable = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-2">
       <div className="bg-stone-50 p-2 mt-2 rounded-lg h-[100vh]">
-        <div className="flex items-center  my-2 relative mt-8">
+        <div className="flex items-end relative">
+          <h2 className="text-2xl font-extrabold pl-4">Menu</h2>
           <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
-            <button
+            <Button
               onClick={() => changeWeek("prev")}
-              className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
-            >
-              <FaCaretSquareLeft />
-            </button>
-            <h2 className="p-2 text-base font-bold">
+              size="md"
+              shapeButton={true}
+              label={<FaCaretSquareLeft />}
+            />
+            <h2 className="px-2 text-base font-bold">
               {/*{`Start Date: ${
                     startDate.toISOString().split("T")[0]
                   }`}*/}
-                  {dayjs(startDate).format("DD MMM")}-{dayjs(endDate).format("DD MMM")}</h2>
-                  <button
-                    onClick={()=>changeWeek("next")}
-                    className="px-4 text-gray-300 text-4xl rounded hover:text-gray-400"
-                  >
-                    <FaCaretSquareRight />
-                  </button>
-                </div>
-      </div>
+              {dayjs(startDate).format("DD MMM")}-
+              {dayjs(endDate).format("DD MMM")}
+            </h2>
+            <Button
+              onClick={() => changeWeek("next")}
+              size="md"
+              shapeButton={true}
+              label={<FaCaretSquareRight />}
+            />
+          </div>
+        </div>
 
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <table className="table-auto w-full rounded-t-lg mt-10">
-            <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
-              <tr className="h-14 rounded-lg">
-                <th className="border p-2">Date</th>
-                <th className="border p-2">Lunch</th>
-                <th className="border p-2">Snacks</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mealData.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="text-center p-4">
-                    No meal data available for this week.
-                  </td>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <table className="table-auto w-full rounded-t-lg mt-4">
+              <thead className="bg-gray-200 border-gray-200 rounded-t-lg sticky top-0">
+                <tr className="h-14 rounded-lg">
+                  <th className="border p-2">Date</th>
+                  <th className="border p-2">Lunch</th>
+                  <th className="border p-2">Snacks</th>
                 </tr>
-              ) : (
-                mealData.map((row) => (
-                  <tr key={row.date} className="border text-center">
-                    <td className="border p-2">
-                      {dayjs(row.date).format("ddd, DD MMM")}
+              </thead>
+              <tbody>
+                {mealData.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="text-center p-4">
+                      No meal data available for this week.
                     </td>
-                    {["lunch", "snacks"].map((mealType) => (
-                      <td key={mealType} className="border p-2">
-                        {isEditing ? (
-                          <div className="flex items-center justify-between">
-                          <input
-                            type="text"
-                            value={
-                              editedData.find((r) => r.date === row.date)?.[
-                                mealType as keyof Row
-                              ] || ""
-                            }
-                            onChange={(e) =>
-                              handleEditChange(
-                                row.date,
-                                mealType as keyof Row,
-                                e.target.value
-                              )
-                            }
-                            className="border p-1 w-full"
-                          />
-                          {/* Edit button */}
-                        <button
-                        onClick={() => openprefModal(row.date,mealType as "lunch"|"snacks")}
-                        className="ml-2 text-blue-500 hover:text-blue-700"
-                      >
-                        <FaExclamation />
-                      </button>
-                      </div>
-                        ) : (
-                          row[mealType as keyof Row] || "—"
-                        )}
-                      </td>
-                    ))}
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-
-           
-
-
-
-
-
-
-
+                ) : (
+                  mealData.map((row) => (
+                    <tr key={row.date} className="border text-center">
+                      <td className="border p-2">
+                        {dayjs(row.date).format("ddd, DD MMM")}
+                      </td>
+                      {["lunch", "snacks"].map((mealType) => (
+                        <td key={mealType} className="border p-2">
+                          {isEditing ? (
+                            <div className="flex items-center justify-between">
+                              <input
+                                type="text"
+                                value={
+                                  editedData.find((r) => r.date === row.date)?.[
+                                    mealType as keyof Row
+                                  ] || ""
+                                }
+                                onChange={(e) =>
+                                  handleEditChange(
+                                    row.date,
+                                    mealType as keyof Row,
+                                    e.target.value
+                                  )
+                                }
+                                className="border p-1 w-full"
+                              />
+                              {/* Edit button */}
+                              <Button
+                                onClick={() =>
+                                  openprefModal(
+                                    row.date,
+                                    mealType as "lunch" | "snacks"
+                                  )
+                                }
+                                utilityButton={true}
+                                size="none"
+                                label={<FaExclamation />}
+                              />
+                            </div>
+                          ) : (
+                            row[mealType as keyof Row] || "—"
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
 
             <div className="flex justify-end mt-4">
               {!isEditing ? (
-                <div className="flex justify-end gap-x-8">
-                  <button
+                <div className="flex justify-end gap-x-2">
+                  <Button
                     onClick={() => setIsEditing(true)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2"
-                  >
-                    Update Menu
-                  </button>
-                  <button
+                    updateButton={true}
+                    label="Update Menu"
+                  />
+                  <Button
                     onClick={() => setIsCopyModalOpen(true)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 mr-2"
-                  >
-                    Copy Menu
-                  </button>
+                    label="Copy Menu"
+                  />
                 </div>
               ) : (
-                <>
-                  <button
-                    onClick={handleSave}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 mr-2"
-                  >
-                    Save
-                  </button>
-                  <button
+                <div className="flex justify-end gap-2">
+                  <Button
                     onClick={() => {
                       setEditedData(mealData);
                       setIsEditing(false);
                     }}
-                    className="bg-gray-500 text-white px-4 py-2"
-                  >
-                    Cancel
-                  </button>
-                </>
+                    cancelButton={true}
+                    label="Cancel"
+                  />
+                  <Button
+                    onClick={handleSave}
+                    successButton={true}
+                    size="xlg"
+                    label="Save"
+                  />
+                </div>
               )}
 
               {/*  copy Modal */}
@@ -578,22 +573,19 @@ const MealPlanTable = () => {
                       Are you sure you want to copy the meals from the previous
                       week?
                     </p>
-                    <div className="mt-4 flex justify-end">
-                      <button
+                    <div className="mt-4 flex justify-end gap-2">
+                      <Button
                         onClick={() => setIsCopyModalOpen(false)}
-                        className="bg-gray-500 text-white px-4 py-2 mr-2"
-                      >
-                        Cancel
-                      </button>
-                      <button
+                        cancelButton={true}
+                        label="Cancel"
+                      />
+                      <Button
                         onClick={() => {
                           handleCopyMealsFromPreviousWeek();
                           setIsCopyModalOpen(false);
                         }}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2"
-                      >
-                        Yes, Copy
-                      </button>
+                        label="Yes, Copy"
+                      />
                     </div>
                   </div>
                 </div>
@@ -605,31 +597,19 @@ const MealPlanTable = () => {
         {/* Prefernce/food tag Modal */}
         {prefmodalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
-            <div className="bg-white p-6 rounded-md shadow-lg w-80 relative">
+            <div className="bg-white p-6 rounded-md shadow-lg w-100 relative">
               {/* Close Button (Top Right) */}
-              <button
+              <Button
                 onClick={closeprefModal}
-                className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
-              >
-                <FaTimes size={20} />
-              </button>
+                shapeButton={true}
+                className="absolute top-2 right-0 text-gray-600 hover:text-red-600"
+                label={<FaTimes size={20} />}
+              />
 
-              <h2 className="text-lg font-bold mb-4">
+              <h2 className="text-lg font-bold mb-4 mt-6">
                 Select Food Tags for Counting Special Meals
               </h2>
               <div className="flex flex-col gap-3">
-                {/* {foodOptions.map((food) => (
-            <label key={food.food_Id} className="flex items-center space-x-2">
-            <input
-               type="checkbox"
-               value={food.food_Id}
-               checked={(selectedPreferences[selectedDate]?.[selectedMealType] || []).includes(food.food_Id)}
-               onChange={() => handlePreferenceChange(selectedDate, selectedMealType, food.food_Id)}
-             />
-            <span>{food.food}</span>
-            </label>
-            ))}
-            */}
                 {foodOptions.map((food) => (
                   <label
                     key={food.food_Id}
@@ -652,23 +632,20 @@ const MealPlanTable = () => {
                 ))}
 
                 {/* "Add New" Option */}
-                <button
-                  className="flex justify-start hover:bg-gray-200 py-2 mt-2"
+                <Button
                   onClick={() => {
                     closeprefModal();
                     setAddFoodModal(true);
                   }}
-                >
-                  + Add New
-                </button>
+                  fillButton={false}
+                  label="+ Add New"
+                />
 
                 <div className="flex justify-end">
-                  <button
-                    className="p-2 bg-blue-500 hover:bg-blue-600 text-white w-auto m-2"
+                  <Button
                     onClick={closeprefModal}
-                  >
-                    Save
-                  </button>
+                    label="Save"
+                  />
                 </div>
               </div>
             </div>
@@ -680,14 +657,14 @@ const MealPlanTable = () => {
           <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
             <div className="bg-white p-6 rounded-md shadow-lg w-80 relative">
               {/* Close Button */}
-              <button
+              <Button
                 onClick={() => setAddFoodModal(false)}
-                className="absolute top-2 right-2 text-gray-600 hover:text-red-600"
-              >
-                <FaTimes size={20} />
-              </button>
+                shapeButton={true}
+                className="absolute top-2 right-0 text-gray-600 hover:text-red-600"
+                label={<FaTimes size={20} />}
+              />
 
-              <h2 className="text-lg font-bold mb-4">Add New Food Tag</h2>
+              <h2 className="text-lg font-bold mb-4 mt-4">Add New Food Tag</h2>
 
               {/* Input Field */}
               <input
@@ -699,13 +676,11 @@ const MealPlanTable = () => {
               />
 
               {/* Save Button */}
-              <div className="flex justify-end">
-                <button
-                  className="p-2 bg-blue-500 hover:bg-blue-600 text-white w-auto mt-4"
+              <div className="flex justify-end mt-2">
+                <Button
                   onClick={handleAddFood}
-                >
-                  Save
-                </button>
+                  label="Save"
+                />
               </div>
             </div>
           </div>

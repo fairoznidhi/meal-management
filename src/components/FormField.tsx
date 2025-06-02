@@ -1,6 +1,7 @@
 "use client";
 
-{/*import React from "react";
+{
+  /*import React from "react";
 
 function labelShow(labelName:string){
    if(labelName==='phone_number')return 'Phone Number';
@@ -181,13 +182,10 @@ const FormField: React.FC<FormFieldProps> = ({
 };
 
 export default FormField;
-*/}
-
-
-
+*/
+}
 
 import React, { useState } from "react";
-
 
 function labelShow(labelName: string) {
   if (labelName === "phone_number") return "Phone Number";
@@ -196,8 +194,6 @@ function labelShow(labelName: string) {
   if (labelName === "preference_food") return "Allergies/Aversions";
   return labelName;
 }
-
-
 
 type FormFieldProps = {
   id: string;
@@ -227,14 +223,20 @@ const FormField: React.FC<FormFieldProps> = ({
 
   // Get food names from selected IDs
   const selectedFoods =
-    options?.filter((opt) => selectedFoodIds.includes(opt.food_id)).map((opt) => opt.food).join(", ") || "";
+    options
+      ?.filter((opt) => selectedFoodIds.includes(opt.food_id))
+      .map((opt) => opt.food)
+      .join(", ") || "";
 
   return (
     <div className="flex flex-col relative">
-      <label htmlFor={id} className="block w-full mb-2 font-medium text-sm text-gray-500 capitalize">
+      <label
+        htmlFor={id}
+        className="block w-full mb-2 font-medium text-sm text-gray-500 capitalize"
+      >
         {labelShow(label)}
       </label>
-      
+
       {/* Editable Mode */}
       {isEditable ? (
         label === "preference_food" && options ? (
@@ -251,7 +253,10 @@ const FormField: React.FC<FormFieldProps> = ({
             {isDropdownOpen && (
               <div className="absolute bg-white border rounded shadow-md w-full mt-1 p-2 z-10">
                 {options.map((option) => (
-                  <label key={option.food_id} className="block p-2 hover:bg-gray-100 cursor-pointer items-center">
+                  <label
+                    key={option.food_id}
+                    className="block p-2 hover:bg-gray-100 cursor-pointer items-center"
+                  >
                     <input
                       type="checkbox"
                       value={option.food_id}
@@ -284,7 +289,6 @@ const FormField: React.FC<FormFieldProps> = ({
             value={value as string}
             onChange={(e) => onChange && onChange(e.target.value)}
             className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-200"
-           
           >
             {options.map((option) => (
               <option key={option.food_id} value={option.food_id}>
@@ -302,15 +306,22 @@ const FormField: React.FC<FormFieldProps> = ({
             //className="bg-gray-200 rounded-md px-4 py-2 flex-1 border border-gray-200"
             disabled={label === "email" || label === "dept_name"}
             className={`bg-gray-200 rounded-md px-4 py-2 flex-1 border border-gray-200 ${
-            label === "email" || label === "dept_name" ? "opacity-50 cursor-not-allowed" : ""
+              label === "email" || label === "dept_name"
+                ? "opacity-50 cursor-not-allowed"
+                : ""
             }`}
-            
           />
         )
       ) : (
         // View Mode - Show Selected Food Names OR "No preferences selected"
-        <span className="bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-200">
-          {label === "preference_food" ? selectedFoods || "No options selected" : value}
+        <span
+          className={`bg-gray-100 rounded-md px-4 py-2 flex-1 border border-gray-200 ${
+            label === "dept_name" || label === "email" ? "cursor-not-allowed" : ""
+          }`}
+        >
+          {label === "preference_food"
+            ? selectedFoods || "No options selected"
+            : value}
         </span>
       )}
     </div>

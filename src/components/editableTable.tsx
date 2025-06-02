@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "./button";
 
 interface TableRow {
   id: number;
@@ -16,7 +17,11 @@ export default function EditableTable({ data, onSave }: EditableTableProps) {
   const [editMode, setEditMode] = useState(false);
   const [editedData, setEditedData] = useState<TableRow[]>(data);
 
-  const handleChange = (id: number, field: keyof TableRow, value: string | number) => {
+  const handleChange = (
+    id: number,
+    field: keyof TableRow,
+    value: string | number
+  ) => {
     setEditedData((prevData) =>
       prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
@@ -45,8 +50,12 @@ export default function EditableTable({ data, onSave }: EditableTableProps) {
                   <td className="border p-2">
                     <input
                       type="text"
-                      value={editedData.find((r) => r.id === row.id)?.name || ""}
-                      onChange={(e) => handleChange(row.id, "name", e.target.value)}
+                      value={
+                        editedData.find((r) => r.id === row.id)?.name || ""
+                      }
+                      onChange={(e) =>
+                        handleChange(row.id, "name", e.target.value)
+                      }
                       className="border p-1 w-full"
                     />
                   </td>
@@ -54,15 +63,21 @@ export default function EditableTable({ data, onSave }: EditableTableProps) {
                     <input
                       type="number"
                       value={editedData.find((r) => r.id === row.id)?.age || ""}
-                      onChange={(e) => handleChange(row.id, "age", Number(e.target.value))}
+                      onChange={(e) =>
+                        handleChange(row.id, "age", Number(e.target.value))
+                      }
                       className="border p-1 w-full"
                     />
                   </td>
                   <td className="border p-2">
                     <input
                       type="email"
-                      value={editedData.find((r) => r.id === row.id)?.email || ""}
-                      onChange={(e) => handleChange(row.id, "email", e.target.value)}
+                      value={
+                        editedData.find((r) => r.id === row.id)?.email || ""
+                      }
+                      onChange={(e) =>
+                        handleChange(row.id, "email", e.target.value)
+                      }
                       className="border p-1 w-full"
                     />
                   </td>
@@ -82,11 +97,24 @@ export default function EditableTable({ data, onSave }: EditableTableProps) {
       <div className="mt-4">
         {editMode ? (
           <>
-            <button onClick={handleSave} className="bg-green-500 text-white px-4 py-2 mr-2">Save</button>
-            <button onClick={() => setEditMode(false)} className="bg-gray-500 text-white px-4 py-2">Cancel</button>
+            <Button
+              onClick={handleSave}
+              successButton={true}
+              label="Save"
+            />
+            <Button
+              onClick={() => setEditMode(false)}
+              cancelButton={true}
+              label="Cancel"
+            />
           </>
         ) : (
-          <button onClick={() => setEditMode(true)} className="bg-blue-500 text-white px-4 py-2">Edit</button>
+          <button
+            onClick={() => setEditMode(true)}
+            className="bg-blue-500 text-white px-4 py-2"
+          >
+            Edit
+          </button>
         )}
       </div>
     </div>

@@ -1,26 +1,19 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
-import Table, { Column, Row } from "@/components/Table"; // Adjust the import path
-import Search from "@/components/Search";
-import Modal from "@/components/modal";
-import { headers } from "next/headers";
-import DepartmentModal from "@/features/employeeList/deptModal";
-import notificationToast from "@/components/notificationToast";
-import { FaEye, FaEyeSlash, FaPrint } from "react-icons/fa";
-import EmployeeDetails from "@/components/employeeUpdateModal";
-import DepartmentList from "@/features/settings/department/DepartmentList";
-import EmployeeFormField from "@/components/EmployeeFormField";
 import { usePrint } from "@/app/hooks/usePrint";
 import { Button } from "@/components/button";
+import EmployeeFormField from "@/components/EmployeeFormField";
+import Modal from "@/components/modal";
+import notificationToast from "@/components/notificationToast";
+import Search from "@/components/Search";
 import Select from "@/components/Select";
-
-
+import Table, { Column, Row } from "@/components/Table"; // Adjust the import path
+import HttpClient, { baseRequest } from "@/services/HttpClientAPI";
+import React, { useEffect, useRef, useState } from "react";
+import { FaPrint } from "react-icons/fa6";
 
 const httpClient = new HttpClient(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
 const request = baseRequest(`${process.env.NEXT_PUBLIC_PROXY_URL}`);
-
 
 type Employee = {
   employee_id: string;
@@ -30,13 +23,12 @@ type Employee = {
   dept_id: string;
   phone_number: string;
   remarks: string;
-  preference_food:number[];
-  is_permanent:boolean;
-  is_active:boolean;
-  designation:string;
-  roll:string;
+  preference_food: number[];
+  is_permanent: boolean;
+  is_active: boolean;
+  designation: string;
+  roll: string;
 };
-
 type TotalMeal = {
   name: string;
   total_count: number;
@@ -66,9 +58,6 @@ type Dept = {
   dept_name: string;
   weekends: string[];
 };
-
-
-
 
 const getCurrentMonthDetails = () => {
   const now = new Date();
@@ -114,9 +103,12 @@ const EmployeeComponent: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(now.getUTCMonth()); // Default: Current month
   const [selectedYear, setSelectedYear] = useState(now.getUTCFullYear()); // Default: Current year
   const [showPassword, setShowPassword] = useState(false);
-  const [loading,setLoading]=useState(true);
+  const [loading, setLoading] = useState(true);
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [deptError, setDeptError] = useState("");
 
   const [newEmployee, setNewEmployee] = useState<{
     name: string;
@@ -126,10 +118,9 @@ const EmployeeComponent: React.FC = () => {
     phone_number: string;
     remarks: string;
     photo: File | null;
-    preference_food:number[];
-    designation:string;
-    roll:string;
-    
+    preference_food: number[];
+    designation: string;
+    roll: string;
   }>({
     name: "",
     email: "",
@@ -138,14 +129,11 @@ const EmployeeComponent: React.FC = () => {
     phone_number: "",
     remarks: "",
     photo: null,
-   preference_food:[],
-   designation:"",
-   roll:"",
-   
+    preference_food: [],
+    designation: "",
+    roll: "",
   });
   const [searchTerm, setSearchTerm] = useState("");
-
-  
 
   //const { now, firstDate, daysInMonth } = getCurrentMonthDetails();
 
@@ -175,9 +163,9 @@ const EmployeeComponent: React.FC = () => {
       phone_number: "",
       remarks: "",
       photo: null,
-      preference_food:[],
-      designation:"",
-      roll:""
+      preference_food: [],
+      designation: "",
+      roll: "",
     });
   };
 
@@ -202,20 +190,15 @@ const EmployeeComponent: React.FC = () => {
         method: "GET",
         useAuth: true,
       });
-      
+
       return employees as any[];
-      
-     
-    } 
-    catch (err: any) {
+    } catch (err: any) {
       console.error("Error fetching employees:", err);
       //setError(err.response?.data?.message || "Failed to fetch employees.");
       notificationToast("Error Fetching Employee List", "error");
       return [];
     }
-     
   };
-  
 
   // Send PATCH request for employee penalties
   const sendPatchRequestForPenalty = async (employee: any) => {
@@ -230,7 +213,7 @@ const EmployeeComponent: React.FC = () => {
         },
         useAuth: true,
       });
-    
+
       return {
         employee_id: employee.employee_id,
         name: employee.name,
@@ -239,7 +222,7 @@ const EmployeeComponent: React.FC = () => {
         phone_number: employee.phone_number,
         remarks: employee.remarks,
         penalties: response,
-        is_active:employee.is_active
+        is_active: employee.is_active,
       };
     } catch (err: any) {
       console.error(
@@ -251,12 +234,10 @@ const EmployeeComponent: React.FC = () => {
         name: employee.name,
         remarks: employee.remarks,
         penalties: "Error occurred",
-        is_active:employee.is_active
+        is_active: employee.is_active,
       };
     }
-   
   };
- 
 
   // Send PATCH request for lunch and snacks
   const sendPatchRequestForMeals = async (employee: any) => {
@@ -321,7 +302,6 @@ const EmployeeComponent: React.FC = () => {
     setResponseData(results);
     setLoading(false);
   };
-  
 
   const deleteEmployee = async (employeeId: number) => {
     try {
@@ -370,10 +350,10 @@ const EmployeeComponent: React.FC = () => {
       }
       formData.append("preference_food", JSON.stringify([]));
 
-    formData.append("is_active", "true"); 
-    //formData.append("is_permanent", "true");
-    formData.append("designation",newEmployee.designation);
-    formData.append("roll",newEmployee.roll);
+      formData.append("is_active", "true");
+      //formData.append("is_permanent", "true");
+      formData.append("designation", newEmployee.designation);
+      formData.append("roll", newEmployee.roll);
       notificationToast("Processing", "info");
       const response = (await request({
         url: "/employee",
@@ -396,8 +376,7 @@ const EmployeeComponent: React.FC = () => {
           penalties: "N/A",
           lunch: 0,
           snacks: 0,
-          preference_food:[],
-          
+          preference_food: [],
         },
       ]);
       await createMealPlan();
@@ -412,8 +391,6 @@ const EmployeeComponent: React.FC = () => {
     }
   };
 
-  
-
   const updateEmployee = async () => {
     try {
       const formData = new FormData();
@@ -424,7 +401,7 @@ const EmployeeComponent: React.FC = () => {
       formData.append("phone_number", updatedEmployee?.phone_number);
       //formData.append("remarks", updatedEmployee?.remarks);
       //formData.append("preference_food", selectedEmployee?.preference_food); // Send empty array
-      formData.append("is_active",updatedEmployee?.is_active);
+      formData.append("is_active", updatedEmployee?.is_active);
       //formData.append("is_permanent","true");
       await request({
         url: `/employee`,
@@ -466,24 +443,22 @@ const EmployeeComponent: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchAndPatchEmployees(); 
-      const deptList = await fetchDept(); 
-      setDepartments(deptList); 
+      await fetchAndPatchEmployees();
+      const deptList = await fetchDept();
+      setDepartments(deptList);
     };
 
-    fetchData(); 
+    fetchData();
   }, [selectedYear, selectedMonth]);
 
   const handleAddEmployeeClick = async () => {
     try {
-      
       const deptList = await fetchDept();
       setDepartments(deptList);
-     
+
       setShowAddModal(true);
     } catch (error) {
       console.error("Error calling additional API:", error);
-    
     }
   };
 
@@ -523,18 +498,18 @@ const EmployeeComponent: React.FC = () => {
       label: "Snacks",
     },
     {
-      key:"is_active",
-      label:"Active Status",
-       render: (value) => (
-      <div className="flex items-center justify-center gap-2">
-        <span
-          className={`h-3 w-3 rounded-full ${
-            value ? "bg-green-500" : "bg-red-500"
-          }`}
-        />
-        <span>{value ? "Active" : "Inactive"}</span>
-      </div>
-    ),
+      key: "is_active",
+      label: "Active Status",
+      render: (value) => (
+        <div className="flex items-center justify-center gap-2">
+          <span
+            className={`h-3 w-3 rounded-full ${
+              value ? "bg-green-500" : "bg-red-500"
+            }`}
+          />
+          <span>{value ? "Active" : "Inactive"}</span>
+        </div>
+      ),
     },
     /*{
       key: "preference_food",
@@ -543,7 +518,6 @@ const EmployeeComponent: React.FC = () => {
     },*/
   ];
 
- 
   const handleSelectChange = (e: any) => {
     const selectedValue = e.target.value;
     if (selectedValue === "add_new") {
@@ -555,360 +529,357 @@ const EmployeeComponent: React.FC = () => {
     }
   };
 
+  const handleNameChange = (e: any) => {
+    const value = e.target.value;
+    setNewEmployee({ ...newEmployee, name: e.target.value });
+    const nameRegex = /^[A-Za-z][A-Za-z-' ]{1,49}$/;
+    setNameError(
+      nameRegex.test(value)
+        ? ""
+        : newEmployee.name.length < 1
+        ? "Name field cannot be empty."
+        : "Please enter a valid name."
+    );
+  };
+
   const handleEmailChange = (e: any) => {
     const value = e.target.value;
     setNewEmployee({ ...newEmployee, email: value });
-
-    // Validate email format: any characters before @yopmail.com
-    const emailRegex = /^[^\s@]+@yopmail\.com$/;
-    {/*if (!emailRegex.test(value)) {
-      setEmailError("Please enter a valid email like em@gmail.com");
-    }
-    else {
-      setEmailError("");
-    }*/}
-    setEmailError(emailRegex.test(value) ? "" : "Please enter a valid email like em@yopmail.com");
-    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    setEmailError(
+      emailRegex.test(value)
+        ? ""
+        : "Please enter a valid email like em@gmail.com"
+    );
   };
-  
-  const handlePhoneChange = (e:any) => {
+
+  const handlePhoneChange = (e: any) => {
     const value = e.target.value;
     setNewEmployee({ ...newEmployee, phone_number: value });
+
+    const digitsOnly = /^\d+$/;
+    const startsWith01 = /^01/;
     const phoneRegex = /^01\d{9}$/;
-    if (!phoneRegex.test(value)) {
-      setPhoneError("Phone number must be 11 digits");
-    } 
+
+    setPhoneError(
+      value.length < 1
+        ? "Phone number is required."
+        : !digitsOnly.test(value)
+        ? "Please enter digits only."
+        : !startsWith01.test(value)
+        ? "Must start with 01."
+        : !phoneRegex.test(value)
+        ? "Must be 11 digits."
+        : ""
+    );
   };
 
+  const handlePasswordChange = (e: any) => {
+    const value = e.target.value;
+    setNewEmployee({ ...newEmployee, password: value });
+
+    setPasswordError(
+      value.length < 1
+        ? "Password is required."
+        : value.length < 4
+        ? "Password must be at least 4 characters."
+        : ""
+    );
+  };
 
   const validateFields = () => {
     let valid = true;
-  
-    const emailRegex = /^[^\s@]+@yopmail\.com$/;
-    if (!emailRegex.test(newEmployee.email)) {
-      setEmailError("Please enter a valid email like emp@gmail.com");
+    if (newEmployee.dept_id.length == 0) {
+      setDeptError("Choose a department.");
+    }
+
+    if (!newEmployee.name.length) {
+      setNameError("Name field cannot be empty.");
+    }
+    const nameRegex = /^[A-Za-z][A-Za-z-' ]{1,49}$/;
+    if (!nameRegex.test(newEmployee.name)) {
+      setNameError("Please enter a valid name.");
+    }
+
+    if (newEmployee.password.length == 0)
+      setPasswordError("Please enter a password.");
+    if (newEmployee.password.length < 4)
+      setPasswordError("Please enter a valid password.");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (/*newEmployee.email &&*/ !emailRegex.test(newEmployee.email)) {
+      setEmailError("Please enter a valid email (ex: emp@gmail.com)");
       valid = false;
-    }  
-  
+    }
+
     const phoneRegex = /^01\d{9}$/;
     if (!phoneRegex.test(newEmployee.phone_number)) {
       setPhoneError("Phone number must be valid");
       valid = false;
-    } 
-  
+    }
+    if (!newEmployee.phone_number) {
+      setPhoneError("Phone number is required.");
+      valid = false;
+    }
+
     return valid;
   };
-  
-  
-  
+
   const handleAddEmployee = () => {
     if (validateFields()) {
       addEmployee();
     }
   };
-  
-  
-  
-
 
   return (
     <div className="p-4">
       <div className="bg-stone-50 p-2 mt-2 rounded-lg">
-      <div className="flex justify-between mb-2 items-end">
-        <div className="flex gap-1 items-center mx-2">
-          Select Month: 
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-            className="px-2 py-1 border rounded bg-[#f4f4f4]"
-          >
-            {Array.from({ length: 12 }, (_, i) => (
-              <option key={i} value={i}>
-                {new Date(0, i).toLocaleString("default", { month: "long" })}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="px-2 py-1 border rounded bg-[#f4f4f4]"
-          >
-            {Array.from({ length: 5 }, (_, i) => {
-              const year = now.getFullYear() - 2 + i; // Show 2 years before and 2 years after
-              return (
-                <option key={year} value={year}>
-                  {year}
+        <div className="flex justify-between mb-2 items-end">
+          <div className="flex gap-1 items-center mx-2">
+            Select Month:
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+              className="px-2 py-1 border rounded bg-[#f4f4f4]"
+            >
+              {Array.from({ length: 12 }, (_, i) => (
+                <option key={i} value={i}>
+                  {new Date(0, i).toLocaleString("default", { month: "long" })}
                 </option>
-              );
-            })}
-          </select>
-        </div>
-
-        <div className="flex gap-4">
-          <Button
-           label="Add Employee"
-           onClick={handleAddEmployeeClick}
-          className="rounded"
-          size="md" 
-          />
-
-          
-        
-        {/*<button
-         onClick={() => handlePrint(printRef.current)}
-         
-         className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out"
-         >
-        <FaPrint className="text-midnightBlue text-xl" />
-        </button>*/}
-        <Button
-          label="Print"
-          onClick={() => handlePrint(printRef.current)}
-          className="bg-blue-200 hover:bg-blue-300 p-3 rounded-md transition duration-300 ease-in-out flex items-center gap-2"
-          
-        >
-       
-        </Button>
-          <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-        </div>
-        
-      </div>
-
-      <div ref={printRef} className="mt-4">
-        {responseData.length > 0 && (
-          <Table
-            columns={columns}
-            data={filteredData.length > 0 ? filteredData : responseData}
-          />
-          
-        )}
-        {loading && <span className="loading loading-dots loading-lg"></span>}
-        {error && (
-          <div>
-            <h3 className="text-red-500">Error:</h3>
-            <p>{error}</p>
+              ))}
+            </select>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+              className="px-2 py-1 border rounded bg-[#f4f4f4]"
+            >
+              {Array.from({ length: 5 }, (_, i) => {
+                const year = now.getFullYear() - 2 + i; // Show 2 years before and 2 years after
+                return (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                );
+              })}
+            </select>
           </div>
-        )}
-      </div>
-      </div>
 
-      
+          <div className="flex gap-2">
+            <Button
+              label="Add Employee"
+              onClick={handleAddEmployeeClick}
+              size="md"
+            />
+            <Button
+              label={<FaPrint />}
+              utilityButton={true}
+              size="none"
+              onClick={() => handlePrint(printRef.current)}
+            ></Button>
+            <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+          </div>
+        </div>
 
-
-
-     {showDeleteModal && selectedEmployee && (
-  <Modal
-    isOpen={showDeleteModal}
-    onClose={() => {
-      setShowDeleteModal(false);
-      setIsEditing(false);
-      setUpdatedEmployee(null);
-    }}
-    title={
-      isEditing
-        ? `Edit Employee: ${selectedEmployee.name}`
-        : `${selectedEmployee.name}`
-    }
-    footer={
-      <>
-        {!isEditing ? (
-          <>
-           
-            <div className="flex space-x-3">
-  {/* Update Button */}
-  <Button
-    label="Update"
-    onClick={() => {
-      setIsEditing(true);
-
-  
-      const matchedDept = departments.find(
-        (dept) => dept.dept_name === selectedEmployee.dept_name
-      );
-
-  
-      setUpdatedEmployee({
-        ...selectedEmployee,
-        dept_id: matchedDept?.dept_id || "",
-      });
-    }}
-    className="bg-yellow-500 text-white rounded"
-  />
-
-  {/* Delete Button */}
-  <Button
-    label="Delete"
-    onClick={() => deleteEmployee(selectedEmployee.employee_id)}
-    className="bg-red-500 text-white rounded"
-  />
-</div>
-
-
-          </>
-        ) : (
-          <>
-          
-
-            <div className="flex space-x-3">
-  {/* Cancel Edit Button */}
-  <Button
-    label="Cancel"
-    onClick={() => {
-      setIsEditing(false);
-      setUpdatedEmployee(null);
-    }}
-    className="bg-gray-300 text-black rounded"
-  />
-
-  {/* Save Changes Button */}
-  <Button
-    label="Save Changes"
-    onClick={async () => {
-      await updateEmployee();
-    }}
-    className="bg-green-500 text-white rounded"
-  />
-</div>
-
-          </>
-        )}
-      </>
-    }
-  >
-    <div className="space-y-4">
-      {/* Name */}
-      <div>
-        <strong>Name:</strong>
-        {isEditing ? (
-          <input
-            type="text"
-            value={updatedEmployee?.name || ""}
-            onChange={(e) =>
-              setUpdatedEmployee({
-                ...updatedEmployee,
-                name: e.target.value,
-              } as Row)
-            }
-            className="border px-4 py-2 w-full rounded"
-          />
-        ) : (
-          selectedEmployee.name
-        )}
+        <div ref={printRef} className="mt-4">
+          {responseData.length > 0 && (
+            <Table
+              columns={columns}
+              data={filteredData.length > 0 ? filteredData : responseData}
+            />
+          )}
+          {loading && <span className="loading loading-dots loading-lg"></span>}
+          {error && (
+            <div>
+              <h3 className="text-red-500">Error:</h3>
+              <p>{error}</p>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Email */}
-      <div>
-        <strong>Email:</strong>
-        {isEditing ? (
-          <input
-            type="email"
-            value={updatedEmployee?.email || ""}
-            onChange={(e) =>
-              setUpdatedEmployee({
-                ...updatedEmployee,
-                email: e.target.value,
-              } as Row)
-            }
-            className="border px-4 py-2 w-full rounded"
-          />
-        ) : (
-          selectedEmployee.email || "N/A"
-        )}
-      </div>
+      {showDeleteModal && selectedEmployee && (
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setIsEditing(false);
+            setUpdatedEmployee(null);
+          }}
+          title={
+            isEditing
+              ? `Edit Employee: ${selectedEmployee.name}`
+              : `${selectedEmployee.name}`
+          }
+          footer={
+            <>
+              {!isEditing ? (
+                <>
+                  <div className="flex space-x-2">
+                    {/* Update Button */}
+                    <Button
+                      label="Update"
+                      updateButton={true}
+                      onClick={() => {
+                        setIsEditing(true);
+                        const matchedDept = departments.find(
+                          (dept) =>
+                            dept.dept_name === selectedEmployee.dept_name
+                        );
+                        setUpdatedEmployee({
+                          ...selectedEmployee,
+                          dept_id: matchedDept?.dept_id || "",
+                        });
+                      }}
+                    />
+                    {/* Delete Button */}
+                    <Button
+                      label="Delete"
+                      deleteButton={true}
+                      onClick={() =>
+                        deleteEmployee(selectedEmployee.employee_id)
+                      }
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex space-x-2">
+                    {/* Cancel Edit Button */}
+                    <Button
+                      label="Cancel"
+                      cancelButton={true}
+                      onClick={() => {
+                        setIsEditing(false);
+                        setUpdatedEmployee(null);
+                      }}
+                    />
 
-      {/* Phone Number */}
-      <div>
-        <strong>Phone Number:</strong>
-        {isEditing ? (
-          <input
-            type="text"
-            value={updatedEmployee?.phone_number || ""}
-            onChange={(e) =>
-              setUpdatedEmployee({
-                ...updatedEmployee,
-                phone_number: e.target.value,
-              } as Row)
-            }
-            className="border px-4 py-2 w-full rounded"
-          />
-        ) : (
-          selectedEmployee.phone_number || "N/A"
-        )}
-      </div>
+                    {/* Save Changes Button */}
+                    <Button
+                      label="Save Changes"
+                      successButton={true}
+                      onClick={async () => {
+                        await updateEmployee();
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+            </>
+          }
+        >
+          <div className="space-y-4">
+            {/* Name */}
+            <div>
+              <strong>Name:</strong>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={updatedEmployee?.name || ""}
+                  onChange={(e) =>
+                    setUpdatedEmployee({
+                      ...updatedEmployee,
+                      name: e.target.value,
+                    } as Row)
+                  }
+                  className="border px-4 py-2 w-full rounded"
+                />
+              ) : (
+                selectedEmployee.name
+              )}
+            </div>
 
-      
+            {/* Email */}
+            <div>
+              <strong>Email:</strong>
+              {isEditing ? (
+                <input
+                  type="email"
+                  value={updatedEmployee?.email || ""}
+                  onChange={(e) =>
+                    setUpdatedEmployee({
+                      ...updatedEmployee,
+                      email: e.target.value,
+                    } as Row)
+                  }
+                  className="border px-4 py-2 w-full rounded"
+                />
+              ) : (
+                selectedEmployee.email || "N/A"
+              )}
+            </div>
 
+            {/* Phone Number */}
+            <div>
+              <strong>Phone Number:</strong>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={updatedEmployee?.phone_number || ""}
+                  onChange={(e) =>
+                    setUpdatedEmployee({
+                      ...updatedEmployee,
+                      phone_number: e.target.value,
+                    } as Row)
+                  }
+                  className="border px-4 py-2 w-full rounded"
+                />
+              ) : (
+                selectedEmployee.phone_number || "N/A"
+              )}
+            </div>
 
-      <div>
-  <strong>Department:</strong>
-  {isEditing ? (
-    <Select
-      value={updatedEmployee?.dept_id || ""}
-      onChange={(e) =>
-        setUpdatedEmployee({
-          ...updatedEmployee,
-          dept_id: e.target.value,
-        } as Row)
-      }
-      options={departments.map((dept) => ({
-        label: dept.dept_name,
-        value: dept.dept_id,
-      }))}
-      disabledOption="Select a department"
-    />
-  ) : (
-    selectedEmployee.dept_name || "N/A"
-  )}
-</div>
+            <div>
+              <strong>Department:</strong>
+              {isEditing ? (
+                <Select
+                  value={updatedEmployee?.dept_id || ""}
+                  onChange={(e) =>
+                    setUpdatedEmployee({
+                      ...updatedEmployee,
+                      dept_id: e.target.value,
+                    } as Row)
+                  }
+                  options={departments.map((dept) => ({
+                    label: dept.dept_name,
+                    value: dept.dept_id,
+                  }))}
+                  disabledOption="Select a department"
+                />
+              ) : (
+                selectedEmployee.dept_name || "N/A"
+              )}
+            </div>
 
-
-
-  <div>
-  <strong>Active Status:</strong>
-  {isEditing ? (
-    <Select
-      value={
-        updatedEmployee?.is_active !== undefined
-          ? updatedEmployee.is_active.toString()
-          : selectedEmployee.is_active.toString()
-      }
-      onChange={(e) =>
-        setUpdatedEmployee({
-          ...updatedEmployee,
-          is_active: e.target.value === "true",
-        } as Row)
-      }
-      options={[
-        { label: "Active", value: "true" },
-        { label: "Inactive", value: "false" },
-      ]}
-    />
-  ) : selectedEmployee.is_active ? (
-    "Active"
-  ) : (
-    "Inactive"
-  )}
-</div>
-
-
-   
-
-    </div>
-  </Modal>
-)}
-
-
-
-
-
-
-
-
-
-
-
-
+            <div>
+              <strong>Active Status:</strong>
+              {isEditing ? (
+                <Select
+                  value={
+                    updatedEmployee?.is_active !== undefined
+                      ? updatedEmployee.is_active.toString()
+                      : selectedEmployee.is_active.toString()
+                  }
+                  onChange={(e) =>
+                    setUpdatedEmployee({
+                      ...updatedEmployee,
+                      is_active: e.target.value === "true",
+                    } as Row)
+                  }
+                  options={[
+                    { label: "Active", value: "true" },
+                    { label: "Inactive", value: "false" },
+                  ]}
+                />
+              ) : selectedEmployee.is_active ? (
+                "Active"
+              ) : (
+                "Inactive"
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
 
       {/* Add Employee Modal */}
       <Modal
@@ -916,117 +887,133 @@ const EmployeeComponent: React.FC = () => {
         onClose={() => {
           setShowAddModal(false);
           resetForm();
+          setPhoneError("");
+          setNameError("");
+          setPasswordError("");
+          setDeptError("");
+          setEmailError("");
         }}
         title="Add New Employee"
         footer={
           <>
-            
             <Button
-  label="Add Employee"
-  onClick={handleAddEmployee}
-  className="bg-blue-500 text-white rounded hover:bg-blue-600 me-3"
-/>
-
-      
-      
-  
+              label="Add Employee"
+              successButton={true}
+              onClick={handleAddEmployee}
+            />
           </>
         }
       >
         <div className="grid grid-cols-2 gap-4">
-          
+          <div>
+            <EmployeeFormField
+              label="Name"
+              type="text"
+              placeholder=""
+              value={newEmployee.name}
+              onChange={handleNameChange}
+              required
+            />
+            {nameError && (
+              <p className="text-red-500 text-sm mt-1">{nameError}</p>
+            )}
+          </div>
+          <div>
+            <EmployeeFormField
+              label="Email"
+              type="email"
+              placeholder="ex: emp@gmail.com"
+              value={newEmployee.email}
+              onChange={handleEmailChange}
+              //error={emailError}
+              required
+            />
+            {emailError && (
+              <p className="text-red-500 text-sm mt-1">{emailError}</p>
+            )}
+          </div>
 
-         
+          <div>
+            <EmployeeFormField
+              label="Password"
+              type="password"
+              value={newEmployee.password}
+              placeholder=""
+              onChange={handlePasswordChange}
+              required
+              showPasswordToggle
+            />
+            {passwordError && (
+              <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+            )}
+          </div>
+
+          <div>
+            <EmployeeFormField
+              label="Department"
+              type="select"
+              value={newEmployee.dept_id}
+              placeholder=""
+              onChange={(e) => {
+                if (e.target.value === "add new") {
+                  setShowDeptModal(true);
+                  setShowAddModal(false);
+                  setNewEmployee({ ...newEmployee, dept_id: "" });
+                } else {
+                  setNewEmployee({ ...newEmployee, dept_id: e.target.value });
+                  setDeptError("");
+                }
+              }}
+              options={[
+                ...departments.map((d) => ({
+                  value: String(d.dept_id),
+                  label: d.dept_name,
+                })),
+                //{ value: "add new", label: "+" },
+              ]}
+              required
+            />
+            {deptError && (
+              <p className="text-red-500 text-sm mt-1">{deptError}</p>
+            )}
+          </div>
+
+          <div>
+            <EmployeeFormField
+              label="Phone No."
+              type="text"
+              placeholder="ex: 01xxxxxxxxx"
+              value={newEmployee.phone_number}
+              onChange={handlePhoneChange}
+              // error={phoneError}
+              required
+            />
+            {phoneError && (
+              <p className="text-red-500 text-sm mt-1">{phoneError}</p>
+            )}
+          </div>
 
           <EmployeeFormField
-  label="Name"
-  type="text"
-  placeholder=""
-  value={newEmployee.name}
-  onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
-  required
-/>
-<div>
-<EmployeeFormField
-  label="Email"
-  type="email"
-  placeholder="ex: emp@gmail.com"
-  value={newEmployee.email}
-  onChange={handleEmailChange}
-  //error={emailError}
-  required
-/>
-{emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+            label="Designation"
+            type="text"
+            placeholder=""
+            value={newEmployee.designation}
+            onChange={(e) =>
+              setNewEmployee({ ...newEmployee, designation: e.target.value })
+            }
+          />
 
- </div>
-
-<EmployeeFormField
-  label="Password"
-  type="password"
-  value={newEmployee.password}
-  placeholder=""
-  onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
-  required
-  showPasswordToggle
-/>
-
-<EmployeeFormField
-  label="Department"
-  type="select"
-  value={newEmployee.dept_id}
-  placeholder=""
-  onChange={(e) => {
-    if (e.target.value === "add new") {
-      setShowDeptModal(true);
-      setShowAddModal(false);
-      setNewEmployee({ ...newEmployee, dept_id: "" });
-    } else {
-      setNewEmployee({ ...newEmployee, dept_id: e.target.value });
-    }
-  }}
-  options={[
-    ...departments.map((d) => ({ value: String(d.dept_id), label: d.dept_name })),
-    //{ value: "add new", label: "+" },
-  ]}
-  required
-/>
-
-<EmployeeFormField
-  label="Phone No."
-  type="text"
-  placeholder="ex: 01xxxxxxxxx"
-  value={newEmployee.phone_number}
-  onChange={handlePhoneChange}
-  error={phoneError}
-  required
-/>
-
-<EmployeeFormField
-  label="Designation"
-  type="text"
-  placeholder=""
-  value={newEmployee.designation}
-  onChange={(e) => setNewEmployee({ ...newEmployee, designation: e.target.value })}
-  required
-/>
-
-<EmployeeFormField
-  label="Employee Id"
-  type="text"
-  placeholder=""
-  value={newEmployee.roll}
-  onChange={(e) => setNewEmployee({ ...newEmployee, roll: e.target.value })}
-  required
-/>
-
-
-
-
-
+          <EmployeeFormField
+            label="Employee Id"
+            type="text"
+            placeholder=""
+            value={newEmployee.roll}
+            onChange={(e) =>
+              setNewEmployee({ ...newEmployee, roll: e.target.value })
+            }
+          />
         </div>
       </Modal>
-
-      
     </div>
   );
 };

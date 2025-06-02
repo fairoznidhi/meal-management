@@ -167,22 +167,18 @@ const AdminDashboard = () => {
           {/* Telegram Notification */}
           <div className="mb-2">
             <Button
-              label={<BsBellFill className="text-midnightBlue text-xl" />}
-              size="sm"
-              custom={true}
-              fillButton={false}
-              className="bg-blue-200 hover:bg-blue-300 p-3 px-3 rounded-md transition duration-300 ease-in-out"
+              label={<BsBellFill/>}
+              size="none"
+              utilityButton={true}
               onClick={() => setIsNotificationModalOpen(true)}
             />
           </div>
           {/*Print meal */}
           <div className="">
             <Button
-              label={<FaPrint className="text-midnightBlue text-xl" />}
-              size="sm"
-              custom={true}
-              fillButton={false}
-              className="bg-blue-200 hover:bg-blue-300 p-3 px-3 rounded-md transition duration-300 ease-in-out"
+              label={<FaPrint/>}
+              size="none"
+              utilityButton={true}
               onClick={() => setIsPrintModalOpen(true)}
             />
           </div>

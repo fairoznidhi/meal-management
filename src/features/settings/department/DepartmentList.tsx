@@ -10,6 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import EditDepartment from "./EditDepartment";
 import { AxiosError } from "axios";
+import { Button } from "@/components/button";
 interface DepartmentListProps {
   subSectionClassName: string;
 }
@@ -81,18 +82,16 @@ const DepartmentList: React.FC<DepartmentListProps> = ({
       label: "Actions",
       render: (_value, row) => (
         <div className="flex justify-center gap-2">
-          <button
+          <Button
             onClick={() => handleEdit(row)}
-            className="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500"
-          >
-            Edit
-          </button>
-          <button
+            updateButton={true}
+            label="Edit"
+          />
+          <Button
             onClick={() => handleDeleteClick(row as department)}
-            className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
-          >
-            Delete
-          </button>
+            deleteButton={true}
+            label="Delete"
+          />
         </div>
       ),
     },
@@ -137,18 +136,16 @@ const DepartmentList: React.FC<DepartmentListProps> = ({
               ?
             </h3>
             <div className="flex justify-end gap-2">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              <Button
+                cancelButton={true}
                 onClick={() => setConfirmDeleteModalOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                label="Cancel"
+              />
+              <Button
                 onClick={confirmDelete}
-              >
-                Delete
-              </button>
+                label="Delete"
+                deleteButton={true}
+              />
             </div>
           </div>
         </div>
