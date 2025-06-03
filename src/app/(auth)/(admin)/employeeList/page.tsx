@@ -555,30 +555,61 @@ const EmployeeComponent: React.FC = () => {
     }
   };
 
-  const handleEmailChange = (e: any) => {
+  {/*const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const value = e.target.value;
     setNewEmployee({ ...newEmployee, email: value });
 
-    // Validate email format: any characters before @yopmail.com
-    ///const emailRegex = /^[^\s@]+@yopmail\.com$/;
-    {/*if (!emailRegex.test(value)) {
+  
+    const emailRegex = /^[^\s@]+^[^\s@]@mail\.com$/;
+    if (!emailRegex.test(value)) {
       setEmailError("Please enter a valid email like em@gmail.com");
     }
     else {
       setEmailError("");
-    }*/}
-    //setEmailError(emailRegex.test(value) ? "" : "Please enter a valid email like em@yopmail.com");
-    
-  };
+    }
   
-  const handlePhoneChange = (e:any) => {
+    
+  };*/}
+  
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const value = e.target.value;
+  setNewEmployee({ ...newEmployee, email: value });
+
+  // General email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.com$/;
+  if (!emailRegex.test(value)) {
+    setEmailError("Please enter a valid email address");
+  } else {
+    setEmailError("");
+  }
+};
+
+
+
+
+
+  
+  {/*const handlePhoneChange = (e:any) => {
     const value = e.target.value;
     setNewEmployee({ ...newEmployee, phone_number: value });
     const phoneRegex = /^01\d{9}$/;
     if (!phoneRegex.test(value)) {
       setPhoneError("Phone number must be 11 digits");
     } 
-  };
+  };*/}
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const value = e.target.value;
+  setNewEmployee({ ...newEmployee, phone_number: value });
+
+  const phoneRegex = /^01\d{9}$/;
+  if (!phoneRegex.test(value)) {
+    setPhoneError("Phone number must be 11 digits starting with 01");
+  } else {
+    setPhoneError(""); // Clear the error if valid
+  }
+};
+
 
 
   const validateFields = () => {
@@ -870,8 +901,8 @@ const EmployeeComponent: React.FC = () => {
     <Select
       value={
         updatedEmployee?.is_active !== undefined
-          ? updatedEmployee.is_active.toString()
-          : selectedEmployee.is_active.toString()
+          ? updatedEmployee.is_active?.toString()
+          : selectedEmployee.is_active?.toString()
       }
       onChange={(e) =>
         setUpdatedEmployee({
@@ -915,6 +946,8 @@ const EmployeeComponent: React.FC = () => {
         isOpen={showAddModal}
         onClose={() => {
           setShowAddModal(false);
+          setPhoneError('');
+          setEmailError('');
           resetForm();
         }}
         title="Add New Employee"
@@ -953,10 +986,10 @@ const EmployeeComponent: React.FC = () => {
   placeholder="ex: emp@gmail.com"
   value={newEmployee.email}
   onChange={handleEmailChange}
-  //error={emailError}
+  error={emailError}
   //required
 />
-{emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+
 
  </div>
 
